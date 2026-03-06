@@ -1,0 +1,63 @@
+## --- [ DERLEME ÇIKTILARI ] ---
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+out/
+
+## --- [ VISUAL STUDIO / JETBRAINS / VS CODE ] ---
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.patch
+*.diff
+
+## --- [ PAKET YÖNETİCİLERİ ] ---
+# NuGet paketleri
+packages/
+
+node_modules/
+dist/
+
+## --- [ YAPILANDIRMA VE GÜVENLİK ] ---
+# Yerel geliştirme ayarları
+appsettings.Development.json
+appsettings.Local.json
+
+# User Secrets (Visual Studio'nun sakladığı gizli veriler)
+secrets.json
+.microsoft.visualstudio.azure.usersecrets.json
+
+# Environment (Çevre) değişkenleri dosyaları
+.env
+.env.local
+.env.*.local
+
+## --- [ VERİTABANI VE LOG DOSYALARI ] ---
+*.log
+*.db
+*.db-shm
+*.db-wal
+App_Data/
+# SQL Server dosyaları
+*.mdf
+*.ldf
+
+## --- [ REDIS ] ---
+# Redis'in diske yazdığı yedekleme dosyası
+dump.rdb
+
+## --- [ İŞLETİM SİSTEMİ DOSYALARI ] ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+## --- [ DOCKER ] ---
+.dockerignore
+# Docker compose geçici dosyaları
+docker-compose.override.yml
