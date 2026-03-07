@@ -47,6 +47,9 @@ App_Data/
 *.mdf
 *.ldf
 
+## Backend Log Folder
+Logs
+
 ## --- [ REDIS ] ---
 # Redis'in diske yazdığı yedekleme dosyası
 dump.rdb
