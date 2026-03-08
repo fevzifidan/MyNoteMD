@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using MyNoteMD_API;
 using MyNoteMD_API.Data;
 using MyNoteMD_API.Handlers;
 using MyNoteMD_API.Models;
@@ -12,7 +15,6 @@ using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
 using System.Text;
-using Microsoft.OpenApi;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -41,6 +43,18 @@ try
     builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString!));
 
     // 2. Identity Settings
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("MyNoteMDReactAppPolicy", policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+    });
+
     builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
     {
         // Password Rules
@@ -73,7 +87,20 @@ try
 
     // Add services to the container.
 
-    builder.Services.AddControllers();
+    builder.Services.AddAntiforgery(options =>
+    {
+        options.HeaderName = "X-CSRF-TOKEN";
+        //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        //options.Cookie.SameSite = SameSiteMode.Lax;
+    });
+
+    builder.Services.AddScoped<CsrfValidationFilter>();
+
+    builder.Services.AddControllers(options =>
+    {
+        options.Filters.AddService<CsrfValidationFilter>();
+    });
+
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
@@ -113,6 +140,10 @@ try
     app.UseExceptionHandler();
 
     app.UseHttpsRedirection();
+
+    app.UseRouting();
+
+    app.UseCors("MyNoteMDReactAppPolicy");
 
     app.UseAuthentication();
 

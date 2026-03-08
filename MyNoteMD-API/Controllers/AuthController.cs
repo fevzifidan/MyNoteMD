@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
@@ -30,6 +31,7 @@ namespace MyNoteMD_API.Controllers
             return Guid.Parse(userId!);
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO request)
         {
@@ -65,6 +67,7 @@ namespace MyNoteMD_API.Controllers
             return StatusCode(201, userDto);
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO request)
         {
@@ -91,7 +94,7 @@ namespace MyNoteMD_API.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             };
@@ -104,6 +107,15 @@ namespace MyNoteMD_API.Controllers
             var response = new AuthResponseDTO(new UserDTO(user.Id, user.Email!, user.GivenName, user.FamilyName));
 
             return Ok(response);
+        }
+
+        [Authorize]
+        [IgnoreAntiforgeryToken]
+        [HttpGet("csrf-token")]
+        public IActionResult GetCsrfToken([FromServices] IAntiforgery antiforgery)
+        {
+            var tokens = antiforgery.GetAndStoreTokens(HttpContext);
+            return Ok(new { token = tokens.RequestToken });
         }
 
         [Authorize]

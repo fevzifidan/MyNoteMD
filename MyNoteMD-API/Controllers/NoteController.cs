@@ -268,6 +268,7 @@ namespace MyNoteMD_API.Controllers
         }
 
         [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
         [HttpGet("public/{slug}")]
         public async Task<IActionResult> GetPublicNote(string slug)
         {

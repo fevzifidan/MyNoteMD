@@ -9,7 +9,7 @@ namespace MyNoteMD_API.DTOs
 
     // 2. Patch DTO for Auto-Save (Draft)
     public record UpdateNoteDraftDto(
-        string? Title,
+        [MaxLength(200)] string? Title,
         string? Content,
         List<Guid>? TagIds
     );

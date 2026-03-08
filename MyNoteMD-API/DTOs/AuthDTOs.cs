@@ -6,8 +6,8 @@ namespace MyNoteMD_API.DTOs
     (
         [Required, EmailAddress] string Email,
         [Required, MinLength(8)] string Password,
-        [Required] string GivenName,
-        [Required] string FamilyName
+        [Required, MinLength(3)] string GivenName,
+        [Required, MinLength(2)] string FamilyName
     );
 
     public record LoginDTO
