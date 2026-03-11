@@ -12,4 +12,9 @@ namespace MyNoteMD_API.DTOs
         int NoteCount,
         DateTimeOffset CreatedAt
     );
+
+    public record PagedCollectionResponseDto(
+        IEnumerable<CollectionResponseDto> Items,
+        string? NextCursor
+    );
 }

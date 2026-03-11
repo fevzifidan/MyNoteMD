@@ -34,22 +34,63 @@ namespace MyNoteMD_API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? cursor, [FromQuery] int limit = 20, [FromQuery] string? search = null)
         {
+            // 1. Üst limiti sınırla
+            limit = Math.Min(limit, 50);
+
             var userId = GetCurrentUserId();
 
-            var collections = await _context.Collections
-                .Where(c => c.OwnerId == userId)
+            // 2. Temel sorgu (Sadece kullanıcıya ait olanlar)
+            var query = _context.Collections.Where(c => c.OwnerId == userId);
+
+            // 3. Arama Filtresi (Koleksiyon isminde ara)
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchTerm = search.ToLower();
+                query = query.Where(c => c.Name.ToLower().Contains(searchTerm));
+            }
+
+            // 4. Cursor Mantığını Uygulama
+            var decodedCursor = CursorHelper.Decode(cursor);
+            if (decodedCursor != null)
+            {
+                var cursorDate = decodedCursor.Value.CreatedAt;
+                var cursorId = decodedCursor.Value.Id;
+
+                // "En yeni en üstte" (DESC) sıralaması için cursor filtresi:
+                query = query.Where(c =>
+                    c.CreatedAt < cursorDate ||
+                    (c.CreatedAt == cursorDate && c.Id.CompareTo(cursorId) < 0));
+            }
+
+            // 5. Veriyi Çekme (Limit + 1 Taktiği)
+            var collections = await query
                 .OrderByDescending(c => c.CreatedAt)
+                .ThenByDescending(c => c.Id)
+                .Take(limit + 1)
                 .Select(c => new CollectionResponseDto(
                     c.Id,
                     c.Name,
-                    c.Notes.Count,
+                    c.Notes.Count, // Global Soft Delete filtresi sayesinde silinmiş notları saymaz
                     c.CreatedAt
                 ))
                 .ToListAsync();
 
-            return Ok(collections);
+            // 6. NextCursor Hesaplanması
+            string? nextCursor = null;
+
+            if (collections.Count > limit)
+            {
+                // Bir sonraki sayfa var, cursor üret
+                var lastItem = collections[limit - 1]; // Listedeki (limit içindeki) son gerçek eleman
+                nextCursor = CursorHelper.Encode(lastItem.CreatedAt, lastItem.Id);
+
+                // Fazladan çektiğimiz (+1) kontrol elemanını listeden çıkar
+                collections.RemoveAt(limit);
+            }
+
+            return Ok(new PagedCollectionResponseDto(collections, nextCursor));
         }
 
         [HttpPost]

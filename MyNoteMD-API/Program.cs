@@ -89,7 +89,7 @@ try
 
     builder.Services.AddAntiforgery(options =>
     {
-        options.HeaderName = "X-CSRF-TOKEN";
+        options.HeaderName = "X-Csrf-Token";
         //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         //options.Cookie.SameSite = SameSiteMode.Lax;
     });
@@ -136,6 +136,18 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+    else
+    {
+        app.UseHsts();
+    }
+
+    app.Use(async (context, next) =>
+    {
+        context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'self';";
+        await next();
+    });
 
     app.UseExceptionHandler();
 

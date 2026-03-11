@@ -33,8 +33,9 @@ namespace MyNoteMD_API
                 // Check Cookie and Header (X-CSRF-TOKEN)
                 await _antiforgery.ValidateRequestAsync(context.HttpContext);
             }
-            catch (AntiforgeryValidationException)
+            catch (AntiforgeryValidationException error)
             {
+                Console.WriteLine(error);
                 context.Result = new BadRequestObjectResult(new
                 {
                     message = "Invalid or missing antiforgery token."

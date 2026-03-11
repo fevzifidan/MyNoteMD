@@ -69,7 +69,7 @@ namespace MyNoteMD_API.Controllers
 
         [IgnoreAntiforgeryToken]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO request)
+        public async Task<IActionResult> Login([FromBody] LoginDTO request, [FromServices] IAntiforgery antiforgery)
         {
             if (!ModelState.IsValid)
             {
