@@ -17,4 +17,6 @@ namespace MyNoteMD_API.DTOs
         IEnumerable<CollectionResponseDto> Items,
         string? NextCursor
     );
+
+    public record CollectionLookupDto(Guid Id, string Name);
 }

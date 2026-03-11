@@ -93,6 +93,21 @@ namespace MyNoteMD_API.Controllers
             return Ok(new PagedCollectionResponseDto(collections, nextCursor));
         }
 
+        [HttpGet("lookup")]
+        public async Task<IActionResult> GetLookUp()
+        {
+            var userId = GetCurrentUserId();
+
+            // Just ID and Name
+            var collections = await _context.Collections
+                .Where(c => c.OwnerId == userId)
+                .OrderBy(c => c.Name) // In alphabetical order
+                .Select(c => new CollectionLookupDto(c.Id, c.Name))
+                .ToListAsync();
+
+            return Ok(collections);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCollectionDto request)
         {

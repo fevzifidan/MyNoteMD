@@ -14,6 +14,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
 
+import { CreateCollectionDialog } from "@/features/collections/components/create-collection-dialog";
+import { CreateNoteDialog } from "@/features/notes/components/create-not-dialog";
+
 export function Sidebar() {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -123,12 +126,8 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-1 mt-1 animate-in fade-in slide-in-from-top-1">
-          <Button variant="ghost" className={cn("w-full flex items-center gap-4 h-10 rounded-xl pl-10 text-muted-foreground hover:text-foreground", !isExpanded && "hidden")}>
-            <Folder className="h-4 w-4" /> <span className="text-sm font-medium">Koleksiyon</span>
-          </Button>
-          <Button variant="ghost" className={cn("w-full flex items-center gap-4 h-10 rounded-xl pl-10 text-muted-foreground hover:text-foreground", !isExpanded && "hidden")}>
-            <FileText className="h-4 w-4" /> <span className="text-sm font-medium">Not</span>
-          </Button>
+          <CreateCollectionDialog isExpanded={isExpanded} />
+          <CreateNoteDialog isExpanded={isExpanded} />
         </CollapsibleContent>
       </Collapsible>
 

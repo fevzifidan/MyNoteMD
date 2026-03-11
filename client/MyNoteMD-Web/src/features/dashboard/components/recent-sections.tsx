@@ -1,43 +1,3 @@
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { SectionHeader } from "./section-header";
-// import { CollectionItem } from "@/features/collections/components/collection-list-item";
-// import { ShowMoreButton } from "./show-more-button";
-// import { NoteItem } from "@/features/notes/components/note-list-item";
-
-// export const RecentActivity = () => {
-//   return (
-//     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-      
-//       {/* RECENT COLLECTIONS CARD */}
-//       <Card className="border-none shadow-none bg-transparent">
-//         <SectionHeader title="Recent Collections" />
-//         <CardContent className="px-0 space-y-1">
-//           <CollectionItem id="123" name="Travel Ideas" noteCount={12} createdAt="2023-10-26" />
-//           <CollectionItem id="456" name="Project X Research" noteCount={8} createdAt="2023-10-25" />
-//           <CollectionItem id="789" name="Recipes to Try" noteCount={25} createdAt="2023-10-24" />
-//           <CollectionItem id="101" name="Book Summaries" noteCount={5} createdAt="2023-10-22" />
-//           <CollectionItem id="102" name="Language Learning" noteCount={10} createdAt="2023-10-20" />
-//           <ShowMoreButton endpoint="/collections" />
-//         </CardContent>
-//       </Card>
-
-//       {/* RECENT NOTES CARD */}
-//       <Card className="border-none shadow-none bg-transparent">
-//         <SectionHeader title="Recent Notes" />
-//         <CardContent className="px-0 space-y-1">
-//           <NoteItem id="123" title="Meeting Minutes - Project X" status="Public" lastUpdated="2023-10-26" />
-//           <NoteItem id="456" title="Grocery List" status="Private" lastUpdated="2023-10-25" />
-//           <NoteItem id="789" title="Novel Outline - Chapter 1" status="Private" lastUpdated="2023-10-24" />
-//           <NoteItem id="101" title="Learning React Hooks" status="Public" lastUpdated="2023-10-22" />
-//           <NoteItem id="102" title="Fitness Goals" status="Public" lastUpdated="2023-10-20" />
-//           <ShowMoreButton endpoint="/notes" />
-//         </CardContent>
-//       </Card>
-
-//     </div>
-//   );
-// };
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -97,7 +57,7 @@ export const RecentActivity = () => {
             <ListSkeleton />
           ) : (
             <>
-              {collections.map((item) => (
+              {collections.slice(0,5).map((item) => (
                 <CollectionRow 
                   key={item.id} 
                   id={item.id} 
