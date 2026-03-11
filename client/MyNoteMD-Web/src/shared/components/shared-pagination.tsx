@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 
-interface NotePaginationProps {
+interface SharedPaginationProps {
   currentPage: number;
   hasNextPage: boolean;
   onNext: () => void;
@@ -15,13 +15,13 @@ interface NotePaginationProps {
   disabled?: boolean;
 }
 
-export const NotePagination = ({
+export const SharedPagination = ({
   currentPage,
   hasNextPage,
   onNext,
   onPrevious,
   disabled
-}: NotePaginationProps) => {
+}: SharedPaginationProps) => {
   return (
     <Pagination className="mt-10">
       <PaginationContent className="gap-4">

@@ -44,8 +44,8 @@ import { useEffect, useState } from "react";
 import apiService from "@/shared/services/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeader } from "./section-header";
-import { CollectionItem } from "@/features/collections/components/collection-list-item";
-import { NoteItem } from "@/features/notes/components/note-list-item";
+import { CollectionRow } from "@/features/collections/components/collection-row";
+import { NoteRow } from "@/features/notes/components/note-row";
 import { ShowMoreButton } from "./show-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -98,7 +98,7 @@ export const RecentActivity = () => {
           ) : (
             <>
               {collections.map((item) => (
-                <CollectionItem 
+                <CollectionRow 
                   key={item.id} 
                   id={item.id} 
                   name={item.name} 
@@ -124,7 +124,7 @@ export const RecentActivity = () => {
           ) : (
             <>
               {notes.slice(0,5).map((item) => (
-                <NoteItem 
+                <NoteRow 
                   key={item.id} 
                   id={item.id} 
                   title={item.title} 

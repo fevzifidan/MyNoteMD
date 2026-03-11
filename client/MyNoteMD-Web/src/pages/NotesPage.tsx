@@ -3,12 +3,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import apiService from "@/shared/services/api";
-import { NoteListItem } from "@/features/notes/components/note-item";
-import { NotePagination } from "@/features/notes/components/note-pagination";
+import { NoteCard } from "@/features/notes/components/note-card";
+import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function NotesPage({forCollection}:undefined | boolean) {
+export default function NotesPage({forCollection}: {forCollection?: boolean}) {
   const [searchParams] = useSearchParams();
   const searchParam = searchParams.get("q") || "";
   const collectionId = forCollection ? searchParams.get("collectionId") : "";
@@ -34,8 +34,9 @@ export default function NotesPage({forCollection}:undefined | boolean) {
         }
       });
 
-      setNotes(response.items || []);
-      setNextCursor(response.nextCursor || null);
+      const data = response as any;
+      setNotes(data.items || []);
+      setNextCursor(data.nextCursor || null);
 
       if (isNewSearch) {
         setCurrentPage(1);
@@ -95,7 +96,7 @@ export default function NotesPage({forCollection}:undefined | boolean) {
             {/* Not Listesi */}
             <div className="grid grid-cols-1 gap-4">
               {notes.map((note) => (
-                <NoteListItem key={note.Id || note.id} note={note} />
+                <NoteCard key={note.Id || note.id} note={note} />
               ))}
             </div>
 
@@ -116,7 +117,7 @@ export default function NotesPage({forCollection}:undefined | boolean) {
         {/* Sayfalama (Pagination) - Sadece veri varsa göster */}
         {notes.length > 0 && (
           <div className="mt-10 mb-20">
-            <NotePagination
+            <SharedPagination
               currentPage={currentPage}
               hasNextPage={!!nextCursor}
               onNext={handleNext}

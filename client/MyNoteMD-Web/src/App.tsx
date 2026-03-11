@@ -15,6 +15,7 @@ import HomePage from './pages/HomePage.js';
 import NotesPage from './pages/NotesPage.js';
 import CollectionsPage from './pages/CollectionsPage.js';
 import ProtectedRoute from './components/custom/ProtectedRoute/ProtectedRoute.jsx';
+import GuestRoute from './components/custom/GuestRoute/GuestRoute.js';
 import { ThemeProvider } from './providers/ThemeProvider/ThemeProvider.js';
 import { TooltipProvider } from "@/components/ui/tooltip"
 
@@ -55,8 +56,8 @@ function App() {
 
                 <Routes>
                   <></>
-                  <Route path='/login' element={<><LoginPage/></>} />
-                  <Route path='/register' element={<><RegisterPage/></>} />
+                  <Route path='/login' element={<GuestRoute><LoginPage/></GuestRoute>} />
+                  <Route path='/register' element={<GuestRoute><RegisterPage/></GuestRoute>} />
                   <Route path='/home'
                     element={<ProtectedRoute><HomePage /></ProtectedRoute>}
                   />

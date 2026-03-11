@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import apiService from "@/shared/services/api";
-import { CollectionListItem } from "@/features/collections/components/collection-item";
-import { NotePagination } from "@/features/notes/components/note-pagination";
+import { CollectionCard } from "@/features/collections/components/collection-card";
+import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -97,7 +97,7 @@ export default function CollectionsPage() {
             {/* Koleksiyon Listesi */}
             <div className="grid grid-cols-1 gap-4">
               {collections.map((item) => (
-                <CollectionListItem key={item.id} collection={item} />
+                <CollectionCard key={item.id} collection={item} />
               ))}
             </div>
 
@@ -120,7 +120,7 @@ export default function CollectionsPage() {
         {/* Pagination - Sadece veri varsa göster */}
         {collections.length > 0 && (
           <div className="mt-12 mb-20">
-            <NotePagination
+            <SharedPagination
               currentPage={currentPage}
               hasNextPage={!!nextCursor}
               onNext={handleNext}
