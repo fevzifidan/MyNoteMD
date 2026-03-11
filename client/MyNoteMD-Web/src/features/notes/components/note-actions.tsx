@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { MoreHorizontal, Eye, Pencil, Trash2, ShieldCheck } from "lucide-react";
 
-import { useConfirm } from "@/shared/services/confirmation/useConfirm"; 
+import { useConfirm } from "@/shared/services/confirmation/useConfirm";
+import { useNavigate } from "react-router-dom";
 
 interface NoteActionsProps {
   initialIsPublic: boolean; // Notun gerçek durumu dışarıdan gelmeli
@@ -22,6 +23,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   
   const confirm = useConfirm(); 
+  const navigate = useNavigate();
 
   const handleAccessChange = async (checked: boolean) => {
     setIsUpdating(true);
@@ -64,12 +66,16 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
         </DropdownMenuTrigger>
         
         <DropdownMenuContent align="end" className="w-52 p-2 rounded-xl shadow-2xl border-border">
-          <DropdownMenuItem className="gap-3 py-2.5 cursor-pointer rounded-lg">
+          <DropdownMenuItem
+            className="gap-3 py-2.5 cursor-pointer rounded-lg"
+            onClick={() => navigate(`/notes/${noteId}`)}>
             <Eye className="h-4 w-4 opacity-70" />
             <span className="font-medium text-sm">Oku</span>
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="gap-3 py-2.5 cursor-pointer rounded-lg">
+          <DropdownMenuItem
+            className="gap-3 py-2.5 cursor-pointer rounded-lg"
+            onClick={() => navigate(`/edit/${noteId}`)}>
             <Pencil className="h-4 w-4 opacity-70" />
             <span className="font-medium text-sm">Düzenle</span>
           </DropdownMenuItem>

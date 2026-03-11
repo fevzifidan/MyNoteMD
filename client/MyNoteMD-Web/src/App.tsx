@@ -18,6 +18,7 @@ import ProtectedRoute from './components/custom/ProtectedRoute/ProtectedRoute.js
 import GuestRoute from './components/custom/GuestRoute/GuestRoute.js';
 import { ThemeProvider } from './providers/ThemeProvider/ThemeProvider.js';
 import { TooltipProvider } from "@/components/ui/tooltip"
+import NoteEditPage from './pages/NoteEditPage/NoteEditPage.js';
 
 function App() {
   const { i18n, ready } = useTranslation();
@@ -69,6 +70,9 @@ function App() {
                   />
                   <Route path='/collection/notes'
                     element={<ProtectedRoute><NotesPage forCollection={true}/></ProtectedRoute>}
+                  />
+                  <Route path='/edit/*'
+                    element={<ProtectedRoute><NoteEditPage /></ProtectedRoute>}
                   />
                 </Routes>
               </AuthProvider>
