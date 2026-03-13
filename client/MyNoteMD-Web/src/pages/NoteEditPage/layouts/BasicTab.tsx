@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { ChevronDown, Bold, Italic, Underline, Strikethrough, ListOrdered, List, AlignLeft, AlignCenter, AlignRight } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, Bold, Italic, Underline, Strikethrough, ListOrdered, List, AlignLeft, AlignCenter, AlignRight, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEditor } from "./Editor/EditorContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 export default function BasicTab() {
+    const { applyFormat, clearFormat, insertText } = useEditor();
     const [textColor, setTextColor] = useState("#ef4444"); // Varsayılan kırmızı
     const [highlightColor, setHighlightColor] = useState("#eab308"); // Varsayılan sarı
 
@@ -44,19 +46,19 @@ export default function BasicTab() {
 
               {/* B, I, U, S Toggle Group */}
               <ToggleGroup type="multiple" className={groupContainer}>
-                <Button variant={"outline"} className={groupBtn}><Bold/></Button>
-                <Button variant={"outline"} className={groupBtn}><Italic/></Button>
-                <Button variant={"outline"} className={groupBtn}><Underline/></Button>
-                <Button variant={"outline"} className={groupBtn}><Strikethrough/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("**", "**")}><Bold/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("*", "*")}><Italic/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("<u>", "</u>")}><Underline/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("~~", "~~")}><Strikethrough/></Button>
               </ToggleGroup>
 
               {/* Text Color Picker (Split Button & Custom Hex) */}
               <div className="flex items-center border rounded-md h-10 bg-background">
                 <button 
                   className="px-3 hover:bg-accent h-full rounded-l-md flex items-center justify-center transition-colors"
-                  onClick={() => console.log("Seçilen yazı rengi uygulandı:", textColor)}
+                  onClick={() => applyFormat(`:style[`, `]{color=${textColor}}`, true)}
                 >
-                  <div className="w-5 h-5 rounded-full border border-border" style={{ backgroundColor: textColor }} />
+                  <Palette className="w-5 h-5" style={{ color: textColor }} />
                 </button>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -94,7 +96,7 @@ export default function BasicTab() {
               <div className="flex items-center border rounded-md h-10 bg-background">
                 <button 
                   className="px-3 hover:bg-accent h-full rounded-l-md flex items-center justify-center transition-colors"
-                  onClick={() => console.log("Seçilen vurgu rengi uygulandı:", highlightColor)}
+                  onClick={() => applyFormat(`:style[`, `]{bg=${highlightColor}}`, true)}
                 >
                   <div className="w-5 h-2 border border-border" style={{ backgroundColor: highlightColor }} />
                 </button>
@@ -138,9 +140,9 @@ export default function BasicTab() {
 
               {/* Alignment Toggle Group */}
               <ToggleGroup type="single" className={groupContainer}>
-                <Button variant={"outline"} className={groupBtn}><AlignLeft/></Button>
-                <Button variant={"outline"} className={groupBtn}><AlignCenter/></Button>
-                <Button variant={"outline"} className={groupBtn}><AlignRight/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat(`:style[`, `]{align=left}`, true)}><AlignLeft/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat(`:style[`, `]{align=center}`, true)}><AlignCenter/></Button>
+                <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat(`:style[`, `]{align=right}`, true)}><AlignRight/></Button>
               </ToggleGroup>
 
               {/* List Toggle Group */}
@@ -170,12 +172,13 @@ export default function BasicTab() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>Link</DropdownMenuItem>
-                  <DropdownMenuItem>Image Link</DropdownMenuItem>
-                  <DropdownMenuItem>Code</DropdownMenuItem>
-                  <DropdownMenuItem>Table</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => insertText("[title](url)")}>Link</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => insertText("![alt](url)")}>Image Link</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => applyFormat("```\n", "\n```")}>Code</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => insertText("\n| header | header |\n| --- | --- |\n| cell | cell |\n")}>Table</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Button variant="ghost" onClick={clearFormat} className="text-xs">Clear</Button>
             </>
     )
 }

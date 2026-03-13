@@ -3,7 +3,7 @@
 import * as React from "react";
 import { 
   Home, Sparkles, FileText, Folder, Plus, 
-  HelpCircle, ChevronRight, ChevronLeft, Menu, X
+  HelpCircle, ChevronRight, ChevronLeft, Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,7 +37,7 @@ export function Sidebar() {
       */}
       <aside
         className={cn(
-          "fixed left-6 top-1/2 -translate-y-1/2 z-40 transition-all duration-500 ease-in-out",
+          "fixed left-6 top-1/2 -translate-y-1/2 z-[90] transition-all duration-500 ease-in-out",
           "hidden md:flex flex-col items-center py-6", // MOBİLDE HİÇ YOK
           "bg-card/80 backdrop-blur-lg border shadow-2xl rounded-[2.5rem]",
           isExpanded ? "w-64 px-4" : "w-20 px-2"
@@ -60,7 +60,7 @@ export function Sidebar() {
         - 'block': Mobilde görünür
         - 'md:hidden': 768px ve üzerinde tamamen gizle
       */}
-      <div className="md:hidden fixed top-6 left-6 z-[60]">
+      <div className="md:hidden fixed top-6 left-6 z-[110]">
         <Sheet>
           <SheetTrigger asChild>
             <Button 
@@ -146,7 +146,7 @@ function SidebarItem({ icon: Icon, label, isExpanded, endpoint }: any) {
   const navigate = useNavigate();
 
   return (
-    <Tooltip disabled={isExpanded}>
+    <Tooltip>
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
@@ -160,7 +160,7 @@ function SidebarItem({ icon: Icon, label, isExpanded, endpoint }: any) {
           {isExpanded && <span className="font-semibold tracking-tight">{label}</span>}
         </Button>
       </TooltipTrigger>
-      <TooltipContent side="right" className="font-bold">{label}</TooltipContent>
+      {!isExpanded && <TooltipContent side="right" className="font-bold">{label}</TooltipContent>}
     </Tooltip>
   );
 }

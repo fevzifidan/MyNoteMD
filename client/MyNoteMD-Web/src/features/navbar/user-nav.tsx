@@ -8,14 +8,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Settings, LogOut } from "lucide-react";
+import { User, Settings, LogOut, Moon, Sun, Monitor, Languages } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
+import { AVAILABLE_LANGUAGES, getFlagUrl } from "@/components/custom/LanguageSelector/config/languageConfig";
 
-export function UserNav() {
+export function UserNav({showAdditional} : {showAdditional?:boolean}) {
   const { user, logout, loading } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const { i18n, t } = useTranslation(["common"]);
 
   if (loading) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
@@ -58,6 +69,63 @@ export function UserNav() {
           <Settings className="h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
+
+        {showAdditional && <>
+          <DropdownMenuSeparator />
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="cursor-pointer gap-2">
+              {theme === "light" && <Sun className="h-4 w-4" />}
+              {theme === "dark" && <Moon className="h-4 w-4" />}
+              {theme === "system" && <Monitor className="h-4 w-4" />}
+              <span>{t("common:theme.appearance")}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                  <DropdownMenuRadioItem value="light" className="cursor-pointer">
+                    <Sun className="mr-2 h-4 w-4" />
+                    <span>{t("common:theme.light")}</span>
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="dark" className="cursor-pointer">
+                    <Moon className="mr-2 h-4 w-4" />
+                    <span>{t("common:theme.dark")}</span>
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="system" className="cursor-pointer">
+                    <Monitor className="mr-2 h-4 w-4" />
+                    <span>{t("common:theme.system")}</span>
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="cursor-pointer gap-2">
+              <Languages className="h-4 w-4" />
+              <span>Language</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup 
+                  value={i18n.language} 
+                  onValueChange={(val) => i18n.changeLanguage(val)}
+                >
+                  {AVAILABLE_LANGUAGES.map((lang) => (
+                    <DropdownMenuRadioItem key={lang.code} value={lang.code} className="cursor-pointer">
+                      <img 
+                        src={getFlagUrl(lang.countryCode)} 
+                        alt={lang.alt}
+                        className="w-4 h-3 mr-2 object-cover rounded-sm"
+                      />
+                      <span>{lang.label}</span>
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        </>}
         
         <DropdownMenuSeparator />
         

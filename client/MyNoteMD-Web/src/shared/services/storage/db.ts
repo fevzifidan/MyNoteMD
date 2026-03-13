@@ -7,6 +7,7 @@ export class AppDatabase extends Dexie {
   contexts!: Table<IContextMetadata>; // Pagination metadata tablosu
   notes!: Dexie.Table<any, string>;        // Notların tipi
   collections!: Dexie.Table<any, string>;  // Koleksiyonların tipi
+  userConfirmationPreferences!: Dexie.Table<any, string>;  // Kullanıcı onay tercihleri
 
   constructor() {
     super('MyAppPaginationDB');
@@ -18,7 +19,8 @@ export class AppDatabase extends Dexie {
       items: "id, contextId, index, dataId, itemType",
       contexts: "contextId",
       notes: "id",
-      collections: "id"
+      collections: "id",
+      userConfirmationPreferences: "id"
     });
   }
 }

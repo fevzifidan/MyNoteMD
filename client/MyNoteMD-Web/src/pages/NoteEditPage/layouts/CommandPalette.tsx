@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import BasicTab from "./BasicTab";
+import MathTab from "./MathTab/MathTab";
 
 export default function CommandPalette() {
   const [activeTab, setActiveTab] = useState("basic");
 
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center bg-card text-card-foreground border shadow-xl rounded-3xl p-3 w-max max-w-[95vw]">
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center bg-card text-card-foreground border shadow-xl rounded-3xl p-3 w-max max-w-[75vw]">
       
       {/* Üst Kısım: Radio Buttons (Ortalanmış) */}
       <RadioGroup
@@ -38,7 +39,7 @@ export default function CommandPalette() {
             <BasicTab />
           )}
 
-          {activeTab === "math" && <div className="p-2 text-sm text-muted-foreground w-full text-center">Math araçları buraya gelecek...</div>}
+          {activeTab === "math" && <MathTab />}
           {activeTab === "diagram" && <div className="p-2 text-sm text-muted-foreground w-full text-center">Diagram araçları buraya gelecek...</div>}
         </div>
       </div>

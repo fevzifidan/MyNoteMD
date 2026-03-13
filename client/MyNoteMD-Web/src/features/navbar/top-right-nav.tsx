@@ -2,17 +2,19 @@ import LanguageSelector from "@/components/custom/LanguageSelector/LanguageSelec
 import { ThemeToggle } from "@/components/custom/ThemeToggle/ThemeToggle";
 import { UserNav } from "./user-nav";
 
-export const TopNav = () => {
+export const TopNav = ({collapse} : {collapse ?: boolean}) => {
   return (
-    <div className="fixed top-6 right-6 z-50 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
-      {/* Dil Seçici */}
-      <LanguageSelector />
-      
-      {/* Tema (Dark/Light) Toggle */}
-      <ThemeToggle />
+    <div className="fixed top-6 right-6 z-[100] flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+      {!collapse && <>
+        {/* Dil Seçici */}
+        <LanguageSelector />
+        
+        {/* Tema (Dark/Light) Toggle */}
+        <ThemeToggle />
+      </>}
       
       {/* Profil Dropdown */}
-      <UserNav />
+      <UserNav showAdditional={collapse}/>
     </div>
   );
 };

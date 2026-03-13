@@ -127,3 +127,20 @@
     @apply font-sans;
     }
 }
+
+/* KaTeX Layout Fixes */
+.katex-mathml {
+  display: none !important;
+}
+
+.katex-display {
+  margin: 1em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: middle;
+}
+
+.prose .katex-display {
+  margin-top: 1.5em !important;
+  margin-bottom: 1.5em !important;
+}
