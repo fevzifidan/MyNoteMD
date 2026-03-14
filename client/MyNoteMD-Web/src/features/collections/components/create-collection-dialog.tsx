@@ -34,7 +34,7 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
       setOpen(false);
       setName("");
     } catch (error) {
-      notificationService.error("Failed to create collection. Please try again.");
+
     } finally {
       setLoading(false);
     }
@@ -43,10 +43,10 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className={cn(
-            "w-full flex items-center gap-4 h-10 rounded-xl pl-10 text-muted-foreground hover:text-foreground", 
+            "w-full flex items-center gap-4 h-10 rounded-xl pl-10 text-muted-foreground hover:text-foreground",
             !isExpanded && "hidden"
           )}
         >
@@ -54,7 +54,7 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
           <span className="text-sm font-medium flex-1 text-left">Collection</span>
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -63,7 +63,7 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
               Organize your notes by creating a new collection.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-6">
             <div className="space-y-2">
               <Label htmlFor="name">Collection Name</Label>
@@ -76,7 +76,7 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
               />
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               Cancel

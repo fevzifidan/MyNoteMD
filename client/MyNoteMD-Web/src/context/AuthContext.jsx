@@ -12,15 +12,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
-      
+
       if (token) {
         try {
-            const userData = await apiService.get("/account/me");
-            setUser(userData.user);
+          const userData = await apiService.get("/account/me");
+          setUser(userData.user);
         } catch (error) {
-            console.log(error);
-            // Token is not valid
-            setUser(null);
+          // Token is not valid
+          setUser(null);
         }
       }
       setLoading(false);
@@ -33,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     // credentials = { email, password }
     const response = await apiService.post("/auth/login", credentials);
-    if (response){
+    if (response) {
       const antiforgeryResponse = await apiService.get("auth/csrf-token")
       localStorage.setItem("token", antiforgeryResponse.token);
     } else {
@@ -52,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
-        {children}
+      {children}
     </AuthContext.Provider>
   );
 };

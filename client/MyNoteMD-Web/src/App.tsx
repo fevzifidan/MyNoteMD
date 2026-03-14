@@ -19,6 +19,9 @@ import GuestRoute from './components/custom/GuestRoute/GuestRoute.js';
 import { ThemeProvider } from './providers/ThemeProvider/ThemeProvider.js';
 import { TooltipProvider } from "@/components/ui/tooltip"
 import NoteEditPage from './pages/NoteEditPage/NoteEditPage.js';
+import NotePreviewPage from './pages/NotePreviewPage/NotePreviewPage.js';
+import TrashPage from './pages/TrashPage.js';
+import GuestPreviewPage from './pages/NotePreviewPage/GuestPreviewPage.js';
 
 function App() {
   const { i18n, ready } = useTranslation();
@@ -26,7 +29,7 @@ function App() {
   useEffect(() => {
     const handleLanguageChange = () => {
       // Get browser's language ('en-US' -> 'en')
-      const newLang = navigator.language.split('-')[0]; 
+      const newLang = navigator.language.split('-')[0];
       i18n.changeLanguage(newLang);
     };
 
@@ -57,8 +60,8 @@ function App() {
 
                 <Routes>
                   <></>
-                  <Route path='/login' element={<GuestRoute><LoginPage/></GuestRoute>} />
-                  <Route path='/register' element={<GuestRoute><RegisterPage/></GuestRoute>} />
+                  <Route path='/login' element={<GuestRoute><LoginPage /></GuestRoute>} />
+                  <Route path='/register' element={<GuestRoute><RegisterPage /></GuestRoute>} />
                   <Route path='/home'
                     element={<ProtectedRoute><HomePage /></ProtectedRoute>}
                   />
@@ -68,11 +71,20 @@ function App() {
                   <Route path='/notes'
                     element={<ProtectedRoute><NotesPage /></ProtectedRoute>}
                   />
-                  <Route path='/collection/notes'
-                    element={<ProtectedRoute><NotesPage forCollection={true}/></ProtectedRoute>}
+                  <Route path='/notes/:id'
+                    element={<ProtectedRoute><NotePreviewPage /></ProtectedRoute>}
                   />
-                  <Route path='/edit/*'
+                  <Route path='/collection/notes'
+                    element={<ProtectedRoute><NotesPage forCollection={true} /></ProtectedRoute>}
+                  />
+                  <Route path='/edit/:id'
                     element={<ProtectedRoute><NoteEditPage /></ProtectedRoute>}
+                  />
+                  <Route path='/trash'
+                    element={<ProtectedRoute><TrashPage /></ProtectedRoute>}
+                  />
+                  <Route path='/notes/public/:id'
+                    element={<GuestPreviewPage />}
                   />
                 </Routes>
               </AuthProvider>

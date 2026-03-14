@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyNoteMD_API.Data;
 using MyNoteMD_API.DTOs;
 using MyNoteMD_API.Services;
+using MyNoteMD_API.Utils;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -32,47 +33,83 @@ namespace MyNoteMD_API.Controllers
 
         // Collections and Notes Together
         [HttpGet]
-        public async Task<IActionResult> GetTrashItems()
+        public async Task<IActionResult> GetTrashItems([FromQuery] string? cursor, [FromQuery] int limit = 20)
         {
+            limit = Math.Min(limit, 50);
             var userId = GetCurrentUserId();
 
-            // Fetch deleted notes
-            var deletedNotes = await _context.Notes
-                .IgnoreQueryFilters() // Bypass global filter for that query
-                .Include(n => n.Collection)
-                .Where(n => n.OwnerId == userId && n.DeletedAt != null)
-                .Select(n => new TrashItemDto(
-                    n.Id,
-                    "note",
-                    n.Title,
-                    n.DeletedAt,
-                    n.Collection.Name,
-                    null
-                ))
-                .ToListAsync();
-
-            // Fetch deleted collections
-            var deletedCollections = await _context.Collections
+            // 1. Notlar için ham veri sorgusu
+            var noteQuery = _context.Notes
                 .IgnoreQueryFilters()
-                .Include(c => c.Notes.Where(n => n.DeletedAt != null))
+                .Where(n => n.OwnerId == userId && n.DeletedAt != null)
+                .Select(n => new
+                {
+                    Id = n.Id,
+                    Type = "note",
+                    TitleOrName = n.Title,
+                    DeletedAt = n.DeletedAt,
+                    // İlişkisel veriyi burada değil, sorgu birleştikten sonra veya manuel alacağız
+                    ParentInfo = n.Collection.Name,
+                    CountInfo = (int?)null
+                });
+
+            // 2. Koleksiyonlar için ham veri sorgusu
+            var colQuery = _context.Collections
+                .IgnoreQueryFilters()
                 .Where(c => c.OwnerId == userId && c.DeletedAt != null)
-                .Select(c => new TrashItemDto(
-                    c.Id,
-                    "collection",
-                    c.Name,
-                    c.DeletedAt,
-                    null,
-                    c.Notes.Count
-                ))
+                .Select(c => new
+                {
+                    Id = c.Id,
+                    Type = "collection",
+                    TitleOrName = c.Name,
+                    DeletedAt = c.DeletedAt,
+                    ParentInfo = (string?)null,
+                    CountInfo = (int?)c.Notes.Count
+                });
+
+            // 3. Sorguları Birleştir (Şemalar artık tamamen aynı)
+            var combinedQuery = noteQuery.Concat(colQuery);
+
+            // 4. Cursor Filtrelemesi
+            var decodedCursor = CursorHelper.Decode(cursor);
+            if (decodedCursor != null)
+            {
+                var cursorDate = decodedCursor.Value.CreatedAt;
+                var cursorId = decodedCursor.Value.Id;
+
+                combinedQuery = combinedQuery.Where(x =>
+                    x.DeletedAt < cursorDate ||
+                    (x.DeletedAt == cursorDate && x.Id.CompareTo(cursorId) < 0));
+            }
+
+            // 5. Sıralama ve Veri Çekme
+            // SQL burada UNION ALL yapıp ORDER BY ve LIMIT uygulayacak
+            var rawItems = await combinedQuery
+                .OrderByDescending(x => x.DeletedAt)
+                .ThenByDescending(x => x.Id)
+                .Take(limit + 1)
                 .ToListAsync();
 
-            // Merge them together
-            var allTrashItems = deletedNotes
-                .Concat(deletedCollections)
-                .OrderByDescending(item => item.DeletedAt)
-                .ToList();
+            // 6. Sonuçları DTO'ya Eşleme (Memory'de yapıyoruz, EF'i yormuyoruz)
+            var items = rawItems.Select(x => new TrashItemDto(
+                x.Id,
+                x.Type,
+                x.TitleOrName,
+                x.DeletedAt,
+                x.ParentInfo,
+                x.CountInfo
+            )).ToList();
 
-            return Ok(allTrashItems);
+            // 7. NextCursor Hesaplama
+            string? nextCursor = null;
+            if (items.Count > limit)
+            {
+                var lastItem = items[limit - 1];
+                nextCursor = CursorHelper.Encode(lastItem.DeletedAt!.Value, lastItem.Id);
+                items.RemoveAt(limit);
+            }
+
+            return Ok(new PagedTrashResponseDto(items, nextCursor));
         }
 
         // 2. Hard Delete All

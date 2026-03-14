@@ -123,11 +123,12 @@ namespace MyNoteMD_API.Controllers
                 Id = noteId,
                 Title = request.Title,
                 Slug = GenerateSlug(request.Title, noteId),
-                Content = "",
+                Content = "", // Draft starts empty
+                PublishedContent = "", // No current published content exists
                 CollectionId = request.CollectionId,
                 OwnerId = userId,
                 HasUnpublishedChanges = true,
-                IsPublic = false
+                IsPublic = false // Private by default
             };
 
             _context.Notes.Add(note);
@@ -160,35 +161,41 @@ namespace MyNoteMD_API.Controllers
             return Ok(note);
         }
 
-        // AUTO-SAVE (for Draft)
+        // Update Note
         [HttpPatch("{id}")]
-        public async Task<IActionResult> AutoSave(Guid id, [FromBody] UpdateNoteDraftDto request)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateNoteDraftDto request)
         {
             var userId = GetCurrentUserId();
             var note = await _context.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == userId);
 
             if (note == null) return NotFound();
 
-            bool isUpdated = false;
+            bool isDraftChanged = false;
 
             if (request.Title != null && request.Title != note.Title)
             {
                 note.Title = request.Title;
                 note.Slug = GenerateSlug(request.Title, note.Id); // Slug should be changed if the title changes
-                isUpdated = true;
+                isDraftChanged = true;
             }
 
             if (request.Content != null && request.Content != note.Content)
             {
                 note.Content = request.Content;
-                isUpdated = true;
+                isDraftChanged = true;
             }
 
-            if (isUpdated)
+            if (request.IsPublic.HasValue)
+            {
+                note.IsPublic = request.IsPublic.Value;
+            }
+
+            if (isDraftChanged)
             {
                 note.HasUnpublishedChanges = true;
-                await _context.SaveChangesAsync();
             }
+
+            await _context.SaveChangesAsync();
 
             return NoContent(); // 204
         }
@@ -204,9 +211,10 @@ namespace MyNoteMD_API.Controllers
 
             // Publish the draft
             note.PublishedContent = note.Content;
-            note.IsPublic = true;
             note.HasUnpublishedChanges = false;
             note.PublishedAt = DateTimeOffset.UtcNow;
+
+            // This endpoint does not change the accessibility of the note
 
             await _context.SaveChangesAsync();
             await _auditService.LogAsync(userId, "NotePublished", $"Published Note ID: {id}");
@@ -214,19 +222,19 @@ namespace MyNoteMD_API.Controllers
             return Ok(new { Message = "Note published successfully.", Slug = note.Slug });
         }
 
-        // Unpublish
-        [HttpPost("{id}/unpublish")]
-        public async Task<IActionResult> Unpublish(Guid id)
+        // Toggle Note Visibility
+        [HttpPost("{id}/toggle-visibility")]
+        public async Task<IActionResult> ToggleVisibility([FromRoute] Guid id)
         {
             var userId = GetCurrentUserId();
             var note = await _context.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == userId);
 
             if (note == null) return NotFound();
 
-            note.IsPublic = false;
+            note.IsPublic = !note.IsPublic;
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Note is now private." });
+            return Ok(new { Message = $"Note is now {(note.IsPublic ? "public" : "private")}." });
         }
 
         // Move the note to another collection

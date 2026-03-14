@@ -24,15 +24,15 @@ const LoginForm = () => {
     defaultValues: { identifier: "", password: "" },
   });
 
-  const onSubmit = async (data:any) => {
+  const onSubmit = async (data: any) => {
     setLoading(true);
     try {
       const res = await login({ email: data.identifier, password: data.password });
-      if (res){
+      if (res) {
         navigate("/home");
       }
     } catch (error) {
-      console.error("Login Error:", error);
+
     } finally {
       setLoading(false);
     }
@@ -42,10 +42,10 @@ const LoginForm = () => {
     // Ekranda tam ortalamak için min-h-screen ve flex kullanıyoruz. 
     // Arka plan rengi vermedik, shadcn default (bg-background) kullanacak.
     <div className="min-h-[100dvh] flex items-center justify-center w-full px-0 sm:px-0 md:px-0">
-      
+
       <Card className="w-full max-w-[540px] border-none shadow-2xl rounded-[3rem] bg-card text-card-foreground overflow-hidden my-auto">
         <CardContent className="p-8 md:p-14 space-y-10">
-          
+
           {/* Header Bölümü */}
           <div className="text-center space-y-3">
             <h1 className="text-5xl font-bold tracking-tight">Login</h1>
@@ -56,7 +56,7 @@ const LoginForm = () => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
+
               <FormField
                 control={form.control}
                 name="identifier"
@@ -64,8 +64,8 @@ const LoginForm = () => {
                   <FormItem>
                     <FormControl>
                       <div className="relative">
-                        <Input 
-                          placeholder="test@test.com" 
+                        <Input
+                          placeholder="test@test.com"
                           {...field}
                           className="h-14 rounded-full border-none bg-secondary/50 px-8 text-base focus-visible:ring-2 focus-visible:ring-[#3D5278]"
                         />
@@ -84,9 +84,9 @@ const LoginForm = () => {
                   <FormItem>
                     <FormControl>
                       <div className="relative">
-                        <Input 
+                        <Input
                           type="password"
-                          placeholder="••••••••••••" 
+                          placeholder="••••••••••••"
                           {...field}
                           className="h-14 rounded-full border-none bg-secondary/50 px-8 text-base focus-visible:ring-2 focus-visible:ring-[#3D5278]"
                         />
@@ -99,14 +99,14 @@ const LoginForm = () => {
               />
 
               <div className="flex items-center justify-between gap-4 pt-2">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={loading}
                   className="bg-[#3D5278] hover:bg-[#2e3e5c] text-white rounded-full px-12 h-14 text-lg font-bold shadow-lg shadow-[#3D5278]/20 transition-all active:scale-95"
                 >
                   {loading ? "..." : "LOGIN"}
                 </Button>
-                
+
                 <Button variant="link" type="button" className="text-muted-foreground font-semibold hover:text-foreground">
                   Forgot password?
                 </Button>
@@ -129,7 +129,7 @@ const LoginForm = () => {
           {/* Footer */}
           <div className="pt-6 border-t border-border flex justify-between items-center px-2">
             <span className="text-muted-foreground font-medium">Don't have your account?</span>
-            <Button variant="link" className="text-primary font-bold p-0 text-lg hover:no-underline">
+            <Button onClick={() => navigate("/register")} variant="link" className="text-primary font-bold p-0 text-lg hover:no-underline">
               Sign up
             </Button>
           </div>

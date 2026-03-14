@@ -148,6 +148,27 @@ namespace MyNoteMD_API.Controllers
             return Ok(collection);
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCollectionDto request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userId = GetCurrentUserId();
+
+            var collection = await _context.Collections
+                .FirstOrDefaultAsync(c => c.Id == id && c.OwnerId == userId);
+
+            if (collection == null)
+                return NotFound(new { Message = "Koleksiyon bulunamadı veya erişim yetkiniz yok." });
+
+            // Update the name
+            collection.Name = request.Name;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

@@ -1,18 +1,12 @@
 "use client";
 
-import { MoreVertical, Eye, Trash2, Globe, Lock, Copy, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Globe, Lock, Copy, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BaseCard } from "@/shared/components/base-card";
+import { NoteActions } from "./note-actions";
+import { useNavigate } from "react-router-dom";
 
 interface NoteResponseDto {
   id: string;
@@ -23,6 +17,12 @@ interface NoteResponseDto {
 }
 
 export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
+  const navigate = useNavigate();
+
+  const handleViewNote = (noteId: string) => {
+    navigate(`/notes/${noteId}`);
+  };
+
   const [copied, setCopied] = useState(false);
 
   const copySlug = (e: React.MouseEvent) => {
@@ -44,31 +44,12 @@ export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
         </div>
       </div>
 
-      {/* Action Menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <MoreVertical className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem className="gap-2">
-            <Eye className="h-4 w-4" /> View Note
-          </DropdownMenuItem>
-          <DropdownMenuItem className="gap-2">
-            <Globe className="h-4 w-4" /> Change Visibility
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="gap-2 text-destructive focus:bg-destructive focus:text-destructive-foreground">
-            <Trash2 className="h-4 w-4" /> Delete Note
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <NoteActions initialIsPublic={note.isPublic} noteId={note.id} />
     </div>
   );
 
   return (
-    <BaseCard actions={actions}>
+    <BaseCard actions={actions} onClick={() => handleViewNote(note.id)}>
       <div className="flex items-center gap-2 mb-1">
         <h3 className="font-bold truncate text-lg max-w-[200px]">{note.title}</h3>
         {note.hasUnpublishedChanges && (

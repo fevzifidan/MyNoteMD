@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { 
-  Home, Sparkles, FileText, Folder, Plus, 
-  HelpCircle, ChevronRight, ChevronLeft, Menu
+import {
+  Home, Sparkles, FileText, Folder, Plus,
+  HelpCircle, ChevronRight, ChevronLeft, Menu,
+  Trash
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -63,16 +64,16 @@ export function Sidebar() {
       <div className="md:hidden fixed top-6 left-6 z-[110]">
         <Sheet>
           <SheetTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="rounded-full h-12 w-12 shadow-xl bg-background/90 backdrop-blur-md border-primary/20 hover:bg-accent"
             >
               <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent 
-            side="left" 
+          <SheetContent
+            side="left"
             className="w-[300px] border-r-0 rounded-r-[2.5rem] bg-card/95 backdrop-blur-xl p-6"
           >
             <SheetHeader className="text-left mb-8">
@@ -97,9 +98,9 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
   return (
     <div className="flex flex-col w-full gap-2">
       <SidebarItem icon={Home} label="Home" isExpanded={isExpanded} endpoint="/home" />
-      
+
       <SidebarItem icon={Sparkles} label="AI" isExpanded={isExpanded} endpoint="/ai" />
-      
+
       {/* AI Altındaki Gradyan Ayırıcı */}
       <div className="px-4 py-2">
         <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
@@ -107,6 +108,7 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
 
       <SidebarItem icon={FileText} label="Notlarım" isExpanded={isExpanded} endpoint="/notes" />
       <SidebarItem icon={Folder} label="Koleksiyonlarım" isExpanded={isExpanded} endpoint="/collections" />
+      <SidebarItem icon={Trash} label="Çöp Kutusu" isExpanded={isExpanded} endpoint="/trash" />
 
       {/* Yeni Seçeneği (Collapsible) */}
       <Collapsible open={isYeniOpen} onOpenChange={setIsYeniOpen} className="w-full">

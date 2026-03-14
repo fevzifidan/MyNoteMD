@@ -1,5 +1,13 @@
-import React, { createContext, useContext, useRef, useState, useDeferredValue } from 'react';
+import React, { createContext, useContext, useRef, useState, useDeferredValue, useEffect } from 'react';
 import type { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import apiService from '@/shared/services/api';
+
+interface NoteData {
+  id: string;
+  content: string;
+  publishedContent: string | null;
+  hasUnpublishedChanges: boolean;
+}
 
 interface EditorContextType {
   markdown: string;
@@ -12,6 +20,19 @@ interface EditorContextType {
   editorRef: React.RefObject<ReactCodeMirrorRef | null>;
   viewMode: 'editor' | 'preview';
   setViewMode: (mode: 'editor' | 'preview') => void;
+  // Note specific states
+  contentMode: 'draft' | 'published';
+  setContentMode: (mode: 'draft' | 'published') => void;
+  noteData: NoteData | null;
+  setNoteData: (data: NoteData | null) => void;
+  isLoading: boolean;
+  fetchNote: (id: string) => Promise<void>;
+  publishNote: () => Promise<void>;
+  // Auto-save states
+  isSavingDraft: boolean;
+  hasUnsavedDraftChanges: boolean;
+  saveDraft: () => Promise<void>;
+  lastSavedMarkdown: string;
 }
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
@@ -25,20 +46,95 @@ export const useEditor = () => {
 };
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [markdown, setMarkdown] = useState(`# Kapsamlı Editör\n:style[Bu metin kırmızı ve ortalanmış]{color=red align=center size=20px}`);
+  const [noteData, setNoteData] = useState<NoteData | null>(null);
+  const [contentMode, setContentMode] = useState<'draft' | 'published'>('draft');
+  const [markdown, setMarkdownState] = useState(``);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [lastSavedMarkdown, setLastSavedMarkdown] = useState('');
   const [viewMode, setViewMode] = useState<'editor' | 'preview'>('editor');
   const deferredMarkdown = useDeferredValue(markdown);
   const editorRef = useRef<ReactCodeMirrorRef>(null);
 
-  React.useEffect(() => {
-    console.log("EditorProvider mounted");
-  }, []);
+  const setMarkdown = (val: string) => {
+    if (contentMode === 'draft') {
+      setMarkdownState(val);
+      if (noteData) {
+        setNoteData({
+          ...noteData,
+          content: val,
+          hasUnpublishedChanges: true // Assume changes if edited
+        });
+      }
+    }
+  };
 
-  React.useEffect(() => {
-    console.log("viewMode changed to:", viewMode);
-  }, [viewMode]);
+  const fetchNote = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const res: any = await apiService.get(`/notes/${id}`);
+      setNoteData(res);
+      setMarkdownState(res.content || "");
+      setLastSavedMarkdown(res.content || "");
+    } catch (error: any) {
+      console.error("Fetch Note Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveDraft = async () => {
+    if (!noteData || isSavingDraft || markdown === lastSavedMarkdown) return;
+    
+    setIsSavingDraft(true);
+    try {
+      await apiService.patch(`/notes/${noteData.id}`, { content: markdown }, { silent: true } as any);
+      setLastSavedMarkdown(markdown);
+      setNoteData(prev => prev ? { ...prev, content: markdown } : null);
+    } catch (error: any) {
+      console.error("Auto-save Error:", error);
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const hasUnsavedDraftChanges = markdown !== lastSavedMarkdown;
+
+  useEffect(() => {
+    if (contentMode !== 'draft' || !noteData) return;
+    
+    if (hasUnsavedDraftChanges) {
+      const timer = setTimeout(() => {
+        saveDraft();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [markdown, lastSavedMarkdown, contentMode, noteData, isSavingDraft]);
+
+  const publishNote = async () => {
+    if (!noteData) return;
+    try {
+      await apiService.post(`/notes/${noteData.id}/publish`, {});
+      setNoteData({
+        ...noteData,
+        publishedContent: noteData.content,
+        hasUnpublishedChanges: false
+      });
+    } catch (error: any) {
+      console.error("Publish Note Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (contentMode === 'published' && noteData) {
+      setMarkdownState(noteData.publishedContent || "");
+    } else if (contentMode === 'draft' && noteData) {
+      setMarkdownState(noteData.content || "");
+    }
+  }, [contentMode, noteData?.content, noteData?.publishedContent]);
 
   const getView = () => editorRef.current?.view;
+  // ... (rest of the formatting methods remain unchanged, omitting for brevity in TargetContent matching)
 
   const mergeStyleProps = (oldProps: string, newProps: string) => {
     const propsObj: Record<string, string> = {};
@@ -73,13 +169,13 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (contentEndIndex !== -1 && propsEndIndex !== -1 && from <= propsEndIndex) {
           const existingContent = fullText.substring(lastOpenIndex + 7, contentEndIndex);
           const existingPropsStr = fullText.substring(contentEndIndex + 2, propsEndIndex);
-          
+
           const newPropsMatch = after.match(/\{(.*?)\}/);
           const newPropsStr = newPropsMatch ? newPropsMatch[1] : "";
 
           const mergedProps = mergeStyleProps(existingPropsStr, newPropsStr);
           const replacement = `:style[${existingContent}]{${mergedProps}}`;
-          
+
           view.dispatch({
             changes: { from: lastOpenIndex, to: propsEndIndex + 1, insert: replacement },
             selection: { anchor: lastOpenIndex + replacement.length }
@@ -92,9 +188,9 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const selectedText = view.state.sliceDoc(from, to);
     const replacement = `${before}${selectedText}${after}`;
-    
-    const newCursorPos = selectedText.length > 0 
-      ? from + replacement.length 
+
+    const newCursorPos = selectedText.length > 0
+      ? from + replacement.length
       : from + before.length;
 
     view.dispatch({
@@ -109,7 +205,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (!view) return;
 
     const { from, to } = view.state.selection.main;
-    
+
     view.dispatch({
       changes: { from, to, insert: snippet },
       selection: { anchor: from + snippet.length }
@@ -124,7 +220,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const { from, to } = view.state.selection.main;
     const selectedText = view.state.sliceDoc(from, to);
     const cleaned = selectedText.replace(/(\*\*|__|\*|_|~~|==|:style\[|\]\{.*?\})/g, "");
-    
+
     view.dispatch({
       changes: { from, to, insert: cleaned },
       selection: { anchor: from + cleaned.length }
@@ -138,13 +234,13 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const { from, to } = view.state.selection.main;
     const fullText = view.state.doc.toString();
-    
+
     const beforeText = fullText.substring(0, from);
-    
-    const doubleDollarCount = (beforeText.match(/\$\$/g) ||[]).length;
+
+    const doubleDollarCount = (beforeText.match(/\$\$/g) || []).length;
     const isInsideBlock = doubleDollarCount % 2 !== 0;
-    
-    const singleDollarCount = (beforeText.replace(/\$\$/g, "").match(/\$/g) ||[]).length;
+
+    const singleDollarCount = (beforeText.replace(/\$\$/g, "").match(/\$/g) || []).length;
     const isInsideInline = singleDollarCount % 2 !== 0;
 
     const isInsideMath = isInsideBlock || isInsideInline;
@@ -155,9 +251,10 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (!isInsideMath) {
       const isInline = snippet.startsWith('$') && !snippet.startsWith('$$') && !snippet.includes('\n');
       if (isInline) {
-        finalSnippet = `$${cleanSnippet}$`; 
+        finalSnippet = `$${cleanSnippet}$`;
       } else {
-        finalSnippet = `\n$$\n${cleanSnippet}\n$$\n`; 
+        // finalSnippet = `\n$$\n${cleanSnippet}\n$$\n`;
+        finalSnippet = `$${cleanSnippet}$`;
       }
     }
 
@@ -169,18 +266,29 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   return (
-    <EditorContext.Provider 
-      value={{ 
-        markdown, 
-        setMarkdown, 
-        deferredMarkdown, 
-        applyFormat, 
-        insertText, 
-        clearFormat, 
-        insertMath, 
+    <EditorContext.Provider
+      value={{
+        markdown,
+        setMarkdown,
+        deferredMarkdown,
+        applyFormat,
+        insertText,
+        clearFormat,
+        insertMath,
         editorRef,
         viewMode,
-        setViewMode
+        setViewMode,
+        contentMode,
+        setContentMode,
+        noteData,
+        setNoteData,
+        isLoading,
+        fetchNote,
+        publishNote,
+        isSavingDraft,
+        hasUnsavedDraftChanges,
+        saveDraft,
+        lastSavedMarkdown
       }}
     >
       {children}

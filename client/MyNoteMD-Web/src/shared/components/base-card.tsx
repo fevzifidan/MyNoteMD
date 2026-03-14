@@ -5,11 +5,14 @@ interface BaseCardProps {
   actions?: React.ReactNode;
   icon?: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
-export const BaseCard = ({ children, actions, icon, className = "" }: BaseCardProps) => {
+export const BaseCard = ({ children, actions, icon, className = "", onClick }: BaseCardProps) => {
   return (
-    <div className={`flex items-center justify-between p-5 rounded-3xl bg-card border hover:shadow-lg hover:border-primary/20 transition-all group ${className}`}>
+    <div
+      onClick={onClick}
+      className={`flex items-center justify-between p-5 rounded-3xl bg-card border transition-all hover:bg-accent/50 active:scale-[0.99] cursor-pointer hover:shadow-lg hover:border-primary/20 transition-all group ${className}`}>
       <div className="flex items-center gap-5">
         {/* Icon Area */}
         {icon && (
@@ -23,7 +26,7 @@ export const BaseCard = ({ children, actions, icon, className = "" }: BaseCardPr
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
         {/* Actions Area */}
         {actions}
       </div>

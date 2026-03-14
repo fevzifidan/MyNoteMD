@@ -8,7 +8,7 @@ import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function NotesPage({forCollection}: {forCollection?: boolean}) {
+export default function NotesPage({ forCollection }: { forCollection?: boolean }) {
   const [searchParams] = useSearchParams();
   const searchParam = searchParams.get("q") || "";
   const collectionId = forCollection ? searchParams.get("collectionId") : "";
@@ -19,7 +19,7 @@ export default function NotesPage({forCollection}: {forCollection?: boolean}) {
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // Önceki sayfalara dönebilmek için cursor geçmişini tutan stack
   const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]);
 
@@ -28,9 +28,9 @@ export default function NotesPage({forCollection}: {forCollection?: boolean}) {
     try {
       // API İsteği: /notes?cursor=abc&search=test
       const response = await apiService.get(endpoint, {
-        params: { 
+        params: {
           cursor: cursor,
-          ...(typeof forCollection !== undefined && {search: searchParam})
+          ...(typeof forCollection !== undefined && { search: searchParam })
         }
       });
 
@@ -43,7 +43,6 @@ export default function NotesPage({forCollection}: {forCollection?: boolean}) {
         setCursorStack([null]);
       }
     } catch (error) {
-      console.error("Notes fetch error:", error);
       setNotes([]);
     } finally {
       setLoading(false);
@@ -72,7 +71,7 @@ export default function NotesPage({forCollection}: {forCollection?: boolean}) {
       const newStack = [...cursorStack];
       newStack.pop(); // Mevcut sayfanın cursor'ını at
       const prevCursor = newStack[newStack.length - 1]; // Önceki sayfanın cursor'ını al
-      
+
       setCursorStack(newStack);
       setCurrentPage((prev) => prev - 1);
       fetchNotes(prevCursor);
@@ -82,7 +81,7 @@ export default function NotesPage({forCollection}: {forCollection?: boolean}) {
   return (
     <DashboardLayout>
       <div className="flex flex-col min-h-[400px]">
-        
+
         {/* Yükleme Durumu (Loading State) */}
         {loading && notes.length === 0 ? (
           <div className="space-y-4">
@@ -92,7 +91,7 @@ export default function NotesPage({forCollection}: {forCollection?: boolean}) {
           </div>
         ) : (
           <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
-            
+
             {/* Not Listesi */}
             <div className="grid grid-cols-1 gap-4">
               {notes.map((note) => (

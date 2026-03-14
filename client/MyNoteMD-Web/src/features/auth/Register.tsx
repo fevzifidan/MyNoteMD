@@ -5,17 +5,19 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useAuth } from "@/context/AuthContext";
 import { registerSchema } from "./validations/registerSchema";
-import apiService from "@/shared/services/api"; // Kayıt için direkt api kullanıyoruz
+import apiService from "@/shared/services/api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chrome, Apple, User, Mail, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: yupResolver(registerSchema),
@@ -36,7 +38,7 @@ const RegisterPage = () => {
       // 2. Başarılı ise login yap
       await login({ email: data.email, password: data.password });
     } catch (error) {
-      console.error("Register Error:", error);
+
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,7 @@ const RegisterPage = () => {
     <div className="min-h-[100dvh] flex items-center justify-center w-full p-4">
       <Card className="w-full max-w-[580px] border-none shadow-2xl rounded-[3rem] bg-card text-card-foreground overflow-hidden">
         <CardContent className="p-8 md:p-14 space-y-8">
-          
+
           {/* Header */}
           <div className="text-center space-y-2">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Join Us</h1>
@@ -60,7 +62,7 @@ const RegisterPage = () => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              
+
               {/* Name Field */}
               <FormField
                 control={form.control}
@@ -148,8 +150,8 @@ const RegisterPage = () => {
 
               {/* Submit Button */}
               <div className="pt-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={loading}
                   className="w-full bg-[#3D5278] hover:bg-[#2e3e5c] text-white rounded-full h-14 text-lg font-bold shadow-lg shadow-[#3D5278]/20 transition-all active:scale-[0.98]"
                 >
@@ -165,7 +167,7 @@ const RegisterPage = () => {
               <span className="absolute inset-x-0 h-px bg-border"></span>
               <span className="relative bg-card px-4 text-sm text-muted-foreground font-medium">Or register with</span>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50 transition-colors">
                 <Chrome className="w-4 h-4 text-red-500" />
@@ -181,8 +183,8 @@ const RegisterPage = () => {
           {/* Footer */}
           <div className="pt-6 border-t border-border flex justify-between items-center px-2">
             <span className="text-muted-foreground font-medium">Already have an account?</span>
-            <Button variant="link" className="text-[#3D5278] dark:text-blue-400 font-bold p-0 text-lg hover:no-underline">
-                Sign in
+            <Button onClick={() => navigate("/login")} variant="link" className="text-[#3D5278] dark:text-blue-400 font-bold p-0 text-lg hover:no-underline">
+              Sign in
             </Button>
           </div>
 

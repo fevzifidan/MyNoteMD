@@ -19,4 +19,8 @@ namespace MyNoteMD_API.DTOs
     );
 
     public record CollectionLookupDto(Guid Id, string Name);
+
+    public record UpdateCollectionDto(
+        [Required, MaxLength(100)] string Name
+    );
 }

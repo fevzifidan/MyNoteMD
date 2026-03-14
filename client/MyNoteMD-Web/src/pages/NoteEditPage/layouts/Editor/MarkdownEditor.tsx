@@ -12,11 +12,12 @@ interface MarkdownEditorProps {
   markdown: string;
   setMarkdown: (val: string) => void;
   editorRef: React.RefObject<ReactCodeMirrorRef | null>;
+  readOnly?: boolean;
 }
 
 const latexExtension = StreamLanguage.define(stex);
 
-const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ markdown, setMarkdown, editorRef }) => {
+const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ markdown, setMarkdown, editorRef, readOnly = false }) => {
   const { resolvedTheme } = useTheme();
 
   return (
@@ -26,7 +27,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ markdown, setMarkdown, 
         value={markdown}
         height="100%"
         theme={resolvedTheme === 'dark' ? vscodeDark : 'light'}
-        onChange={(val) => setMarkdown(val)}
+        onChange={(val) => !readOnly && setMarkdown(val)}
+        readOnly={readOnly}
         extensions={[
           cmMarkdown({ base: markdownLanguage, codeLanguages: languages }),
           latexExtension,
@@ -36,7 +38,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ markdown, setMarkdown, 
           lineNumbers: true,
           history: true,
           foldGutter: false,
-          highlightActiveLine: true,
+          highlightActiveLine: !readOnly,
           bracketMatching: true,
         }}
         className="text-xs sm:text-xs font-thin font-mono h-full"

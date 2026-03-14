@@ -18,7 +18,7 @@ export default function CollectionsPage() {
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // Önceki sayfalara dönebilmek için cursor geçmişi
   const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]);
 
@@ -26,9 +26,9 @@ export default function CollectionsPage() {
     setLoading(true);
     try {
       const response = await apiService.get("/collections", {
-        params: { 
-          cursor: cursor, 
-          search: query 
+        params: {
+          cursor: cursor,
+          search: query
         }
       });
 
@@ -40,7 +40,6 @@ export default function CollectionsPage() {
         setCursorStack([null]);
       }
     } catch (error) {
-      console.error("Collections fetch error:", error);
       setCollections([]);
     } finally {
       setLoading(false);
@@ -64,9 +63,9 @@ export default function CollectionsPage() {
   const handlePrevious = () => {
     if (currentPage > 1) {
       const newStack = [...cursorStack];
-      newStack.pop(); 
-      const prevCursor = newStack[newStack.length - 1]; 
-      
+      newStack.pop();
+      const prevCursor = newStack[newStack.length - 1];
+
       setCursorStack(newStack);
       setCurrentPage((prev) => prev - 1);
       fetchCollections(prevCursor);
@@ -76,7 +75,7 @@ export default function CollectionsPage() {
   return (
     <DashboardLayout>
       <div className="flex flex-col min-h-[400px]">
-        
+
         {/* Giriş Bilgisi (Opsiyonel - DashboardLayout'taki başlığın altına ek bilgi) */}
         {!query && collections.length > 0 && (
           <p className="text-muted-foreground text-lg mb-8 -mt-8 animate-in fade-in slide-in-from-top-2">
@@ -93,7 +92,7 @@ export default function CollectionsPage() {
           </div>
         ) : (
           <div className={loading ? "opacity-40 pointer-events-none transition-opacity" : "transition-opacity"}>
-            
+
             {/* Koleksiyon Listesi */}
             <div className="grid grid-cols-1 gap-4">
               {collections.map((item) => (

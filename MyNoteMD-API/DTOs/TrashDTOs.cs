@@ -12,4 +12,9 @@
         // Specified for only collections
         int? AffectedNotesCount
     );
+
+    public record PagedTrashResponseDto(
+        IEnumerable<TrashItemDto> Items,
+        string? NextCursor
+    );
 }

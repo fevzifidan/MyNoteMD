@@ -11,6 +11,7 @@ namespace MyNoteMD_API.DTOs
     public record UpdateNoteDraftDto(
         [MaxLength(200)] string? Title,
         string? Content,
+        bool? IsPublic,
         List<Guid>? TagIds
     );
 

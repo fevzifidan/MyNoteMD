@@ -28,7 +28,7 @@ export const RecentActivity = () => {
         setCollections(collectionsRes.items || []);
         setNotes(notesRes.items || []);
       } catch (error) {
-        console.error("Recent Activity fetch error:", error);
+
       } finally {
         setLoading(false);
       }
@@ -48,7 +48,7 @@ export const RecentActivity = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-      
+
       {/* RECENT COLLECTIONS CARD */}
       <Card className="border-none shadow-none bg-transparent">
         <SectionHeader title="Recent Collections" />
@@ -57,13 +57,13 @@ export const RecentActivity = () => {
             <ListSkeleton />
           ) : (
             <>
-              {collections.slice(0,5).map((item) => (
-                <CollectionRow 
-                  key={item.id} 
-                  id={item.id} 
-                  name={item.name} 
-                  noteCount={item.noteCount} 
-                  createdAt={new Date(item.createdAt).toLocaleDateString()} 
+              {collections.slice(0, 5).map((item) => (
+                <CollectionRow
+                  key={item.id}
+                  id={item.id}
+                  name={item.name}
+                  noteCount={item.noteCount}
+                  createdAt={new Date(item.createdAt).toLocaleDateString()}
                 />
               ))}
               {collections.length === 0 && (
@@ -83,13 +83,13 @@ export const RecentActivity = () => {
             <ListSkeleton />
           ) : (
             <>
-              {notes.slice(0,5).map((item) => (
-                <NoteRow 
-                  key={item.id} 
-                  id={item.id} 
-                  title={item.title} 
-                  status={item.isPublic ? "Public" : "Private"} 
-                  lastUpdated={new Date(item.updatedAt || item.createdAt).toLocaleDateString()} 
+              {notes.slice(0, 5).map((item) => (
+                <NoteRow
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  status={item.isPublic ? "Public" : "Private"}
+                  lastUpdated={new Date(item.updatedAt || item.createdAt).toLocaleDateString()}
                 />
               ))}
               {notes.length === 0 && (
