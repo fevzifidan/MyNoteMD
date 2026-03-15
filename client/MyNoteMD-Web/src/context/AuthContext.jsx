@@ -44,13 +44,24 @@ export const AuthProvider = ({ children }) => {
 
   // 3. Logout Fonksiyonu
   const logout = async () => {
-    const response = await apiService.post("/auth/logout")
+    try {
+      await apiService.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+    }
+  };
+
+  // 4. Local state'i temizle (API çağrısı yapmadan)
+  const clearAuth = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, clearAuth, loading, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

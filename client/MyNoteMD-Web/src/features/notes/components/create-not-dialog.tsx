@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FileText } from "lucide-react";
-import apiService from "@/shared/services/api";
+import { noteService, collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue } from "@/components/ui/combobox";
 
@@ -34,7 +34,7 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
       const fetchCollections = async () => {
         setFetchingCollections(true);
         try {
-          const response = await apiService.get("/collections/lookup");
+          const response = await collectionService.lookup();
           const dataArray = Array.isArray(response) ? response : (response.data || []);
 
           // VERİ DÖNÜŞÜMÜ (MAPPING) DÜZELTİLDİ
@@ -75,7 +75,7 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
 
     setLoading(true);
     try {
-      await apiService.post("/notes", {
+      await noteService.create({
         title: title,
         collectionId: selectedCollection.code // .value yerine .code gönderiyoruz
       });

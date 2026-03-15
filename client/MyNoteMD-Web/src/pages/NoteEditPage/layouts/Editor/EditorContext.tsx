@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useRef, useState, useDeferredValue, useEffect } from 'react';
 import type { ReactCodeMirrorRef } from '@uiw/react-codemirror';
-import apiService from '@/shared/services/api';
+import { noteService } from '@/shared/services/api';
 
 interface NoteData {
   id: string;
@@ -72,7 +72,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const fetchNote = async (id: string) => {
     setIsLoading(true);
     try {
-      const res: any = await apiService.get(`/notes/${id}`);
+      const res: any = await noteService.getById(id);
       setNoteData(res);
       setMarkdownState(res.content || "");
       setLastSavedMarkdown(res.content || "");
@@ -88,7 +88,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     setIsSavingDraft(true);
     try {
-      await apiService.patch(`/notes/${noteData.id}`, { content: markdown }, { silent: true } as any);
+      await noteService.update(noteData.id, { content: markdown }, { silent: true });
       setLastSavedMarkdown(markdown);
       setNoteData(prev => prev ? { ...prev, content: markdown } : null);
     } catch (error: any) {
@@ -114,7 +114,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const publishNote = async () => {
     if (!noteData) return;
     try {
-      await apiService.post(`/notes/${noteData.id}/publish`, {});
+      await noteService.publish(noteData.id);
       setNoteData({
         ...noteData,
         publishedContent: noteData.content,

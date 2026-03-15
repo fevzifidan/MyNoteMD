@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import notificationService from "@/shared/services/notification";
-import apiService from "@/shared/services/api/api.service";
+import { trashService } from "@/shared/services/api";
 import { useConfirm } from "@/shared/services/confirmation/useConfirm";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -36,7 +36,7 @@ export default function TrashItem({ id, type, title, deletedAt, parentCollection
             });
 
             if (ok) {
-                await apiService.delete(`/trash/${type}/${id}`);
+                await trashService.permanentDelete(type, id as string);
                 notificationService.info(`${type} deleted successfully.`);
             }
         } catch (error) {
@@ -48,7 +48,7 @@ export default function TrashItem({ id, type, title, deletedAt, parentCollection
     const handleRestore = async () => {
         setIsUpdating(true);
         try {
-            await apiService.post(`/trash/${type}/${id}/restore`);
+            await trashService.restore(type, id as string);
             notificationService.info(`${type} restored successfully.`);
         } catch (error) {
 

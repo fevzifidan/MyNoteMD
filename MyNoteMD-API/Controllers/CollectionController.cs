@@ -236,7 +236,7 @@ namespace MyNoteMD_API.Controllers
                 .ThenByDescending(n => n.Id)
                 .Take(limit + 1)
                 .Select(n => new NoteSummaryDto(
-                    n.Id, n.Title, n.Slug, n.IsPublic, n.HasUnpublishedChanges, n.CreatedAt
+                    n.Id, n.Title, n.Slug, n.IsPublic, n.HasUnpublishedChanges, n.CreatedAt, n.UpdatedAt
                 ))
                 .ToListAsync();
 
@@ -253,6 +253,28 @@ namespace MyNoteMD_API.Controllers
             }
 
             return Ok(new PagedNoteResponseDto(notes, nextCursor));
+        }
+
+        [HttpGet("{id}/notes/lookup")]
+        public async Task<IActionResult> NoteLookup([FromRoute] Guid id)
+        {
+            var userId = GetCurrentUserId();
+
+            // Check whether the collection belongs to the user
+            var hasAccess = await _context.Collections.AnyAsync(c => c.Id == id && c.OwnerId == userId);
+            if (!hasAccess) return Forbid(); // 403 Forbidden
+
+            // Query
+            var notes = _context.Notes
+                .Where(n => n.CollectionId == id && n.OwnerId == userId)
+                .OrderByDescending(n => n.CreatedAt)
+                .ThenByDescending(n => n.Id)
+                .Select(n => new NoteLookupDto(
+                    n.Id, n.Title
+                ))
+                .ToListAsync();
+
+            return Ok(notes);
         }
     }
 }

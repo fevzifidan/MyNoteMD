@@ -89,7 +89,7 @@ export const RecentActivity = () => {
                   id={item.id}
                   title={item.title}
                   status={item.isPublic ? "Public" : "Private"}
-                  lastUpdated={new Date(item.updatedAt || item.createdAt).toLocaleDateString()}
+                  lastUpdated={new Date(item.updatedAt).toLocaleDateString()}
                 />
               ))}
               {notes.length === 0 && (

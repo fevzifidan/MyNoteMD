@@ -2,21 +2,24 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import apiService from "@/shared/services/api";
+import { noteService, collectionService } from "@/shared/services/api";
 import { NoteCard } from "@/features/notes/components/note-card";
 import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
+import { ChatBar } from "@/features/chatbar/components/ChatBar";
 
 export default function NotesPage({ forCollection }: { forCollection?: boolean }) {
   const [searchParams] = useSearchParams();
   const searchParam = searchParams.get("q") || "";
   const collectionId = forCollection ? searchParams.get("collectionId") : "";
-  const endpoint = forCollection === true ? `/collections/${collectionId}/notes` : "/notes";
 
   // State Yönetimi
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -26,13 +29,15 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
   const fetchNotes = useCallback(async (cursor: string | null, isNewSearch: boolean = false) => {
     setLoading(true);
     try {
-      // API İsteği: /notes?cursor=abc&search=test
-      const response = await apiService.get(endpoint, {
-        params: {
-          cursor: cursor,
-          ...(typeof forCollection !== undefined && { search: searchParam })
-        }
-      });
+      // API İsteği
+      const params = {
+        cursor: cursor,
+        ...(typeof forCollection !== undefined && { search: searchParam })
+      };
+
+      const response = await (forCollection === true && collectionId
+        ? collectionService.getNotes(collectionId, params)
+        : noteService.list(params));
 
       const data = response as any;
       setNotes(data.items || []);
@@ -81,6 +86,18 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
   return (
     <DashboardLayout>
       <div className="flex flex-col min-h-[400px]">
+        {/* AI Butonu - Sağ Üstte (Sadece koleksiyon modunda) */}
+        {forCollection && collectionId && (
+          <div className="flex justify-end mb-4">
+            <Button 
+              onClick={() => setIsChatOpen(true)}
+              className="group flex items-center gap-2 rounded-full px-6 shadow-lg hover:shadow-primary/20 transition-all"
+            >
+              <Sparkles className="w-4 h-4 group-hover:animate-spin" />
+              <span>AI Asistan</span>
+            </Button>
+          </div>
+        )}
 
         {/* Yükleme Durumu (Loading State) */}
         {loading && notes.length === 0 ? (
@@ -126,6 +143,15 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
           </div>
         )}
       </div>
+
+      {/* AI Chat Panel */}
+      {forCollection && (
+        <ChatBar 
+          collectionId={collectionId} 
+          open={isChatOpen} 
+          onOpenChange={setIsChatOpen} 
+        />
+      )}
     </DashboardLayout>
   );
 }

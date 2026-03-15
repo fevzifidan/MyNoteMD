@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import apiService from "@/shared/services/api";
+import { collectionService } from "@/shared/services/api";
 import { CollectionCard } from "@/features/collections/components/collection-card";
 import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
@@ -25,11 +25,9 @@ export default function CollectionsPage() {
   const fetchCollections = useCallback(async (cursor: string | null, isNewSearch: boolean = false) => {
     setLoading(true);
     try {
-      const response = await apiService.get("/collections", {
-        params: {
-          cursor: cursor,
-          search: query
-        }
+      const response = await collectionService.list({
+        cursor: cursor,
+        search: query
       });
 
       setCollections(response.items || []);

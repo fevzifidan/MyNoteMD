@@ -25,6 +25,7 @@ namespace MyNoteMD_API.DTOs
         bool HasUnpublishedChanges,
         Guid CollectionId,
         DateTimeOffset CreatedAt,
+        DateTimeOffset? UpdatedAt,
         DateTimeOffset? PublishedAt
     );
 
@@ -41,7 +42,8 @@ namespace MyNoteMD_API.DTOs
         string Slug,
         bool IsPublic,
         bool HasUnpublishedChanges,
-        DateTimeOffset CreatedAt
+        DateTimeOffset CreatedAt,
+        DateTimeOffset? UpdatedAt
     );
 
     public record PagedNoteResponseDto(
@@ -51,5 +53,10 @@ namespace MyNoteMD_API.DTOs
 
     public record MoveNoteDto(
         [Required] Guid TargetCollectionId
+    );
+
+    public record NoteLookupDto(
+        Guid Id,
+        string Title
     );
 }

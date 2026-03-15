@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FileText } from "lucide-react";
-import apiService from "@/shared/services/api";
+import { noteService, collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue } from "@/components/ui/combobox";
 
@@ -43,7 +43,7 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
             const fetchCollections = async () => {
                 setFetchingCollections(true);
                 try {
-                    const response = await apiService.get("/collections/lookup");
+                    const response = await collectionService.lookup();
                     const dataArray = Array.isArray(response) ? response : (response.data || []);
 
                     // VERİ DÖNÜŞÜMÜ (MAPPING) DÜZELTİLDİ
@@ -82,9 +82,7 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
 
         setLoading(true);
         try {
-            await apiService.patch(`/notes/${noteId}/move`, {
-                targetCollectionId: selectedCollection.code
-            });
+            await noteService.move(noteId, selectedCollection.code);
             notificationService.success("Note moved successfully!");
             setOpen(false);
         } catch (error) {

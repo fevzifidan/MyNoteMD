@@ -82,7 +82,7 @@ namespace MyNoteMD_API.Controllers
                 .ThenByDescending(n => n.Id)
                 .Take(limit + 1)
                 .Select(n => new NoteSummaryDto(
-                    n.Id, n.Title, n.Slug, n.IsPublic, n.HasUnpublishedChanges, n.CreatedAt
+                    n.Id, n.Title, n.Slug, n.IsPublic, n.HasUnpublishedChanges, n.CreatedAt, n.UpdatedAt
                 ))
                 .ToListAsync();
 
@@ -148,7 +148,7 @@ namespace MyNoteMD_API.Controllers
                 .Select(n => new NoteDetailDto(
                     n.Id, n.Title, n.Slug, n.Content, n.PublishedContent,
                     n.IsPublic, n.HasUnpublishedChanges, n.CollectionId,
-                    n.CreatedAt, n.PublishedAt
+                    n.CreatedAt, n.UpdatedAt, n.PublishedAt
                 ))
                 .FirstOrDefaultAsync();
 
@@ -194,6 +194,8 @@ namespace MyNoteMD_API.Controllers
             {
                 note.HasUnpublishedChanges = true;
             }
+
+            note.UpdatedAt = DateTimeOffset.Now;
 
             await _context.SaveChangesAsync();
 

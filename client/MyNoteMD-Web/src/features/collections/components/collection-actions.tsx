@@ -15,7 +15,7 @@ import { useConfirm } from "@/shared/services/confirmation/useConfirm";
 import { useNavigate } from "react-router-dom";
 
 import notificationService from "@/shared/services/notification";
-import apiService from "@/shared/services/api";
+import { collectionService } from "@/shared/services/api";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface CollectionActionsProps {
@@ -51,7 +51,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
       });
 
       if (ok) {
-        await apiService.delete(`/collections/${collectionId}`);
+        await collectionService.delete(collectionId);
         notificationService.info("Collection deleted successfully.");
       }
     } catch (error) {
@@ -65,7 +65,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
     setIsUpdating(true);
 
     try {
-      await apiService.patch(`/collections/${collectionId}`, { name: newName });
+      await collectionService.update(collectionId, { name: newName });
       notificationService.info("Collection name updated successfully.");
     } catch (error) {
 

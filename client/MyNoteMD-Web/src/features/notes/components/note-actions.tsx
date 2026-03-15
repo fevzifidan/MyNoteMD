@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { MoreHorizontal, Eye, Pencil, Trash2, ShieldCheck } from "lucide-react";
+import { MoreHorizontal, Eye, Pencil, Trash2, ShieldCheck, Save, Package } from "lucide-react";
 
 import { useConfirm } from "@/shared/services/confirmation/useConfirm";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "@/shared/services/api/api.service";
+import { noteService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { MoveNoteDialog } from "./move-not-dialog";
 import { cn } from "@/lib/utils";
@@ -47,7 +47,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
       });
 
       if (ok) {
-        await apiService.post(`/notes/${noteId}/publish`, {});
+        await noteService.publish(noteId);
         notificationService.info("Draft saved as final successfully.");
       }
     } catch (error) {
@@ -73,7 +73,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
       });
 
       if (ok) {
-        await apiService.post(`/notes/${noteId}/toggle-visibility`, {});
+        await noteService.toggleVisibility(noteId);
         setIsPublic(checked);
         notificationService.info("Accessibility updated successfully.");
       }
@@ -100,7 +100,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
       });
 
       if (ok) {
-        await apiService.delete(`/notes/${noteId}`);
+        await noteService.delete(noteId);
         notificationService.info("Note deleted successfully.");
       }
     } catch (error) {
@@ -144,7 +144,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
           <DropdownMenuItem
             className="gap-3 py-2.5 cursor-pointer rounded-lg"
             onClick={() => handlePublishDraft()}>
-            <Pencil className="h-4 w-4 opacity-70" />
+            <Save className="h-4 w-4 opacity-70" />
             <span className="font-medium text-sm">Save Draft as Final</span>
           </DropdownMenuItem>
 
@@ -152,7 +152,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
             className="gap-3 py-2.5 cursor-pointer rounded-lg"
             onClick={() => setIsMoveDialogOpen(true)}
           >
-            <Pencil className="h-4 w-4 opacity-70" />
+            <Package className="h-4 w-4 opacity-70" />
             <span className="font-medium text-sm">Move</span>
           </DropdownMenuItem>
 
@@ -187,7 +187,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       <MoveNoteDialog
         noteId={noteId}
         open={isMoveDialogOpen}

@@ -1,6 +1,5 @@
-import React from "react";
 import { useState, useCallback, useEffect } from "react";
-import apiService from "@/shared/services/api";
+import { trashService } from "@/shared/services/api";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { SharedPagination } from "@/shared/components/shared-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,12 +18,9 @@ export default function TrashPage() {
     const fetchTrash = useCallback(async (cursor: string | null) => {
         setLoading(true);
         try {
-            // API İsteği: /notes?cursor=abc&search=test
-            const response = await apiService.get("/trash", {
-                params: {
-                    cursor: cursor,
-                    limit: 20
-                }
+            const response = await trashService.list({
+                cursor: cursor,
+                limit: 20
             });
 
             const data = response as any;

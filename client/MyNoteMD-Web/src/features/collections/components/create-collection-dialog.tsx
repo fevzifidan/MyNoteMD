@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, FolderPlus } from "lucide-react";
-import apiService from "@/shared/services/api";
+import { collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
 
     setLoading(true);
     try {
-      await apiService.post("/collections", { name });
+      await collectionService.create({ name });
       notificationService.success("Collection created successfully!");
       setOpen(false);
       setName("");
