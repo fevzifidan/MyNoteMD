@@ -1,0 +1,23 @@
+{
+    "read": "Oku",
+    "edit": "Düzenle",
+    "saveAsFinal": "Taslağı Final olarak Kaydet",
+    "move": "Taşı",
+    "access": "Erişim",
+    "delete": "Sil",
+    "handlePublishDraft": {
+        "title": "Taslağı Final Olarak Kaydet",
+        "description": "Bu taslağı final olarak kaydetmek üzeresiniz. Emin misiniz?",
+        "successful": "Taslak başarıyla final olarak kaydedildi."
+    },
+    "handleAccessChange": {
+        "title": "Erişimi Güncelle",
+        "description": "Bu notun erişimini güncellemek üzeresiniz. Emin misiniz?",
+        "successful": "Erişim başarıyla güncellendi."
+    },
+    "handleDelete": {
+        "title": "Notu Sil",
+        "description": "Bu notu silmek üzeresiniz. Emin misiniz?",
+        "successful": "Not başarıyla silindi."
+    }
+}

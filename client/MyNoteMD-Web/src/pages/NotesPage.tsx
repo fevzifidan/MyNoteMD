@@ -10,26 +10,28 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { ChatBar } from "@/features/chatbar/components/ChatBar";
+import { useTranslation } from "react-i18next";
 
 export default function NotesPage({ forCollection }: { forCollection?: boolean }) {
   const [searchParams] = useSearchParams();
   const searchParam = searchParams.get("q") || "";
   const collectionId = forCollection ? searchParams.get("collectionId") : "";
+  const { t } = useTranslation(["ai", "notePage", "common"]);
 
-  // State Yönetimi
+  // States
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Önceki sayfalara dönebilmek için cursor geçmişini tutan stack
+  // Cursor stack to move previous pages
   const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]);
 
   const fetchNotes = useCallback(async (cursor: string | null, isNewSearch: boolean = false) => {
     setLoading(true);
     try {
-      // API İsteği
+      // API Request
       const params = {
         cursor: cursor,
         ...(typeof forCollection !== undefined && { search: searchParam })
@@ -54,28 +56,28 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
     }
   }, [searchParam]);
 
-  // Arama terimi (query) her değiştiğinde listeyi sıfırla ve baştan ara
+  // Search param changes, reset list and fetch from start
   useEffect(() => {
     fetchNotes(null, true);
   }, [searchParam, fetchNotes]);
 
-  // Sonraki Sayfa
+  // Next Page
   const handleNext = () => {
     if (nextCursor) {
-      // Mevcut nextCursor'ı geçmişe ekle
+      // Add current nextCursor to stack
       setCursorStack((prev) => [...prev, nextCursor]);
       setCurrentPage((prev) => prev + 1);
       fetchNotes(nextCursor);
     }
   };
 
-  // Önceki Sayfa
+  // Previous Page
   const handlePrevious = () => {
     if (currentPage > 1) {
-      // Stack'ten son cursor'ı çıkar ve bir öncekini kullan
+      // Remove current cursor from stack and use previous one
       const newStack = [...cursorStack];
-      newStack.pop(); // Mevcut sayfanın cursor'ını at
-      const prevCursor = newStack[newStack.length - 1]; // Önceki sayfanın cursor'ını al
+      newStack.pop(); // Remove current page cursor
+      const prevCursor = newStack[newStack.length - 1]; // Get previous page cursor
 
       setCursorStack(newStack);
       setCurrentPage((prev) => prev - 1);
@@ -86,20 +88,20 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
   return (
     <DashboardLayout>
       <div className="flex flex-col min-h-[400px]">
-        {/* AI Butonu - Sağ Üstte (Sadece koleksiyon modunda) */}
+        {/* AI Button - Right Top (Only in collection mode) */}
         {forCollection && collectionId && (
           <div className="flex justify-end mb-4">
-            <Button 
+            <Button
               onClick={() => setIsChatOpen(true)}
               className="group flex items-center gap-2 rounded-full px-6 shadow-lg hover:shadow-primary/20 transition-all"
             >
               <Sparkles className="w-4 h-4 group-hover:animate-spin" />
-              <span>AI Asistan</span>
+              <span>{t("ai:title")}</span>
             </Button>
           </div>
         )}
 
-        {/* Yükleme Durumu (Loading State) */}
+        {/* Loading State */}
         {loading && notes.length === 0 ? (
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -109,28 +111,28 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
         ) : (
           <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
 
-            {/* Not Listesi */}
+            {/* Notes List */}
             <div className="grid grid-cols-1 gap-4">
               {notes.map((note) => (
                 <NoteCard key={note.Id || note.id} note={note} />
               ))}
             </div>
 
-            {/* Boş Liste Durumu (Empty State) */}
+            {/* Empty State */}
             {!loading && notes.length === 0 && (
               <div className="flex flex-col items-center justify-center py-32 text-center border-2 border-dashed rounded-[3rem] border-muted/40">
                 <p className="text-xl font-medium text-muted-foreground">
-                  {searchParam ? `"${searchParam}" ile eşleşen not bulunamadı.` : "Henüz bir notunuz yok."}
+                  {searchParam ? `${t("notePage:noResultsFound")}` : t("notePage:doNotHaveNotes")}
                 </p>
                 <p className="text-sm text-muted-foreground/60 mt-1">
-                  Yeni bir not oluşturarak başlayabilirsiniz.
+                  {t("notePage:start")}
                 </p>
               </div>
             )}
           </div>
         )}
 
-        {/* Sayfalama (Pagination) - Sadece veri varsa göster */}
+        {/* Pagination - Only show if data exists */}
         {notes.length > 0 && (
           <div className="mt-10 mb-20">
             <SharedPagination
@@ -146,10 +148,10 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
 
       {/* AI Chat Panel */}
       {forCollection && (
-        <ChatBar 
-          collectionId={collectionId} 
-          open={isChatOpen} 
-          onOpenChange={setIsChatOpen} 
+        <ChatBar
+          collectionId={collectionId}
+          open={isChatOpen}
+          onOpenChange={setIsChatOpen}
         />
       )}
     </DashboardLayout>

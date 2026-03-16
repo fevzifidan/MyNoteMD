@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 interface GlobalSearchProps {
   onSearch: (value: string) => void;
@@ -16,20 +17,21 @@ interface GlobalSearchProps {
 }
 
 export function GlobalSearch({ onSearch, onTypeChange, currentType, defaultValue, placeholder }: GlobalSearchProps) {
+  const { t } = useTranslation(["notePage", "collectionPage"]);
   return (
     <div className="flex items-center w-full max-w-2xl mx-auto">
       <div className="relative flex items-center w-full h-12 bg-background border rounded-full px-1 shadow-sm focus-within:ring-2 focus-within:ring-[#3D5278] transition-all overflow-hidden">
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 h-10 px-4 ml-1 rounded-full text-muted-foreground hover:bg-transparent shrink-0">
-              <span className="text-sm font-semibold">{currentType === "Notes" ? "Notlar" : "Koleksiyonlar"}</span>
+              <span className="text-sm font-semibold">{currentType === "Notes" ? t("notePage:title") : t("collectionPage:title")}</span>
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48 rounded-xl mt-2">
-            <DropdownMenuItem onClick={() => onTypeChange("Collections")}>Koleksiyonlar</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onTypeChange("Notes")}>Notlar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onTypeChange("Collections")}>{t("collectionPage:title")}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onTypeChange("Notes")}>{t("notePage:title")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

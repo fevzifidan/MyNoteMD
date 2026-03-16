@@ -12,9 +12,11 @@ import { ToggleGroup } from "@/components/ui/toggle-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
 export default function BasicTab() {
     const { applyFormat, clearFormat, insertText } = useEditor();
+    const { t } = useTranslation('noteEditPage');
     const [textColor, setTextColor] = useState("#ef4444"); // Varsayılan kırmızı
     const [highlightColor, setHighlightColor] = useState("#eab308"); // Varsayılan sarı
 
@@ -78,7 +80,7 @@ export default function BasicTab() {
                       ))}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="text-hex" className="text-xs text-muted-foreground w-8">HEX:</Label>
+                      <Label htmlFor="text-hex" className="text-xs text-muted-foreground w-8">{t('basicTab.hex')}</Label>
                       <Input 
                         id="text-hex"
                         value={textColor}
@@ -118,7 +120,7 @@ export default function BasicTab() {
                       ))}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="highlight-hex" className="text-xs text-muted-foreground w-8">HEX:</Label>
+                      <Label htmlFor="highlight-hex" className="text-xs text-muted-foreground w-8">{t('basicTab.hex')}</Label>
                       <Input 
                         id="highlight-hex"
                         value={highlightColor}
@@ -159,8 +161,8 @@ export default function BasicTab() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>Indicator</DropdownMenuItem>
-                  <DropdownMenuItem>Descriptor</DropdownMenuItem>
+                  <DropdownMenuItem>{t('basicTab.fn.indicator')}</DropdownMenuItem>
+                  <DropdownMenuItem>{t('basicTab.fn.descriptor')}</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -168,17 +170,17 @@ export default function BasicTab() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex gap-1 px-3">
-                    Insert <ChevronDown className="h-4 w-4 opacity-50" />
+                  {t('basicTab.insert.label')} <ChevronDown className="h-4 w-4 opacity-50" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => insertText("[title](url)")}>Link</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => insertText("![alt](url)")}>Image Link</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => applyFormat("```\n", "\n```")}>Code</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => insertText("\n| header | header |\n| --- | --- |\n| cell | cell |\n")}>Table</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => insertText("[title](url)")}>{t('basicTab.insert.link')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => insertText("![alt](url)")}>{t('basicTab.insert.imageLink')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => applyFormat("```\n", "\n```")}>{t('basicTab.insert.code')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => insertText("\n| header | header |\n| --- | --- |\n| cell | cell |\n")}>{t('basicTab.insert.table')}</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" onClick={clearFormat} className="text-xs">Clear</Button>
+              <Button variant="ghost" onClick={clearFormat} className="text-xs">{t('basicTab.clear')}</Button>
             </>
     )
 }

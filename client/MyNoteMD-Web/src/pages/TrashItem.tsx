@@ -6,6 +6,7 @@ import { useConfirm } from "@/shared/services/confirmation/useConfirm";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import LoadingSpinner from "@/components/custom/LoadingSpinner/LoadingSpinner";
+import { useTranslation } from "react-i18next";
 
 interface TrashItemProps {
     id?: string;
@@ -17,6 +18,7 @@ interface TrashItemProps {
 }
 
 export default function TrashItem({ id, type, title, deletedAt, parentCollectionName, affectedNotesCount }: TrashItemProps) {
+    const { t } = useTranslation(["common", "trashPage"]);
     const confirm = useConfirm();
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -25,19 +27,19 @@ export default function TrashItem({ id, type, title, deletedAt, parentCollection
 
         try {
             const ok = await confirm.confirm({
-                title: `Delete ${type} Permanently`,
-                description: `Are you sure you want to delete this ${type} permanently?`,
-                confirmText: "Yes",
+                title: t(`trashPage:deletePermanently`),
+                description: t(`trashPage:emptyTrashConfirmDescription`),
+                confirmText: t(`trashPage:deletePermanently`),
                 variant: "destructive",
                 size: "sm",
                 icon: <Trash2 />,
                 iconSize: "md",
-                dontAskAgain: { id: `delete-${type}-permanently`, label: "Don't ask this again" }
+                dontAskAgain: { id: `delete-${type}-permanently`, label: t(`common:choices.doNotAskAgain`) }
             });
 
             if (ok) {
                 await trashService.permanentDelete(type, id as string);
-                notificationService.info(`${type} deleted successfully.`);
+                notificationService.info(`${t(`trashPage:deleteSuccessful`)}`);
             }
         } catch (error) {
 
@@ -49,7 +51,7 @@ export default function TrashItem({ id, type, title, deletedAt, parentCollection
         setIsUpdating(true);
         try {
             await trashService.restore(type, id as string);
-            notificationService.info(`${type} restored successfully.`);
+            notificationService.info(`${t(`trashPage:restoreSuccessful`)}`);
         } catch (error) {
 
         } finally {
@@ -70,8 +72,8 @@ export default function TrashItem({ id, type, title, deletedAt, parentCollection
                 {isUpdating && <LoadingSpinner />}
                 {!isUpdating && (
                     <CardFooter>
-                        <Button onClick={handleDelete}>Delete</Button>
-                        <Button onClick={handleRestore}>Restore</Button>
+                        <Button onClick={handleDelete} variant="destructive">{t(`trashPage:delete`)}</Button>
+                        <Button onClick={handleRestore}>{t(`trashPage:restore`)}</Button>
                     </CardFooter>
                 )}
             </Card>

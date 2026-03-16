@@ -23,7 +23,7 @@ import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { AVAILABLE_LANGUAGES, getFlagUrl } from "@/components/custom/LanguageSelector/config/languageConfig";
 
-export function UserNav({showAdditional} : {showAdditional?:boolean}) {
+export function UserNav({ showAdditional }: { showAdditional?: boolean }) {
   const { user, logout, loading } = useAuth();
   const { theme, setTheme } = useTheme();
   const { i18n, t } = useTranslation(["common"]);
@@ -33,7 +33,7 @@ export function UserNav({showAdditional} : {showAdditional?:boolean}) {
   }
 
   // Kullanıcı adının ilk harfini fallback için alalım
-  const initials = user?.givenName?.substring(0, 1).toUpperCase() +  user?.familyName?.substring(0, 1).toUpperCase()|| "U";
+  const initials = user?.givenName?.substring(0, 1).toUpperCase() + user?.familyName?.substring(0, 1).toUpperCase() || "U";
 
   return (
     <DropdownMenu>
@@ -47,7 +47,7 @@ export function UserNav({showAdditional} : {showAdditional?:boolean}) {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      
+
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
@@ -57,17 +57,17 @@ export function UserNav({showAdditional} : {showAdditional?:boolean}) {
             </p>
           </div>
         </DropdownMenuLabel>
-        
+
         <DropdownMenuSeparator />
-        
+
         <DropdownMenuItem className="cursor-pointer gap-2">
           <User className="h-4 w-4" />
-          <span>Profile</span>
+          <span>{t("common:actions.profile")}</span>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem className="cursor-pointer gap-2">
           <Settings className="h-4 w-4" />
-          <span>Settings</span>
+          <span>{t("common:actions.settings")}</span>
         </DropdownMenuItem>
 
         {showAdditional && <>
@@ -103,18 +103,18 @@ export function UserNav({showAdditional} : {showAdditional?:boolean}) {
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="cursor-pointer gap-2">
               <Languages className="h-4 w-4" />
-              <span>Language</span>
+              <span>{t("common:actions.language")}</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuRadioGroup 
-                  value={i18n.language} 
+                <DropdownMenuRadioGroup
+                  value={i18n.language}
                   onValueChange={(val) => i18n.changeLanguage(val)}
                 >
                   {AVAILABLE_LANGUAGES.map((lang) => (
                     <DropdownMenuRadioItem key={lang.code} value={lang.code} className="cursor-pointer">
-                      <img 
-                        src={getFlagUrl(lang.countryCode)} 
+                      <img
+                        src={getFlagUrl(lang.countryCode)}
                         alt={lang.alt}
                         className="w-4 h-3 mr-2 object-cover rounded-sm"
                       />
@@ -126,16 +126,16 @@ export function UserNav({showAdditional} : {showAdditional?:boolean}) {
             </DropdownMenuPortal>
           </DropdownMenuSub>
         </>}
-        
+
         <DropdownMenuSeparator />
-        
+
         {/* Destructive Logout Button */}
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={logout}
           className="cursor-pointer gap-2 text-destructive focus:bg-destructive focus:text-destructive-foreground"
         >
           <LogOut className="h-4 w-4" />
-          <span>Log out</span>
+          <span>{t("common:actions.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

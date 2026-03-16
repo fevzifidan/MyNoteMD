@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useAuth } from "@/context/AuthContext";
-import { registerSchema } from "./validations/registerSchema";
 import apiService from "@/shared/services/api";
+import { getRegisterSchema } from "./validations/registerSchema";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,8 @@ const RegisterPage = () => {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation(["auth"]);
+  const registerSchema = getRegisterSchema(t);
 
   const form = useForm({
     resolver: yupResolver(registerSchema),
@@ -54,9 +57,9 @@ const RegisterPage = () => {
 
           {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Join Us</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{t("auth:register.title")}</h1>
             <p className="text-muted-foreground text-lg font-medium">
-              Create your account to start collecting
+              {t("auth:register.description")}
             </p>
           </div>
 
@@ -155,7 +158,7 @@ const RegisterPage = () => {
                   disabled={loading}
                   className="w-full bg-[#3D5278] hover:bg-[#2e3e5c] text-white rounded-full h-14 text-lg font-bold shadow-lg shadow-[#3D5278]/20 transition-all active:scale-[0.98]"
                 >
-                  {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+                  {loading ? "..." : t("auth:register.title")}
                 </Button>
               </div>
             </form>
@@ -165,26 +168,26 @@ const RegisterPage = () => {
           <div className="space-y-4">
             <div className="relative flex items-center justify-center">
               <span className="absolute inset-x-0 h-px bg-border"></span>
-              <span className="relative bg-card px-4 text-sm text-muted-foreground font-medium">Or register with</span>
+              <span className="relative bg-card px-4 text-sm text-muted-foreground font-medium">{t("auth:register.orRegisterWith")}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50 transition-colors">
                 <Chrome className="w-4 h-4 text-red-500" />
-                <span className="text-sm font-bold opacity-80">Google</span>
+                <span className="text-sm font-bold opacity-80">{t("auth:register.google")}</span>
               </Button>
               <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50 transition-colors">
                 <Apple className="w-4 h-4 fill-current" />
-                <span className="text-sm font-bold opacity-80">Apple</span>
+                <span className="text-sm font-bold opacity-80">{t("auth:register.apple")}</span>
               </Button>
             </div>
           </div>
 
           {/* Footer */}
           <div className="pt-6 border-t border-border flex justify-between items-center px-2">
-            <span className="text-muted-foreground font-medium">Already have an account?</span>
+            <span className="text-muted-foreground font-medium">{t("auth:register.hasAccount")}</span>
             <Button onClick={() => navigate("/login")} variant="link" className="text-[#3D5278] dark:text-blue-400 font-bold p-0 text-lg hover:no-underline">
-              Sign in
+              {t("auth:register.login")}
             </Button>
           </div>
 

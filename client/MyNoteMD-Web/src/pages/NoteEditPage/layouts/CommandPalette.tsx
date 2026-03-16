@@ -3,9 +3,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import BasicTab from "./BasicTab";
 import MathTab from "./MathTab/MathTab";
+import { useTranslation } from "react-i18next";
 
 export default function CommandPalette() {
   const [activeTab, setActiveTab] = useState("basic");
+  const { t } = useTranslation('noteEditPage');
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center bg-card text-card-foreground border shadow-xl rounded-3xl p-3 w-max max-w-[75vw]">
@@ -18,15 +20,15 @@ export default function CommandPalette() {
       >
         <div className="flex items-center space-x-2 text-sm">
           <RadioGroupItem value="basic" id="r1" />
-          <Label htmlFor="r1" className="cursor-pointer">Basic</Label>
+          <Label htmlFor="r1" className="cursor-pointer">{t('commandPalette.tabs.basic')}</Label>
         </div>
         <div className="flex items-center space-x-2 text-sm">
           <RadioGroupItem value="math" id="r2" />
-          <Label htmlFor="r2" className="cursor-pointer">Math</Label>
+          <Label htmlFor="r2" className="cursor-pointer">{t('commandPalette.tabs.math')}</Label>
         </div>
         <div className="flex items-center space-x-2 text-sm">
           <RadioGroupItem value="diagram" id="r3" />
-          <Label htmlFor="r3" className="cursor-pointer">Diagram</Label>
+          <Label htmlFor="r3" className="cursor-pointer">{t('commandPalette.tabs.diagram')}</Label>
         </div>
       </RadioGroup>
 
@@ -40,7 +42,7 @@ export default function CommandPalette() {
           )}
 
           {activeTab === "math" && <MathTab />}
-          {activeTab === "diagram" && <div className="p-2 text-sm text-muted-foreground w-full text-center">Diagram araçları buraya gelecek...</div>}
+          {activeTab === "diagram" && <div className="p-2 text-sm text-muted-foreground w-full text-center">{t('commandPalette.tabs.diagramPlaceholder')}</div>}
         </div>
       </div>
     </div>

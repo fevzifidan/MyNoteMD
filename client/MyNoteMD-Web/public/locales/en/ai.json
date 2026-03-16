@@ -1,0 +1,13 @@
+{
+    "title": "AI Assistant",
+    "description": "AI Assistant",
+    "placeholder": "Type something...",
+    "send": "Send",
+    "clear": "Clear",
+    "close": "Close",
+    "stop": "Stop",
+    "disclaimer": "AI may provide incorrect information. Check important information.",
+    "welcome": "You can ask questions about your notes in this collection.",
+    "syncing": "Syncing notes...",
+    "modelLoading": "Loading AI Model..."
+}

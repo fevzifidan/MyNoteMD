@@ -8,18 +8,21 @@ import { CollectionRow } from "@/features/collections/components/collection-row"
 import { NoteRow } from "@/features/notes/components/note-row";
 import { ShowMoreButton } from "./show-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 export const RecentActivity = () => {
   const [collections, setCollections] = useState<any[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { t } = useTranslation(["common", "dashboard"]);
+
   useEffect(() => {
     const fetchRecentData = async () => {
       setLoading(true);
       try {
-        // İki isteği paralel olarak atıyoruz (Hız için)
-        // API'den sadece 5 kayıt istiyoruz (pageSize=5)
+        // Send two requests at the same time for performance
+        // Get only 5 records from API (pageSize=5)
         const [collectionsRes, notesRes] = await Promise.all([
           apiService.get("/collections", { params: { pageSize: 5 } }),
           apiService.get("/notes", { params: { pageSize: 5 } }),
@@ -37,7 +40,7 @@ export const RecentActivity = () => {
     fetchRecentData();
   }, []);
 
-  // Loading sırasında gösterilecek Skeleton yapısı
+  // Loading Skeleton
   const ListSkeleton = () => (
     <div className="space-y-3">
       {[1, 2, 3, 4, 5].map((i) => (
@@ -51,7 +54,7 @@ export const RecentActivity = () => {
 
       {/* RECENT COLLECTIONS CARD */}
       <Card className="border-none shadow-none bg-transparent">
-        <SectionHeader title="Recent Collections" />
+        <SectionHeader title={t("dashboard:recentCollections")} />
         <CardContent className="px-0 space-y-1">
           {loading ? (
             <ListSkeleton />
@@ -67,7 +70,7 @@ export const RecentActivity = () => {
                 />
               ))}
               {collections.length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 px-2 italic">Henüz koleksiyon bulunmuyor.</p>
+                <p className="text-sm text-muted-foreground py-4 px-2 italic">{t("dashboard:noRecentCollections")}</p>
               )}
               {collections.length > 0 && <ShowMoreButton endpoint="/collections" />}
             </>
@@ -88,12 +91,12 @@ export const RecentActivity = () => {
                   key={item.id}
                   id={item.id}
                   title={item.title}
-                  status={item.isPublic ? "Public" : "Private"}
+                  status={item.isPublic ? t("common:public") : t("common:private")}
                   lastUpdated={new Date(item.updatedAt).toLocaleDateString()}
                 />
               ))}
               {notes.length === 0 && (
-                <p className="text-sm text-muted-foreground py-4 px-2 italic">Henüz not bulunmuyor.</p>
+                <p className="text-sm text-muted-foreground py-4 px-2 italic">{t("dashboard:noRecentNotes")}</p>
               )}
               {notes.length > 0 && <ShowMoreButton endpoint="/notes" />}
             </>

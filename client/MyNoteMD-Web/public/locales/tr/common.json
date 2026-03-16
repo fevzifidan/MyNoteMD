@@ -1,5 +1,5 @@
 {
-  "brand": "CoLDAT",
+  "brand": "MyNoteMD",
   "actions": {
     "save": "Kaydet",
     "cancel": "İptal",
@@ -10,19 +10,37 @@
     "yes": "Evet",
     "no": "Hayır",
     "close": "Kapat",
-    "create": "Oluştur"
+    "create": "Oluştur",
+    "add": "Ekle",
+    "new": "Yeni",
+    "showMore": "Daha Fazla",
+    "ok": "Tamam",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "logout": "Çıkış Yap",
+    "language": "Dil",
+    "nextPage": "Sonraki",
+    "previousPage": "Önceki"
   },
   "status": {
+    "status": "Durum",
     "loading": "Yükleniyor...",
     "success": "İşlem Başarılı!",
     "error": "Bir hata oluştu!",
     "server_error": "Sunucu hatası!",
     "deleting": "Siliniyor...",
     "updating": "Güncelleniyor...",
-    "saving": "Kaydediliyor..."
+    "saving": "Kaydediliyor...",
+    "public": "Açık",
+    "private": "Gizli",
+    "draft": "Taslak",
+    "final": "Final Versiyon",
+    "moving": "Taşınıyor..."
   },
   "error": {
-    "err_reach_server": "Sunucuya ulaşılamıyor!"
+    "err_reach_server": "Sunucuya ulaşılamıyor!",
+    "fill_all_fields": "Lütfen tüm alanları doldurun!",
+    "accessDenied": "Erişim Engellendi"
   },
   "theme": {
     "header": "Temayı Değiştir",
@@ -30,5 +48,12 @@
     "light": "Açık",
     "dark": "Koyu",
     "system": "Sistem"
+  },
+  "choices": {
+    "doNotAskAgain": "Bunu tekrar sorma"
+  },
+  "info": {
+    "lastUpdated": "Son Güncellenme",
+    "page": "Sayfa"
   }
 }

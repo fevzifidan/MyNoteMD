@@ -1,0 +1,41 @@
+{
+  "actions": {
+    "open": "Koleksiyonu Aç",
+    "rename": "Yeniden Adlandır",
+    "delete": "Sil"
+  },
+  "delete": {
+    "title": "Koleksiyonu Sil",
+    "description": "Bu koleksiyonu ve tüm notlarını silmek istediğinizden emin misiniz?",
+    "confirmText": "Evet",
+    "dontAskAgain": "Bunu tekrar sorma",
+    "successMessage": "Koleksiyon başarıyla silindi."
+  },
+  "rename": {
+    "dialogTitle": "Koleksiyon Adını Güncelle",
+    "dialogDescription": "Bu koleksiyon için yeni bir ad girin.",
+    "nameLabel": "Yeni Koleksiyon Adı",
+    "namePlaceholder": "örn. Seyahat Planları, İş Projeleri",
+    "cancelButton": "İptal",
+    "updateButton": "Güncelle",
+    "successMessage": "Koleksiyon adı başarıyla güncellendi."
+  },
+  "card": {
+    "noteCount": "{{count}} Not"
+  },
+  "row": {
+    "noteCount": "({{count}} not)",
+    "createdAt": "Oluşturulma tarihi:"
+  },
+  "create": {
+    "triggerLabel": "Koleksiyon",
+    "dialogTitle": "Koleksiyon Oluştur",
+    "dialogDescription": "Yeni bir koleksiyon oluşturarak notlarınızı düzenleyin.",
+    "nameLabel": "Koleksiyon Adı",
+    "namePlaceholder": "örn. Seyahat Planları, İş Projeleri",
+    "cancelButton": "İptal",
+    "submitButton": "Koleksiyon Oluştur",
+    "creatingButton": "Oluşturuluyor...",
+    "successMessage": "Koleksiyon başarıyla oluşturuldu!"
+  }
+}

@@ -1,0 +1,8 @@
+{
+    "error": {
+        "accessDeniedMessage": "Bu nota şu anda erişilemiyor, not gizli veya bir hata oluştu."
+    },
+    "actions": {
+        "backToHome": "Ana Sayfaya Dön"
+    }
+}

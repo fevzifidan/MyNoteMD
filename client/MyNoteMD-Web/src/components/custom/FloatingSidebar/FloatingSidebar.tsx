@@ -14,15 +14,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { CreateCollectionDialog } from "@/features/collections/components/create-collection-dialog";
 import { CreateNoteDialog } from "@/features/notes/components/create-not-dialog";
 
 export function Sidebar() {
+  const { t } = useTranslation("sidebar");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
-  // Hydration hatasını önlemek için
+  // To prevent hydration errors
   React.useEffect(() => {
     setMounted(true);
   }, []);
@@ -32,14 +34,14 @@ export function Sidebar() {
   return (
     <TooltipProvider delayDuration={0}>
       {/* 
-        1. MASAÜSTÜ SIDEBAR (Floating Pill)
-        - 'hidden': Mobilde tamamen gizle
-        - 'md:flex': 768px ve üzerinde görünür yap
+        1. DESKTOP SIDEBAR (Floating Pill)
+        - 'hidden': Not seen on mobile
+        - 'md:flex': Visible on 768px and above
       */}
       <aside
         className={cn(
           "fixed left-6 top-1/2 -translate-y-1/2 z-[90] transition-all duration-500 ease-in-out",
-          "hidden md:flex flex-col items-center py-6", // MOBİLDE HİÇ YOK
+          "hidden md:flex flex-col items-center py-6", // Not seen on mobile
           "bg-card/80 backdrop-blur-lg border shadow-2xl rounded-[2.5rem]",
           isExpanded ? "w-64 px-4" : "w-20 px-2"
         )}
@@ -57,9 +59,9 @@ export function Sidebar() {
       </aside>
 
       {/* 
-        2. MOBİL SIDEBAR (Hamburger & Sheet)
-        - 'block': Mobilde görünür
-        - 'md:hidden': 768px ve üzerinde tamamen gizle
+        2. MOBILE SIDEBAR (Hamburger & Sheet)
+        - 'block': Seen on mobile
+        - 'md:hidden': Not seen on 768px and above
       */}
       <div className="md:hidden fixed top-6 left-6 z-[110]">
         <Sheet>
@@ -78,7 +80,7 @@ export function Sidebar() {
           >
             <SheetHeader className="text-left mb-8">
               <SheetTitle className="text-3xl font-bold italic tracking-tighter text-primary">
-                Menu
+                {t("sidebar:menu")}
               </SheetTitle>
             </SheetHeader>
             <div className="overflow-y-auto h-full pr-2">
@@ -91,26 +93,27 @@ export function Sidebar() {
   );
 }
 
-// --- ORTAK MENÜ İÇERİĞİ ---
+// --- SHARED MENU CONTENT ---
 function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
+  const { t } = useTranslation("sidebar");
   const [isYeniOpen, setIsYeniOpen] = React.useState(false);
 
   return (
     <div className="flex flex-col w-full gap-2">
-      <SidebarItem icon={Home} label="Home" isExpanded={isExpanded} endpoint="/home" />
+      <SidebarItem icon={Home} label={t("sidebar:home")} isExpanded={isExpanded} endpoint="/home" />
 
-      <SidebarItem icon={Sparkles} label="AI" isExpanded={isExpanded} endpoint="/ai" />
+      <SidebarItem icon={Sparkles} label={t("sidebar:ai")} isExpanded={isExpanded} endpoint="/ai" />
 
-      {/* AI Altındaki Gradyan Ayırıcı */}
+      {/* Gradient Separator under AI */}
       <div className="px-4 py-2">
         <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       </div>
 
-      <SidebarItem icon={FileText} label="Notlarım" isExpanded={isExpanded} endpoint="/notes" />
-      <SidebarItem icon={Folder} label="Koleksiyonlarım" isExpanded={isExpanded} endpoint="/collections" />
-      <SidebarItem icon={Trash} label="Çöp Kutusu" isExpanded={isExpanded} endpoint="/trash" />
+      <SidebarItem icon={FileText} label={t("sidebar:myNotes")} isExpanded={isExpanded} endpoint="/notes" />
+      <SidebarItem icon={Folder} label={t("sidebar:myCollections")} isExpanded={isExpanded} endpoint="/collections" />
+      <SidebarItem icon={Trash} label={t("sidebar:trash")} isExpanded={isExpanded} endpoint="/trash" />
 
-      {/* Yeni Seçeneği (Collapsible) */}
+      {/* 'New' Option (Collapsible) */}
       <Collapsible open={isYeniOpen} onOpenChange={setIsYeniOpen} className="w-full">
         <CollapsibleTrigger asChild>
           <Button
@@ -121,7 +124,7 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
             )}
           >
             <Plus className="h-5 w-5 shrink-0" />
-            {isExpanded && <span className="font-semibold flex-1 text-left">Yeni</span>}
+            {isExpanded && <span className="font-semibold flex-1 text-left">{t("sidebar:new")}</span>}
             {isExpanded && (
               <ChevronRight className={cn("h-4 w-4 transition-transform duration-200", isYeniOpen && "rotate-90")} />
             )}
@@ -133,17 +136,17 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
         </CollapsibleContent>
       </Collapsible>
 
-      {/* Yeni Altındaki Normal Ayırıcı */}
+      {/* Normal Separator under New */}
       <div className="px-4 py-2">
         <Separator className="opacity-40" />
       </div>
 
-      <SidebarItem icon={HelpCircle} label="Help" isExpanded={isExpanded} endpoint="/help" />
+      <SidebarItem icon={HelpCircle} label={t("sidebar:help")} isExpanded={isExpanded} endpoint="/help" />
     </div>
   );
 }
 
-// --- SIDEBAR LİNK BİLEŞENİ ---
+// --- SIDEBAR ITEM COMPONENT ---
 function SidebarItem({ icon: Icon, label, isExpanded, endpoint }: any) {
   const navigate = useNavigate();
 

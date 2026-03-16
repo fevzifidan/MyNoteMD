@@ -1,0 +1,8 @@
+{
+    "error": {
+        "accessDeniedMessage": "This note is not accessible right now, it is private or an error occurred."
+    },
+    "actions": {
+        "backToHome": "Back to Home"
+    }
+}

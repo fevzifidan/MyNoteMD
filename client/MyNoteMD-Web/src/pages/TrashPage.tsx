@@ -4,15 +4,17 @@ import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { SharedPagination } from "@/shared/components/shared-pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import TrashItem from "./TrashItem";
+import { useTranslation } from "react-i18next";
 
 export default function TrashPage() {
-    // State Yönetimi
+    const { t } = useTranslation(["common", "trashPage"]);
+    // States
     const [trashItems, setTrashItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Önceki sayfalara dönebilmek için cursor geçmişini tutan stack
+    // Cursor stack to move previous pages
     const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]);
 
     const fetchTrash = useCallback(async (cursor: string | null) => {
@@ -76,10 +78,10 @@ export default function TrashPage() {
                         {!loading && trashItems.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-32 text-center border-2 border-dashed rounded-[3rem] border-muted/40">
                                 <p className="text-xl font-medium text-muted-foreground">
-                                    Çöp kutunuzda hiçbir öğe yok.
+                                    {t("trashPage:notFound")}
                                 </p>
                                 <p className="text-sm text-muted-foreground/60 mt-1">
-                                    Silinen notlar ve koleksiyonlar burada görünür.
+                                    {t("trashPage:text")}
                                 </p>
                             </div>
                         )}

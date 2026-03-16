@@ -1,0 +1,8 @@
+{
+    "title": "Koleksiyonlar",
+    "description": "Notlarınızı koleksiyonlarla düzenleyin.",
+    "empty": "Koleksiyon bulunamadı.",
+    "searchPlaceholder": "Koleksiyonları ara...",
+    "noCollectionsFound": "Koleksiyon bulunamadı.",
+    "createCollection": "Yeni bir tane oluşturun"
+}

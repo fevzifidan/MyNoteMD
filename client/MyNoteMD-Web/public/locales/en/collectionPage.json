@@ -1,0 +1,8 @@
+{
+    "title": "Collections",
+    "description": "Organize your notes with collections.",
+    "empty": "No collections found.",
+    "searchPlaceholder": "Search collections...",
+    "noCollectionsFound": "No collections found.",
+    "createCollection": "Create a new one"
+}

@@ -10,15 +10,17 @@ import { FileText } from "lucide-react";
 import { noteService, collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue } from "@/components/ui/combobox";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
-// Combobox'ın tam olarak beklediği tip (senin ülkeler örneğindeki yapı)
+// Type for Combobox
 type ComboboxOption = {
-  code: string;  // Backend'deki ID'yi (Guid) burada tutacağız
-  value: string; // Arama (search) işleminin yapılacağı alan (küçük harf isim)
-  label: string; // Ekranda kullanıcıya gösterilecek alan (orijinal isim)
+  code: string;  // ID
+  value: string; // Search
+  label: string; // Display
 };
 
-const defaultOption: ComboboxOption = { code: "", value: "", label: "Select a collection" };
+const defaultOption: ComboboxOption = { code: "", value: "", label: t("createNoteDialog:collection") };
 
 export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
   const [open, setOpen] = useState(false);
@@ -29,6 +31,8 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
   const [collections, setCollections] = useState<ComboboxOption[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<ComboboxOption>(defaultOption);
 
+  const { t } = useTranslation(["createNoteDialog", "common"]);
+
   useEffect(() => {
     if (open) {
       const fetchCollections = async () => {
@@ -37,15 +41,14 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
           const response = await collectionService.lookup();
           const dataArray = Array.isArray(response) ? response : (response.data || []);
 
-          // VERİ DÖNÜŞÜMÜ (MAPPING) DÜZELTİLDİ
           const formattedData = dataArray.map((item: any) => {
             const itemName = item.Name || item.name || "";
             const itemId = item.Id || item.id || "";
 
             return {
-              code: itemId,                    // API'ye göndereceğimiz ID (Örn: 3fa85f64...)
-              value: itemName.toLowerCase(),   // Search bar'ın filtreleme yapacağı değer
-              label: itemName                  // Listede görünecek isim
+              code: itemId,                    // Id to send to API
+              value: itemName.toLowerCase(),   // Value for search bar to filter
+              label: itemName                  // Label to display
             };
           });
 
@@ -58,7 +61,7 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
       };
       fetchCollections();
     } else {
-      // Dialog kapandığında formu sıfırla
+      // Reset the form when the dialog closes
       setTitle("");
       setSelectedCollection(defaultOption);
     }
@@ -67,9 +70,8 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // selectedCollection.code artık bizim backend'in beklediği GUID değeridir!
     if (!title.trim() || !selectedCollection.code) {
-      notificationService.error("Please fill in all required fields.");
+      notificationService.error(t("common:error.fill_all_fields"));
       return;
     }
 
@@ -77,9 +79,9 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
     try {
       await noteService.create({
         title: title,
-        collectionId: selectedCollection.code // .value yerine .code gönderiyoruz
+        collectionId: selectedCollection.code
       });
-      notificationService.success("Note created successfully!");
+      notificationService.success(t("createNoteDialog:success"));
       setOpen(false);
     } catch (error) {
 
@@ -99,29 +101,29 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
           )}
         >
           <FileText className="h-4 w-4 shrink-0" />
-          <span className="text-sm font-medium flex-1 text-left">Not</span>
+          <span className="text-sm font-medium flex-1 text-left">{t("createNoteDialog:note")}</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Create New Note</DialogTitle>
-            <DialogDescription>Add a new note to a collection.</DialogDescription>
+            <DialogTitle>{t("createNoteDialog:title")}</DialogTitle>
+            <DialogDescription>{t("createNoteDialog:description")}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-6 py-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Note Title</Label>
+              <Label htmlFor="title">{t("createNoteDialog:title")}</Label>
               <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
             </div>
 
             <div className="space-y-2 flex flex-col">
-              <Label>Collection</Label>
+              <Label>{t("createNoteDialog:collection")}</Label>
               <Combobox
                 items={collections}
                 value={selectedCollection}
-                onValueChange={setSelectedCollection}
+                onValueChange={(value) => setSelectedCollection(value ?? defaultOption)}
                 disabled={fetchingCollections}
               >
                 <ComboboxTrigger
@@ -131,10 +133,10 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
                     </Button>
                   }
                 />
-                {/* z-index eklendi: Dialog overlay'inin altında kalıp tıklanmayı engellememesi için */}
+                {/* z-index added: To prevent it from staying under the dialog overlay and blocking clicks */}
                 <ComboboxContent className="z-[9999]">
-                  <ComboboxInput showTrigger={false} placeholder="Search collections..." />
-                  <ComboboxEmpty>No collections found.</ComboboxEmpty>
+                  <ComboboxInput showTrigger={false} placeholder={t("createNoteDialog:searchPlaceholder")} />
+                  <ComboboxEmpty>{t("createNoteDialog:noCollectionsFound")}</ComboboxEmpty>
                   <ComboboxList>
                     {(item) => (
                       <ComboboxItem key={item.code} value={item}>
@@ -148,9 +150,9 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>{t("common:actions.cancel")}</Button>
             <Button type="submit" disabled={!title.trim() || !selectedCollection.code || loading}>
-              {loading ? "Creating..." : "Create Note"}
+              {loading ? t("common:status.creating") : t("common:actions.create")}
             </Button>
           </DialogFooter>
         </form>

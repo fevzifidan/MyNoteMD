@@ -1,0 +1,41 @@
+{
+  "actions": {
+    "open": "Open Collection",
+    "rename": "Rename",
+    "delete": "Delete"
+  },
+  "delete": {
+    "title": "Delete Collection",
+    "description": "Are you sure you want to delete this collection and all its notes?",
+    "confirmText": "Yes",
+    "dontAskAgain": "Don't ask this again",
+    "successMessage": "Collection deleted successfully."
+  },
+  "rename": {
+    "dialogTitle": "Update Collection Name",
+    "dialogDescription": "Enter a new name for this collection.",
+    "nameLabel": "New Collection Name",
+    "namePlaceholder": "e.g. Travel Plans, Work Projects",
+    "cancelButton": "Cancel",
+    "updateButton": "Update",
+    "successMessage": "Collection name updated successfully."
+  },
+  "card": {
+    "noteCount": "{{count}} Notes"
+  },
+  "row": {
+    "noteCount": "({{count}} notes)",
+    "createdAt": "Created at:"
+  },
+  "create": {
+    "triggerLabel": "Collection",
+    "dialogTitle": "Create Collection",
+    "dialogDescription": "Organize your notes by creating a new collection.",
+    "nameLabel": "Collection Name",
+    "namePlaceholder": "e.g. Travel Plans, Work Projects",
+    "cancelButton": "Cancel",
+    "submitButton": "Create Collection",
+    "creatingButton": "Creating...",
+    "successMessage": "Collection created successfully!"
+  }
+}

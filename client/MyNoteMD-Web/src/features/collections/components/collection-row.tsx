@@ -4,6 +4,7 @@ import { Folder } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CollectionActions } from "./collection-actions";
 import { BaseRow } from "@/shared/components/base-row";
+import { useTranslation } from "react-i18next";
 
 interface CollectionRowProps {
   id: string;
@@ -14,6 +15,7 @@ interface CollectionRowProps {
 
 export const CollectionRow = ({ id, name, noteCount, createdAt }: CollectionRowProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('collectionActions');
 
   const handleItemClick = (): void => {
     navigate(`/collection/notes?collectionId=${id}`);
@@ -29,11 +31,11 @@ export const CollectionRow = ({ id, name, noteCount, createdAt }: CollectionRowP
         <span className="text-sm font-semibold leading-none mb-1">
           {name}
           <span className="text-muted-foreground/50 ml-1 font-normal">
-            ({noteCount} notes)
+            {t('row.noteCount', { count: noteCount })}
           </span>
         </span>
         <span className="text-xs text-muted-foreground text-left font-medium opacity-70">
-          Created at: {createdAt}
+          {t('row.createdAt')} {createdAt}
         </span>
       </div>
     </BaseRow>

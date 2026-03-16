@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Send, Sparkles } from "lucide-react";
 import { useChat } from "../hooks/useChat";
 import { ChatMessages } from "./ChatMessages";
+import { useTranslation } from "react-i18next";
 
 interface ChatBarProps {
     collectionId: string | null;
@@ -18,6 +19,7 @@ interface ChatBarProps {
 }
 
 export const ChatBar: React.FC<ChatBarProps> = ({ collectionId, open, onOpenChange }) => {
+    const { t } = useTranslation();
     const [input, setInput] = useState("");
     const { messages, sendMessage, stopChat, isLoading, isSyncing, modelLoading, clearMessages } = useChat(collectionId);
 
@@ -37,10 +39,10 @@ export const ChatBar: React.FC<ChatBarProps> = ({ collectionId, open, onOpenChan
                     <div className="flex items-center justify-between">
                         <SheetTitle className="flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-primary" />
-                            AI Asistan (Beta)
+                            {t("ai:title")}
                         </SheetTitle>
                         <Button variant="ghost" size="sm" onClick={clearMessages} className="text-xs text-muted-foreground" disabled={isBusy}>
-                            Temizle
+                            {t("ai:clear")}
                         </Button>
                     </div>
                 </SheetHeader>
@@ -55,7 +57,7 @@ export const ChatBar: React.FC<ChatBarProps> = ({ collectionId, open, onOpenChan
                 <div className="p-4 border-t bg-background">
                     <div className="flex gap-2">
                         <Input
-                            placeholder="Soru sor..."
+                            placeholder={t("ai:placeholder")}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             disabled={isBusy}
@@ -78,7 +80,7 @@ export const ChatBar: React.FC<ChatBarProps> = ({ collectionId, open, onOpenChan
                         )}
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-2 text-center">
-                        AI hatalı bilgiler verebilir. Önemli bilgileri kontrol edin.
+                        {t("ai:disclaimer")}
                     </p>
                 </div>
             </SheetContent>

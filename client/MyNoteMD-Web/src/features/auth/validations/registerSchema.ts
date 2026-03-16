@@ -1,21 +1,18 @@
 import * as yup from "yup";
 
-export const registerSchema = yup.object().shape({
-  name: yup.string().required("Given name is required").min(3, "Name is too short"),
-  surname: yup.string().required("Family name is required").min(3, "Surname is too short"),
-  email: yup.string().email("Invalid email").required("Email is required"),
+export const getRegisterSchema = (t: any) => yup.object({
+  name: yup.string().required(t("auth:validation.nameRequired")).min(3, t("auth:validation.nameMin")),
+  surname: yup.string().required(t("auth:validation.surnameRequired")).min(3, t("auth:validation.surnameMin")),
+  email: yup.string().email(t("auth:validation.email")).required(t("auth:validation.emailRequired")),
   password: yup
     .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters")
-    // Küçük harf kontrolü
-    .matches(/[a-z]/, "Passwords must have at least one lowercase ('a'-'z').")
-    // Büyük harf kontrolü
-    .matches(/[A-Z]/, "Passwords must have at least one uppercase ('A'-'Z').")
-    // Alfanumerik olmayan (özel karakter) kontrolü
-    .matches(/[^a-zA-Z0-9]/, "Passwords must have at least one non alphanumeric character."),
+    .required(t("auth:validation.passwordRequired"))
+    .min(8, t("auth:validation.password"))
+    .matches(/[a-z]/, t("auth:validation.passwordLowercase"))
+    .matches(/[A-Z]/, t("auth:validation.passwordUppercase"))
+    .matches(/[^a-zA-Z0-9]/, t("auth:validation.passwordNonAlphanumeric")),
   confirmPassword: yup
     .string()
-    .oneOf([yup.ref("password")], "Passwords must match")
-    .required("Please confirm your password"),
+    .oneOf([yup.ref("password")], t("auth:validation.confirmPassword"))
+    .required(t("auth:validation.confirmPasswordRequired")),
 });

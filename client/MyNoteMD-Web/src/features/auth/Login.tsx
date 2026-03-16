@@ -4,17 +4,19 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useAuth } from "@/context/AuthContext";
-import { loginSchema } from "./validations/loginSchema";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Chrome, Apple } from "lucide-react";
-
+import { useTranslation } from "react-i18next";
+import { getLoginSchema } from "./validations/loginSchema";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const { t } = useTranslation(["auth"]);
+  const loginSchema = getLoginSchema(t);
+
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -39,18 +41,16 @@ const LoginForm = () => {
   };
 
   return (
-    // Ekranda tam ortalamak için min-h-screen ve flex kullanıyoruz. 
-    // Arka plan rengi vermedik, shadcn default (bg-background) kullanacak.
     <div className="min-h-[100dvh] flex items-center justify-center w-full px-0 sm:px-0 md:px-0">
 
       <Card className="w-full max-w-[540px] border-none shadow-2xl rounded-[3rem] bg-card text-card-foreground overflow-hidden my-auto">
         <CardContent className="p-8 md:p-14 space-y-10">
 
-          {/* Header Bölümü */}
+          {/* Header Section */}
           <div className="text-center space-y-3">
-            <h1 className="text-5xl font-bold tracking-tight">Login</h1>
+            <h1 className="text-5xl font-bold tracking-tight">{t("auth:login.title")}</h1>
             <p className="text-muted-foreground text-lg font-medium">
-              Access your notes and collections
+              {t("auth:login.description")}
             </p>
           </div>
 
@@ -104,33 +104,39 @@ const LoginForm = () => {
                   disabled={loading}
                   className="bg-[#3D5278] hover:bg-[#2e3e5c] text-white rounded-full px-12 h-14 text-lg font-bold shadow-lg shadow-[#3D5278]/20 transition-all active:scale-95"
                 >
-                  {loading ? "..." : "LOGIN"}
+                  {loading ? "..." : t("auth:login.title")}
                 </Button>
 
                 <Button variant="link" type="button" className="text-muted-foreground font-semibold hover:text-foreground">
-                  Forgot password?
+                  {t("auth:login.forgotPassword")}
                 </Button>
               </div>
             </form>
           </Form>
 
           {/* Sosyal Girişler */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50">
-              <Chrome className="w-4 h-4 text-red-500" />
-              <span className="text-sm font-bold opacity-80">Continue with Google</span>
-            </Button>
-            <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50">
-              <Apple className="w-4 h-4 fill-current" />
-              <span className="text-sm font-bold opacity-80">Continue with Apple</span>
-            </Button>
+          <div className="space-y-4 sm:space-y-2 xs:space-y-0">
+            <div className="relative flex items-center justify-center">
+              <span className="absolute inset-x-0 h-px bg-border"></span>
+              <span className="relative bg-card px-4 text-sm text-muted-foreground font-medium">{t("auth:login.orLoginWith")}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50">
+                <Chrome className="w-4 h-4 text-red-500" />
+                <span className="text-sm font-bold opacity-80">{t("auth:login.google")}</span>
+              </Button>
+              <Button variant="outline" className="flex-1 rounded-full bg-secondary/30 border-none h-12 gap-3 hover:bg-secondary/50">
+                <Apple className="w-4 h-4 fill-current" />
+                <span className="text-sm font-bold opacity-80">{t("auth:login.apple")}</span>
+              </Button>
+            </div>
           </div>
 
           {/* Footer */}
           <div className="pt-6 border-t border-border flex justify-between items-center px-2">
-            <span className="text-muted-foreground font-medium">Don't have your account?</span>
+            <span className="text-muted-foreground font-medium">{t("auth:login.noAccount")}</span>
             <Button onClick={() => navigate("/register")} variant="link" className="text-primary font-bold p-0 text-lg hover:no-underline">
-              Sign up
+              {t("auth:login.signUp")}
             </Button>
           </div>
 

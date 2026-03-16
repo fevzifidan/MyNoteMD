@@ -2,6 +2,8 @@ import React from "react";
 import { Lock, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 interface NoteErrorStateProps {
   title?: string;
@@ -10,11 +12,12 @@ interface NoteErrorStateProps {
 }
 
 export const NoteErrorState = ({
-  title = "Access Denied",
-  message = "This note is not accessible right now, an error occurred or it is private.",
+  title = t("common:error.accessDenied"),
+  message = t("notePreviewPage:error.accessDeniedMessage"),
   showHomeButton = true,
 }: NoteErrorStateProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation("notePreviewPage");
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center animate-in fade-in zoom-in-95 duration-500">
@@ -40,7 +43,7 @@ export const NoteErrorState = ({
           className="rounded-2xl gap-2 font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300"
         >
           <Home className="h-4 w-4" />
-          Ana Sayfaya Dön
+          {t("notePreviewPage:actions.backToHome")}
         </Button>
       )}
     </div>

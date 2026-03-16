@@ -1,0 +1,8 @@
+{
+    "title": "Notu Taşı",
+    "description": "Notu farklı bir koleksiyona taşıyın.",
+    "targetCollection": "Hedef Koleksiyon",
+    "searchPlaceholder": "Koleksiyonları ara...",
+    "noCollectionsFound": "Hiçbir koleksiyon bulunamadı.",
+    "success": "Not başarıyla taşındı!"
+}

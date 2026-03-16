@@ -1,0 +1,37 @@
+{
+  "editor": {
+    "draft": "Draft",
+    "finalVersion": "Final Version",
+    "saving": "Saving...",
+    "unsaved": "Unsaved",
+    "saved": "Saved",
+    "saveAsFinalVersion": "Save as Final Version",
+    "editor": "Editor",
+    "preview": "Preview"
+  },
+  "commandPalette": {
+    "tabs": {
+      "basic": "Basic",
+      "math": "Math",
+      "diagram": "Diagram",
+      "diagramPlaceholder": "Diagram tools coming soon..."
+    }
+  },
+  "basicTab": {
+    "textColor": "Text Color",
+    "highlightColor": "Highlight Color",
+    "hex": "HEX:",
+    "fn": {
+      "indicator": "Indicator",
+      "descriptor": "Descriptor"
+    },
+    "insert": {
+      "label": "Insert",
+      "link": "Link",
+      "imageLink": "Image Link",
+      "code": "Code",
+      "table": "Table"
+    },
+    "clear": "Clear"
+  }
+}

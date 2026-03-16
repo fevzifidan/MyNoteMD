@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { BaseCard } from "@/shared/components/base-card";
 import { NoteActions } from "./note-actions";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface NoteResponseDto {
   id: string;
@@ -18,6 +19,7 @@ interface NoteResponseDto {
 
 export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation(["common", "notePage"]);
 
   const handleViewNote = (noteId: string) => {
     navigate(`/notes/${noteId}`);
@@ -29,7 +31,7 @@ export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
     e.stopPropagation();
     navigator.clipboard.writeText(note.slug);
     setCopied(true);
-    toast.success("Slug copied to clipboard");
+    toast.success(t("notePage:slugCopyied"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -37,10 +39,10 @@ export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
     <div className="flex items-center gap-3">
       {/* Status Badge */}
       <div className="hidden sm:block text-right mr-4">
-        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Status</p>
+        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">{t("common:status.status")}</p>
         <div className="flex items-center gap-1.5 justify-end">
           {note.isPublic ? <Globe className="h-3 w-3 text-blue-500" /> : <Lock className="h-3 w-3 text-amber-500" />}
-          <span className="text-sm font-medium">{note.isPublic ? "Public" : "Private"}</span>
+          <span className="text-sm font-medium">{note.isPublic ? t("common:status.public") : t("common:status.private")}</span>
         </div>
       </div>
 
@@ -53,7 +55,7 @@ export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
       <div className="flex items-center gap-2 mb-1">
         <h3 className="font-bold truncate text-lg max-w-[200px]">{note.title}</h3>
         {note.hasUnpublishedChanges && (
-          <Badge variant="secondary" className="text-[10px] uppercase">Draft</Badge>
+          <Badge variant="secondary" className="text-[10px] uppercase">{t("common:status.draft")}</Badge>
         )}
       </div>
 

@@ -17,11 +17,13 @@ import { Plus, FolderPlus } from "lucide-react";
 import { collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
+  const { t } = useTranslation('collectionActions');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
     setLoading(true);
     try {
       await collectionService.create({ name });
-      notificationService.success("Collection created successfully!");
+      notificationService.success(t('create.successMessage'));
       setOpen(false);
       setName("");
     } catch (error) {
@@ -51,25 +53,25 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
           )}
         >
           <FolderPlus className="h-4 w-4" />
-          <span className="text-sm font-medium flex-1 text-left">Collection</span>
+          <span className="text-sm font-medium flex-1 text-left">{t('create.triggerLabel')}</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Create Collection</DialogTitle>
+            <DialogTitle>{t('create.dialogTitle')}</DialogTitle>
             <DialogDescription>
-              Organize your notes by creating a new collection.
+              {t('create.dialogDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Collection Name</Label>
+              <Label htmlFor="name">{t('create.nameLabel')}</Label>
               <Input
                 id="name"
-                placeholder="e.g. Travel Plans, Work Projects"
+                placeholder={t('create.namePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoFocus
@@ -79,10 +81,10 @@ export function CreateCollectionDialog({ isExpanded }: { isExpanded: boolean }) 
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
-              Cancel
+              {t('create.cancelButton')}
             </Button>
             <Button type="submit" disabled={!name.trim() || loading}>
-              {loading ? "Creating..." : "Create Collection"}
+              {loading ? t('create.creatingButton') : t('create.submitButton')}
             </Button>
           </DialogFooter>
         </form>

@@ -1,0 +1,13 @@
+{
+    "title": "AI Asistanı",
+    "description": "AI Asistanı",
+    "placeholder": "Bir şey sorun...",
+    "send": "Gönder",
+    "clear": "Temizle",
+    "close": "Kapat",
+    "stop": "Durdur",
+    "disclaimer": "AI hatalı bilgiler verebilir. Önemli bilgileri kontrol edin.",
+    "welcome": "Bu koleksiyondaki notlarınız hakkında soru sorabilirsiniz.",
+    "syncing": "Notlar senkronize ediliyor...",
+    "modelLoading": "AI Modeli Yükleniyor..."
+}

@@ -6,6 +6,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface SharedPaginationProps {
   currentPage: number;
@@ -15,13 +16,8 @@ interface SharedPaginationProps {
   disabled?: boolean;
 }
 
-export const SharedPagination = ({
-  currentPage,
-  hasNextPage,
-  onNext,
-  onPrevious,
-  disabled
-}: SharedPaginationProps) => {
+export const SharedPagination = ({ currentPage, hasNextPage, onNext, onPrevious, disabled }: SharedPaginationProps) => {
+  const { t } = useTranslation();
   return (
     <Pagination className="mt-10">
       <PaginationContent className="gap-4">
@@ -33,13 +29,12 @@ export const SharedPagination = ({
             className="gap-1 pl-2.5 rounded-full"
           >
             <PaginationPrevious className="hover:bg-transparent p-0" />
-            <span>Geri</span>
           </Button>
         </PaginationItem>
 
         <PaginationItem>
           <div className="flex h-10 w-24 items-center justify-center rounded-full bg-secondary/50 text-sm font-bold shadow-inner">
-            Sayfa {currentPage}
+            {t("common:info.page")} {currentPage}
           </div>
         </PaginationItem>
 
@@ -50,7 +45,6 @@ export const SharedPagination = ({
             disabled={!hasNextPage || disabled}
             className="gap-1 pr-2.5 rounded-full"
           >
-            <span>İleri</span>
             <PaginationNext className="hover:bg-transparent p-0" />
           </Button>
         </PaginationItem>

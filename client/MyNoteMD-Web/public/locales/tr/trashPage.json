@@ -1,0 +1,14 @@
+{
+    "title": "Çöp Kutusu",
+    "emptyTrash": "Çöp Kutusunu Boşalt",
+    "emptyTrashConfirm": "Çöp kutusunu boşaltmak istediğinizden emin misiniz?",
+    "emptyTrashConfirmDescription": "Bu eylem geri alınamaz.",
+    "emptyTrashConfirmButton": "Çöp Kutusunu Boşalt",
+    "deletePermanently": "Kalıcı Olarak Sil",
+    "restore": "Kurtar",
+    "delete": "Sil",
+    "text": "Silinen notlar ve koleksiyonlar burada görünür.",
+    "notFound": "Çöp kutunuzda hiçbir öğe yok.",
+    "deleteSuccessful": "Başarıyla Silindi!",
+    "restoreSuccessful": "Başarıyla Kurtarıldı!"
+}

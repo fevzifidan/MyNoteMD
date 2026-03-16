@@ -1,6 +1,6 @@
 import React from "react";
 import MarkdownPreview from "../Note/shared/MarkdownPreview";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import apiService from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { TopNav } from "@/features/navbar/top-right-nav";
@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/custom/FloatingSidebar/FloatingSidebar";
 import { NoteErrorState } from "@/shared/components/note-error-state";
 import { Button } from "@/components/ui/button";
 import { History, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
     const { id } = useParams();
@@ -16,7 +17,7 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(false);
     const [contentMode, setContentMode] = React.useState<'draft' | 'published'>('published');
-    const navigate = useNavigate();
+    const { t } = useTranslation();
 
     React.useEffect(() => {
         const fetchNote = async () => {
@@ -64,7 +65,7 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
                                 className="rounded-full gap-2 px-4 shadow-sm"
                             >
                                 <History className="h-4 w-4" />
-                                <span>Draft</span>
+                                <span>{t("common:status.draft")}</span>
                             </Button>
                             <Button
                                 size="sm"
@@ -73,7 +74,7 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
                                 className="rounded-full gap-2 px-4 shadow-sm"
                             >
                                 <CheckCircle2 className="h-4 w-4" />
-                                <span>Final Version</span>
+                                <span>{t("common:status.final")}</span>
                             </Button>
                         </div>
                         <MarkdownPreview markdown={contentMode === 'draft' ? (draftNote || "") : (publishedNote || "")} />

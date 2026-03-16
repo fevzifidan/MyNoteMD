@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { BaseCard } from "@/shared/components/base-card";
 import { CollectionActions } from "./collection-actions";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Note: If types.ts is not found during build, this might need adjustment
 export interface CollectionResponseDto {
@@ -16,12 +17,13 @@ export interface CollectionResponseDto {
 
 export const CollectionCard = ({ collection }: { collection: CollectionResponseDto }) => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation('collectionActions');
 
   const handleViewCollection = (collectionId: string) => {
     navigate(`/collection/notes?collectionId=${collectionId}`);
   };
 
-  const formattedDate = new Intl.DateTimeFormat("tr-TR", {
+  const formattedDate = new Intl.DateTimeFormat(i18n.language, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -39,7 +41,7 @@ export const CollectionCard = ({ collection }: { collection: CollectionResponseD
       <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
         <span className="flex items-center gap-1.5">
           <Badge variant="secondary" className="rounded-md font-bold">
-            {collection.noteCount} Not
+            {t('card.noteCount', { count: collection.noteCount })}
           </Badge>
         </span>
         <span className="flex items-center gap-1 text-xs">

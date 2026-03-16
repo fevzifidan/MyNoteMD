@@ -1,20 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { FileText } from "lucide-react";
 import { noteService, collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue } from "@/components/ui/combobox";
+import { useTranslation } from "react-i18next";
 
-// Combobox'ın tam olarak beklediği tip (senin ülkeler örneğindeki yapı)
+// Type for Combobox
 type ComboboxOption = {
-    code: string;  // Backend'deki ID'yi (Guid) burada tutacağız
-    value: string; // Arama (search) işleminin yapılacağı alan (küçük harf isim)
-    label: string; // Ekranda kullanıcıya gösterilecek alan (orijinal isim)
+    code: string;  // We keep the ID (Guid) from the Backend here
+    value: string; // The field to search in (lowercase name)
+    label: string; // The field to display to the user (original name)
 };
 
 const defaultOption: ComboboxOption = { code: "", value: "", label: "Select a collection" };
@@ -38,6 +37,8 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
     const [collections, setCollections] = useState<ComboboxOption[]>([]);
     const [selectedCollection, setSelectedCollection] = useState<ComboboxOption>(defaultOption);
 
+    const { t } = useTranslation(["moveNoteDialog", "common"]);
+
     useEffect(() => {
         if (open) {
             const fetchCollections = async () => {
@@ -46,15 +47,14 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
                     const response = await collectionService.lookup();
                     const dataArray = Array.isArray(response) ? response : (response.data || []);
 
-                    // VERİ DÖNÜŞÜMÜ (MAPPING) DÜZELTİLDİ
                     const formattedData = dataArray.map((item: any) => {
                         const itemName = item.Name || item.name || "";
                         const itemId = item.Id || item.id || "";
 
                         return {
-                            code: itemId,                    // API'ye göndereceğimiz ID (Örn: 3fa85f64...)
-                            value: itemName.toLowerCase(),   // Search bar'ın filtreleme yapacağı değer
-                            label: itemName                  // Listede görünecek isim
+                            code: itemId,                    // ID to send to API (Örn: 3fa85f64...)
+                            value: itemName.toLowerCase(),   // Value for search bar to filter
+                            label: itemName                  // Label to display
                         };
                     });
 
@@ -67,7 +67,7 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
             };
             fetchCollections();
         } else {
-            // Dialog kapandığında formu sıfırla
+            // Reset the form when the dialog closes
             setSelectedCollection(defaultOption);
         }
     }, [open]);
@@ -76,14 +76,14 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
         e.preventDefault();
 
         if (!selectedCollection.code) {
-            notificationService.error("Please select a collection.");
+            notificationService.error(t("moveNoteDialog:noCollectionsFound"));
             return;
         }
 
         setLoading(true);
         try {
             await noteService.move(noteId, selectedCollection.code);
-            notificationService.success("Note moved successfully!");
+            notificationService.success(t("moveNoteDialog:success"));
             setOpen(false);
         } catch (error) {
 
@@ -110,17 +110,17 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
             >
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle>Move Note</DialogTitle>
-                        <DialogDescription>Move the note to a different collection.</DialogDescription>
+                        <DialogTitle>{t("moveNoteDialog:title")}</DialogTitle>
+                        <DialogDescription>{t("moveNoteDialog:description")}</DialogDescription>
                     </DialogHeader>
 
                     <div className="grid gap-6 py-6">
                         <div className="space-y-2 flex flex-col">
-                            <Label>Target Collection</Label>
+                            <Label>{t("moveNoteDialog:targetCollection")}</Label>
                             <Combobox
                                 items={collections}
                                 value={selectedCollection}
-                                onValueChange={setSelectedCollection}
+                                onValueChange={(value) => setSelectedCollection(value ?? defaultOption)}
                                 disabled={fetchingCollections}
                             >
                                 <ComboboxTrigger
@@ -132,8 +132,8 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
                                 />
                                 {/* z-index eklendi: Dialog overlay'inin altında kalıp tıklanmayı engellememesi için */}
                                 <ComboboxContent className="z-[9999]">
-                                    <ComboboxInput showTrigger={false} placeholder="Search collections..." />
-                                    <ComboboxEmpty>No collections found.</ComboboxEmpty>
+                                    <ComboboxInput showTrigger={false} placeholder={t("moveNoteDialog:searchPlaceholder")} />
+                                    <ComboboxEmpty>{t("moveNoteDialog:noCollectionsFound")}</ComboboxEmpty>
                                     <ComboboxList>
                                         {(item) => (
                                             <ComboboxItem key={item.code} value={item}>
@@ -147,9 +147,9 @@ export function MoveNoteDialog({ noteId, isExpanded = true, trigger, open: contr
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>Cancel</Button>
+                        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>{t("common:actions.cancel")}</Button>
                         <Button type="submit" disabled={!selectedCollection.code || loading}>
-                            {loading ? "Moving..." : "Move Note"}
+                            {loading ? t("common:status.moving") : t("common:actions.save")}
                         </Button>
                     </DialogFooter>
                 </form>

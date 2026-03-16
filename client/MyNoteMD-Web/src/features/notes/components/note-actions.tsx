@@ -16,6 +16,7 @@ import { noteService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { MoveNoteDialog } from "./move-not-dialog";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface NoteActionsProps {
   initialIsPublic: boolean;
@@ -27,6 +28,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useTranslation(["common", "noteActions"]);
 
   const confirm = useConfirm();
   const navigate = useNavigate();
@@ -36,19 +38,19 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
 
     try {
       const ok = await confirm.confirm({
-        title: "Save Draft as Final",
-        description: "Are you sure you want to save this draft as final?",
-        confirmText: "Yes",
+        title: t("noteActions:handlePublishDraft.title"),
+        description: t("noteActions:handlePublishDraft.description"),
+        confirmText: t("common:actions.yes"),
         variant: "destructive",
         size: "sm",
         icon: <Pencil />,
         iconSize: "md",
-        dontAskAgain: { id: "save-draft-as-final", label: "Don't ask this again" }
+        dontAskAgain: { id: "save-draft-as-final", label: t("common:choices.doNotAskAgain") }
       });
 
       if (ok) {
         await noteService.publish(noteId);
-        notificationService.info("Draft saved as final successfully.");
+        notificationService.info(t("noteActions:handlePublishDraft.successful"));
       }
     } catch (error) {
 
@@ -62,20 +64,20 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
 
     try {
       const ok = await confirm.confirm({
-        title: "Erişimi Güncelle",
-        description: `Bu notun erişimini ${checked ? "Public" : "Private"} olarak güncellemek üzeresiniz. Emin misiniz?`,
-        confirmText: "Evet",
+        title: t("noteActions:handleAccessChange.title"),
+        description: t("noteActions:handleAccessChange.description"),
+        confirmText: t("common:actions.yes"),
         variant: "destructive",
         size: "sm",
         icon: <ShieldCheck />,
         iconSize: "md",
-        dontAskAgain: { id: "update-access-note", label: "Bu uyarıyı bir daha gösterme" }
+        dontAskAgain: { id: "update-access-note", label: t("common:choices.doNotAskAgain") }
       });
 
       if (ok) {
         await noteService.toggleVisibility(noteId);
         setIsPublic(checked);
-        notificationService.info("Accessibility updated successfully.");
+        notificationService.info(t("noteActions:handleAccessChange.successful"));
       }
     } catch (error) {
 
@@ -89,19 +91,19 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
 
     try {
       const ok = await confirm.confirm({
-        title: "Delete Note",
-        description: "Are you sure you want to delete this note?",
-        confirmText: "Yes",
+        title: t("noteActions:handleDelete.title"),
+        description: t("noteActions:handleDelete.description"),
+        confirmText: t("common:actions.yes"),
         variant: "destructive",
         size: "sm",
         icon: <Trash2 />,
         iconSize: "md",
-        dontAskAgain: { id: "delete-note", label: "Don't ask this again" }
+        dontAskAgain: { id: "delete-note", label: t("common:choices.doNotAskAgain") }
       });
 
       if (ok) {
         await noteService.delete(noteId);
-        notificationService.info("Note deleted successfully.");
+        notificationService.info(t("noteActions:handleDelete.successful"));
       }
     } catch (error) {
 
@@ -131,21 +133,21 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
             className="gap-3 py-2.5 cursor-pointer rounded-lg"
             onClick={() => navigate(`/notes/${noteId}`)}>
             <Eye className="h-4 w-4 opacity-70" />
-            <span className="font-medium text-sm">Oku</span>
+            <span className="font-medium text-sm">{t("noteActions:read")}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             className="gap-3 py-2.5 cursor-pointer rounded-lg"
             onClick={() => navigate(`/edit/${noteId}`)}>
             <Pencil className="h-4 w-4 opacity-70" />
-            <span className="font-medium text-sm">Düzenle</span>
+            <span className="font-medium text-sm">{t("noteActions:edit")}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             className="gap-3 py-2.5 cursor-pointer rounded-lg"
             onClick={() => handlePublishDraft()}>
             <Save className="h-4 w-4 opacity-70" />
-            <span className="font-medium text-sm">Save Draft as Final</span>
+            <span className="font-medium text-sm">{t("noteActions:saveAsFinal")}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
@@ -153,25 +155,25 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
             onClick={() => setIsMoveDialogOpen(true)}
           >
             <Package className="h-4 w-4 opacity-70" />
-            <span className="font-medium text-sm">Move</span>
+            <span className="font-medium text-sm">{t("noteActions:move")}</span>
           </DropdownMenuItem>
 
-          {/* ACCESS SWITCH ALANI */}
+          {/* ACCESS SWITCH AREA */}
           <div
             className="flex items-center justify-between px-2 py-2.5"
-            // Dropdown'ın Switch'e tıklandığında kapanmasını engeller
+            // Prevent Dropdown from closing when Switch is clicked
             onSelect={(e) => e.preventDefault()}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3">
               <ShieldCheck className={isPublic ? "h-4 w-4 text-blue-500" : "h-4 w-4 opacity-70"} />
-              <span className="font-medium text-sm">Access</span>
+              <span className="font-medium text-sm">{t("noteActions:access")}</span>
             </div>
 
             <Switch
               checked={isPublic}
               disabled={isUpdating}
-              // onCheckedChange bize direkt yeni boolean değeri verir
+              // onCheckedChange gives us the new boolean value directly
               onCheckedChange={handleAccessChange}
               className="scale-75 origin-right"
             />
@@ -183,7 +185,7 @@ export const NoteActions = ({ initialIsPublic, noteId }: NoteActionsProps) => {
             className="gap-3 py-2.5 cursor-pointer rounded-lg text-destructive focus:text-destructive focus:bg-destructive/10"
             onClick={handleDelete}>
             <Trash2 className="h-4 w-4" />
-            <span className="font-bold text-sm">Sil</span>
+            <span className="font-bold text-sm">{t("noteActions:delete")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

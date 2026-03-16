@@ -1,12 +1,12 @@
 import * as yup from "yup";
 
-export const loginSchema = yup.object({
+export const getLoginSchema = (t: any) => yup.object({
   identifier: yup
     .string()
-    .required("Email is required")
-    .email("Email should be in a valid format"),
+    .required(t("auth:validation.emailRequired"))
+    .email(t("auth:validation.emailInvalid")),
   password: yup
     .string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    .required(t("auth:validation.passwordRequired"))
+    .min(8, t("auth:validation.password")),
 }).required();

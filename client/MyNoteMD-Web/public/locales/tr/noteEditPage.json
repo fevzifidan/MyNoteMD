@@ -1,0 +1,37 @@
+{
+  "editor": {
+    "draft": "Taslak",
+    "finalVersion": "Son Sürüm",
+    "saving": "Kaydediliyor...",
+    "unsaved": "Kaydedilmedi",
+    "saved": "Kaydedildi",
+    "saveAsFinalVersion": "Son Sürüm Olarak Kaydet",
+    "editor": "Düzenleyici",
+    "preview": "Önizleme"
+  },
+  "commandPalette": {
+    "tabs": {
+      "basic": "Temel",
+      "math": "Matematik",
+      "diagram": "Diyagram",
+      "diagramPlaceholder": "Diyagram araçları buraya gelecek..."
+    }
+  },
+  "basicTab": {
+    "textColor": "Metin Rengi",
+    "highlightColor": "Vurgu Rengi",
+    "hex": "HEX:",
+    "fn": {
+      "indicator": "Gösterge",
+      "descriptor": "Tanımlayıcı"
+    },
+    "insert": {
+      "label": "Ekle",
+      "link": "Bağlantı",
+      "imageLink": "Görsel Bağlantı",
+      "code": "Kod",
+      "table": "Tablo"
+    },
+    "clear": "Temizle"
+  }
+}

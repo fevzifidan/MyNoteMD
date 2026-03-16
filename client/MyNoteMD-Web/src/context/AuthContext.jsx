@@ -1,14 +1,32 @@
 // src/context/AuthContext.js
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import apiService from "@/shared/services/api";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // 1. Uygulama ilk açıldığında token'ı kontrol et
+  // Clear auth state without calling API
+  /**
+   * Active user session information is cleared.
+   */
+  const clearAuth = useCallback(() => {
+    localStorage.removeItem("token");
+    setUser(null);
+  }, []);
+
+  useEffect(() => {
+    apiService.setUnauthorizedCallback(() => {
+      clearAuth();
+      navigate("/login");
+    });
+  }, [clearAuth, navigate]);
+
+  // Check token when application first opens
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
@@ -28,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  // 2. Login Fonksiyonu
+  // Login Function
   const login = async (credentials) => {
     // credentials = { email, password }
     const response = await apiService.post("/auth/login", credentials);
@@ -42,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
-  // 3. Logout Fonksiyonu
+  // Logout Function
   const logout = async () => {
     try {
       await apiService.post("/auth/logout");
@@ -52,12 +70,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
       setUser(null);
     }
-  };
-
-  // 4. Local state'i temizle (API çağrısı yapmadan)
-  const clearAuth = () => {
-    localStorage.removeItem("token");
-    setUser(null);
   };
 
   return (

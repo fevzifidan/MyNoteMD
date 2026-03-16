@@ -1,0 +1,8 @@
+{
+    "title": "Move Note",
+    "description": "Move the note to a different collection.",
+    "targetCollection": "Target Collection",
+    "searchPlaceholder": "Search collections...",
+    "noCollectionsFound": "No collections found.",
+    "success": "Note moved successfully!"
+}

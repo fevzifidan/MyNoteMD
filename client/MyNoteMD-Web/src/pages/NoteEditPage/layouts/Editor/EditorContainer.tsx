@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Eye, Edit3, Save, CheckCircle2, History, Cloud, CloudOff, Loader2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 const EditorContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation('noteEditPage');
   const {
     markdown,
     setMarkdown,
@@ -62,7 +64,7 @@ const EditorContainer: React.FC = () => {
             className="rounded-full gap-2 px-4 shadow-sm"
           >
             <History className="h-4 w-4" />
-            <span>Draft</span>
+            <span>{t('editor.draft')}</span>
           </Button>
           <Button
             size="sm"
@@ -71,7 +73,7 @@ const EditorContainer: React.FC = () => {
             className="rounded-full gap-2 px-4 shadow-sm"
           >
             <CheckCircle2 className="h-4 w-4" />
-            <span>Final Version</span>
+            <span>{t('editor.finalVersion')}</span>
           </Button>
         </div>
 
@@ -95,7 +97,7 @@ const EditorContainer: React.FC = () => {
                 <Cloud className="h-4 w-4 text-green-500" />
               )}
               <span className="hidden sm:inline">
-                {isSavingDraft ? 'Saving...' : hasUnsavedDraftChanges ? 'Unsaved' : 'Saved'}
+                {isSavingDraft ? t('editor.saving') : hasUnsavedDraftChanges ? t('editor.unsaved') : t('editor.saved')}
               </span>
             </Button>
           )}
@@ -109,7 +111,7 @@ const EditorContainer: React.FC = () => {
               className="rounded-full gap-2 px-4 shadow-sm bg-green-600 hover:bg-green-700 text-white"
             >
               <Save className="h-4 w-4" />
-              <span>Save as Final Version</span>
+              <span>{t('editor.saveAsFinalVersion')}</span>
             </Button>
           )}
 
@@ -123,7 +125,7 @@ const EditorContainer: React.FC = () => {
             className="rounded-full gap-2 px-4 shadow-sm"
           >
             <Edit3 className="h-4 w-4" />
-            <span>Editor</span>
+            <span>{t('editor.editor')}</span>
           </Button>
           <Button
             size="sm"
@@ -132,7 +134,7 @@ const EditorContainer: React.FC = () => {
             className="rounded-full gap-2 px-4 shadow-sm"
           >
             <Eye className="h-4 w-4" />
-            <span>Preview</span>
+            <span>{t('editor.preview')}</span>
           </Button>
         </div>
       </div>

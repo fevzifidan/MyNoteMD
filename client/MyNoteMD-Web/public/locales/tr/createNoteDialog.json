@@ -1,0 +1,9 @@
+{
+    "note": "Not",
+    "title": "Not Oluştur",
+    "description": "Yeni bir not oluştur.",
+    "collection": "Koleksiyon",
+    "searchPlaceholder": "Koleksiyonları ara...",
+    "noCollectionsFound": "Hiçbir koleksiyon bulunamadı.",
+    "success": "Not başarıyla oluşturuldu!"
+}

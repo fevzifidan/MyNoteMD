@@ -8,18 +8,20 @@ import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 export default function CollectionsPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("q") || ""; // DashboardLayout içindeki GlobalSearch burayı tetikler
+  const query = searchParams.get("q") || "";
 
-  // State Yönetimi
+  // States
   const [collections, setCollections] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Önceki sayfalara dönebilmek için cursor geçmişi
+  // Cursor history for returning to previous pages
   const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]);
 
   const fetchCollections = useCallback(async (cursor: string | null, isNewSearch: boolean = false) => {
@@ -44,12 +46,12 @@ export default function CollectionsPage() {
     }
   }, [query]);
 
-  // Arama terimi (URL'deki ?q=) değiştiğinde listeyi sıfırla ve baştan getir
+  // Reset the list and fetch from the beginning when the search term (URL's ?q=) changes
   useEffect(() => {
     fetchCollections(null, true);
   }, [query, fetchCollections]);
 
-  // Sayfalama Fonksiyonları
+  // Pagination Functions
   const handleNext = () => {
     if (nextCursor) {
       setCursorStack((prev) => [...prev, nextCursor]);
@@ -74,10 +76,9 @@ export default function CollectionsPage() {
     <DashboardLayout>
       <div className="flex flex-col min-h-[400px]">
 
-        {/* Giriş Bilgisi (Opsiyonel - DashboardLayout'taki başlığın altına ek bilgi) */}
         {!query && collections.length > 0 && (
           <p className="text-muted-foreground text-lg mb-8 -mt-8 animate-in fade-in slide-in-from-top-2">
-            Notlarınızı tematik klasörlerle organize edin.
+            {t("collectionPage:description")}
           </p>
         )}
 
@@ -106,7 +107,7 @@ export default function CollectionsPage() {
                 </p>
                 {!query && (
                   <Button variant="link" className="mt-2 font-bold text-primary hover:no-underline text-lg">
-                    Yeni bir tane oluşturun
+                    {t("collectionPage:createCollection")}
                   </Button>
                 )}
               </div>

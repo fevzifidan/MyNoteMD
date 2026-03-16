@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
           if (unauthorizedCallback) {
             unauthorizedCallback();
           } else {
-            localStorage.removeItem('token');
+            localStorage.removeItem("token");
             if (navigateFn) navigateFn('/login');
           }
           notificationService.error(backendMessage || i18n.t("apiService:error.unauthorized"));
@@ -79,15 +79,15 @@ apiClient.interceptors.response.use(
 // 4. Metotları Dışarı Açma
 export const apiService = {
   get: <T = any>(url: string, config = {}) => apiClient.get<any, T>(url, config),
-  
+
   post: <T = any>(url: string, data?: any, config = {}) => apiClient.post<any, T>(url, data, config),
-  
+
   put: <T = any>(url: string, data?: any, config = {}) => apiClient.put<any, T>(url, data, config),
-  
+
   delete: <T = any>(url: string, config = {}) => apiClient.delete<any, T>(url, config),
 
   patch: <T = any>(url: string, data?: any, config = {}) => apiClient.patch<any, T>(url, data, config),
-  
+
   client: apiClient,
 
   setNavigate: (fn: (path: string) => void) => {

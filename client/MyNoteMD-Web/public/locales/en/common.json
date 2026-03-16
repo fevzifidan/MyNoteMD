@@ -1,5 +1,5 @@
 {
-  "brand": "CoLDAT",
+  "brand": "MyNoteMD",
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
@@ -10,19 +10,37 @@
     "yes": "Yes",
     "no": "No",
     "close": "Close",
-    "create": "Create"
+    "create": "Create",
+    "add": "Add",
+    "new": "New",
+    "showMore": "Show More",
+    "ok": "Ok",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "language": "Language",
+    "nextPage": "Next",
+    "previousPage": "Previous"
   },
   "status": {
+    "status": "Status",
     "loading": "Loading...",
     "success": "Successful!",
     "error": "An error occurred!",
     "server_error": "Server error!",
     "deleting": "Deleting...",
     "updating": "Updating...",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "public": "Public",
+    "private": "Private",
+    "draft": "Draft",
+    "final": "Final Version",
+    "moving": "Moving..."
   },
   "error": {
-    "err_reach_server": "Could not reach server!"
+    "err_reach_server": "Could not reach server!",
+    "fill_all_fields": "Please fill in all fields!",
+    "accessDenied": "Access Denied"
   },
   "theme": {
     "header": "Change Theme",
@@ -30,5 +48,12 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "choices": {
+    "doNotAskAgain": "Do not ask again"
+  },
+  "info": {
+    "lastUpdated": "Last Updated",
+    "page": "Page"
   }
 }

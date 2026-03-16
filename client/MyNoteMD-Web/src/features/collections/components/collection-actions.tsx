@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import notificationService from "@/shared/services/notification";
 import { collectionService } from "@/shared/services/api";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 interface CollectionActionsProps {
   collectionId: string;
@@ -24,6 +25,7 @@ interface CollectionActionsProps {
 
 export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('collectionActions');
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
@@ -31,7 +33,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
 
   const confirm = useConfirm();
 
-  const handleView = async (e: React.MouseEvent): Promise<void> => {
+  const handleView = async (): Promise<void> => {
     navigate(`/collection/notes?collectionId=${collectionId}`);
   }
 
@@ -40,19 +42,19 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
 
     try {
       const ok = await confirm.confirm({
-        title: "Delete Collection",
-        description: "Are you sure you want to delete this collection and all its notes?",
-        confirmText: "Yes",
+        title: t('delete.title'),
+        description: t('delete.description'),
+        confirmText: t('delete.confirmText'),
         variant: "destructive",
         size: "sm",
         icon: <Trash2 />,
         iconSize: "md",
-        dontAskAgain: { id: "delete-collection", label: "Don't ask this again" }
+        dontAskAgain: { id: "delete-collection", label: t('delete.dontAskAgain') }
       });
 
       if (ok) {
         await collectionService.delete(collectionId);
-        notificationService.info("Collection deleted successfully.");
+        notificationService.info(t('delete.successMessage'));
       }
     } catch (error) {
 
@@ -66,7 +68,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
 
     try {
       await collectionService.update(collectionId, { name: newName });
-      notificationService.info("Collection name updated successfully.");
+      notificationService.info(t('rename.successMessage'));
     } catch (error) {
 
     } finally {
@@ -101,14 +103,14 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
             onClick={handleView}
             className="gap-3 py-2.5 cursor-pointer rounded-lg">
             <Eye className="h-4 w-4 opacity-70" />
-            <span className="font-medium text-sm">Koleksiyonu Aç</span>
+            <span className="font-medium text-sm">{t('actions.open')}</span>
           </DropdownMenuItem>
 
           <DropdownMenuItem
             onClick={handleNameUpdate}
             className="gap-3 py-2.5 cursor-pointer rounded-lg">
             <Pencil className="h-4 w-4 opacity-70" />
-            <span className="font-medium text-sm">Yeniden Adlandır</span>
+            <span className="font-medium text-sm">{t('actions.rename')}</span>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className="my-2" />
@@ -117,7 +119,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
             onClick={handleDelete}
             className="gap-3 py-2.5 cursor-pointer rounded-lg text-destructive focus:text-destructive focus:bg-destructive/10">
             <Trash2 className="h-4 w-4" />
-            <span className="font-bold text-sm">Sil</span>
+            <span className="font-bold text-sm">{t('actions.delete')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -125,17 +127,17 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
       <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update Collection Name</DialogTitle>
+            <DialogTitle>{t('rename.dialogTitle')}</DialogTitle>
             <DialogDescription>
-              Enter a new name for this collection.
+              {t('rename.dialogDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-6">
             <div className="space-y-2">
-              <Label htmlFor="name">New Collection Name</Label>
+              <Label htmlFor="name">{t('rename.nameLabel')}</Label>
               <Input
                 id="name"
-                placeholder="e.g. Travel Plans, Work Projects"
+                placeholder={t('rename.namePlaceholder')}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 autoFocus
@@ -150,7 +152,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">{t('rename.cancelButton')}</Button>
             </DialogClose>
             <Button
               disabled={isUpdating || !newName.trim()}
@@ -159,7 +161,7 @@ export const CollectionActions = ({ collectionId }: CollectionActionsProps) => {
                 setIsRenameOpen(false);
               }}
             >
-              Update
+              {t('rename.updateButton')}
             </Button>
           </DialogFooter>
         </DialogContent>
