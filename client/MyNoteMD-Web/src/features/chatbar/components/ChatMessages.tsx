@@ -21,7 +21,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isLoading,
     }, [messages, isLoading, isSyncing]);
 
     return (
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-4 min-h-0">
             <div className="space-y-4">
                 {messages.length === 0 && !isSyncing && (
                     <div className="text-center py-10 text-muted-foreground text-sm">
@@ -72,7 +72,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isLoading,
                     </div>
                 ))}
 
-                {isLoading && messages[messages.length - 1]?.role !== "ai" && (
+                {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
                     <div className="flex justify-start">
                         <div className="bg-muted p-3 rounded-2xl rounded-tl-none">
                             <span className="flex gap-1">

@@ -151,7 +151,7 @@ try
 
     app.UseExceptionHandler();
 
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
 
     app.UseRouting();
 

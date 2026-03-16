@@ -4,7 +4,7 @@ import { searchRelevantNotes } from "@/shared/services/ai/services/search.servic
 import type { ChatRequest } from "@/shared/services/ai/types";
 
 export interface Message {
-    role: "user" | "ai";
+    role: "user" | "assistant";
     content: string;
 }
 
@@ -25,7 +25,7 @@ export function useChat(collectionId: string | null) {
                     setModelLoading({ active: false, progress: 100, text: "Hazır" });
                     setMessages((prev) => {
                         const lastMessage = prev[prev.length - 1];
-                        if (lastMessage && lastMessage.role === "ai") {
+                        if (lastMessage && lastMessage.role === "assistant") {
                             const newMessages = [...prev];
                             newMessages[newMessages.length - 1] = {
                                 ...lastMessage,
@@ -33,12 +33,12 @@ export function useChat(collectionId: string | null) {
                             };
                             return newMessages;
                         }
-                        return [...prev, { role: "ai", content }];
+                        return [...prev, { role: "assistant", content }];
                     });
                 } else if (type === "ERROR") {
                     setModelLoading({ active: false, progress: 0, text: "" });
                     setIsLoading(false);
-                    setMessages((prev) => [...prev, { role: "ai", content: `❌ **Hata:** ${message || "AI servisi başlatılamadı."}` }]);
+                    setMessages((prev) => [...prev, { role: "assistant", content: `❌ **Hata:** ${message || "AI servisi başlatılamadı."}` }]);
                 } else if (type === "DONE") {
                     setIsLoading(false);
                 }
@@ -77,7 +77,7 @@ export function useChat(collectionId: string | null) {
                     setModelLoading({ active: false, progress: 100, text: "Hazır" });
                     setMessages((prev) => {
                         const lastMessage = prev[prev.length - 1];
-                        if (lastMessage && lastMessage.role === "ai") {
+                        if (lastMessage && lastMessage.role === "assistant") {
                             const newMessages = [...prev];
                             newMessages[newMessages.length - 1] = {
                                 ...lastMessage,
@@ -85,12 +85,12 @@ export function useChat(collectionId: string | null) {
                             };
                             return newMessages;
                         }
-                        return [...prev, { role: "ai", content }];
+                        return [...prev, { role: "assistant", content }];
                     });
                 } else if (type === "ERROR") {
                     setModelLoading({ active: false, progress: 0, text: "" });
                     setIsLoading(false);
-                    setMessages((prev) => [...prev, { role: "ai", content: `❌ **Hata:** ${message || "AI servisi başlatılamadı."}` }]);
+                    setMessages((prev) => [...prev, { role: "assistant", content: `❌ **Hata:** ${message || "AI servisi başlatılamadı."}` }]);
                 } else if (type === "DONE") {
                     setIsLoading(false);
                 }
@@ -125,17 +125,19 @@ export function useChat(collectionId: string | null) {
             workerRef.current?.postMessage({
                 type: "GENERATE_CHAT",
                 question,
-                context
+                context,
+                history: messages // En son halini yakalamak için useCallback dependency'ye messages ekledim
             } as ChatRequest);
 
         } catch (error) {
             console.error("Chat hatası:", error);
-            setMessages((prev) => [...prev, { role: "ai", content: "Bir hata oluştu. Lütfen tekrar deneyin." }]);
+            setMessages((prev) => [...prev, { role: "assistant", content: "Bir hata oluştu. Lütfen tekrar deneyin." }]);
         } finally {
             setIsLoading(false);
             setIsSyncing(false);
         }
-    }, [collectionId, isLoading, stopChat]);
+    }, [collectionId, isLoading, messages, stopChat]);
+
 
     const clearMessages = () => setMessages([]);
 

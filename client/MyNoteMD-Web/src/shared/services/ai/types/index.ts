@@ -20,7 +20,9 @@ export type ChatRequest = {
     type: 'GENERATE_CHAT';
     question: string;
     context: string[]; // Note chunks sent for RAG
+    history?: ChatMessage[];
 };
+
 
 export type ChatResponse =
     | { type: 'CHUNK'; content: string }

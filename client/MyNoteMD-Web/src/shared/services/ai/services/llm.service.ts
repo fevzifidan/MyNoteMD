@@ -1,61 +1,117 @@
-import * as webllm from "@mlc-ai/web-llm";
+import { pipeline, env, TextStreamer } from "@huggingface/transformers";
 import type { ChatRequest } from "../types";
 
-let engine: webllm.MLCEngine | null = null;
+// Transformers.js environment configuration
+env.allowLocalModels = false;
+env.useBrowserCache = true;
+
+let generator: any = null;
+let initPromise: Promise<void> | null = null;
+
+// configuration from environment variables
+const MODEL_ID = import.meta.env.VITE_AI_MODEL_ID || "onnx-community/Qwen2.5-1.5B-Instruct";
+const DTYPE = import.meta.env.VITE_AI_DTYPE || 'q8';
+const MAX_NEW_TOKENS = Number(import.meta.env.VITE_AI_MAX_NEW_TOKENS) || 25;
+const TEMPERATURE = Number(import.meta.env.VITE_AI_TEMPERATURE) || 0.1;
+const REPETITION_PENALTY = Number(import.meta.env.VITE_AI_REPETITION_PENALTY) || 1.1;
+const DEVICE = import.meta.env.VITE_AI_DEVICE || 'wasm';
+const DO_SAMPLE = Boolean(import.meta.env.VITE_AI_DO_SAMPLE) || false;
+const TOP_K = Number(import.meta.env.VITE_AI_TOP_K) || 40;
+const VITE_AI_SYSTEM_PROMPT = import.meta.env.VITE_AI_SYSTEM_PROMPT || '';
 
 const initEngine = async () => {
-    if (engine) return;
-
-    // GPU Kontrolü
-    if (!(navigator as any).gpu) {
-        throw new Error("Tarayıcınız WebGPU'yu desteklemiyor veya devre dışı. Lütfen Chrome/Edge gibi güncel bir tarayıcı kullanın ve ayarlarınızdan 'Donanım Hızlandırma'nın açık olduğundan emin olun.");
+    if (generator) return;
+    if (initPromise) {
+        return initPromise;
     }
 
-    try {
-        engine = new webllm.MLCEngine();
-        engine.setInitProgressCallback((report) => {
-            self.postMessage({ type: 'PROGRESS', progress: report.progress, text: report.text });
-        });
-        // Phi-3-mini'yi tarayıcıya indirip yükle
-        await engine.reload("Phi-3-mini-4k-instruct-q4f16_1-MLC");
-    } catch (error: any) {
-        console.error("GPU Başlatma Hatası:", error);
-        if (error.message?.includes("compatible GPU")) {
-            throw new Error("Uyumlu bir GPU bulunamadı. WebLLM için modern bir ekran kartı gereklidir. chrome://gpu sayfasındaki WebGPU durumunu kontrol edin.");
+    initPromise = (async () => {
+        try {
+            generator = await pipeline('text-generation', MODEL_ID, {
+                dtype: DTYPE,
+                device: DEVICE,
+                progress_callback: (report: any) => {
+                    if (report.status === 'progress') {
+                        const progress = report.progress / 100;
+                        const text = report.file ? `İndiriliyor: ${report.file}` : report.status;
+                        self.postMessage({ type: 'PROGRESS', progress, text });
+                    } else if (report.status === 'done') {
+                        self.postMessage({ type: 'PROGRESS', progress: 1, text: "Yüklendi" });
+                    }
+                }
+            });
+        } catch (error: any) {
+            console.error("Transformers.js Başlatma Hatası:", error);
+            initPromise = null;
+            throw error;
         }
-        throw error;
-    }
+    })();
+
+    return initPromise;
 };
 
 self.onmessage = async (event: MessageEvent<ChatRequest>) => {
     if (event.data.type === 'GENERATE_CHAT') {
         const { question, context } = event.data;
-        
+
         try {
             await initEngine();
 
-            // RAG Prompt Mühendisliği
-            const prompt = `Aşağıdaki notları kullanarak soruyu cevapla. Notlarda cevap yoksa uydurma ve "Notlarınızda bu konuda bilgi bulamadım" de.
-            
-            NOTLAR:
-            ${context.join('\n---\n')}
-            
-            SORU: ${question}`;
+            // 1. System Message: Focus on "finding" rather than "rejecting"
+            const systemMessage = {
+                role: "system",
+                content: VITE_AI_SYSTEM_PROMPT
+            };
 
-            const asyncGenerator = await engine!.chat.completions.create({
-                messages: [{ role: "user", content: prompt }],
-                stream: true,
+            // 2. User Message: Structural Clarity
+            const userMessage = {
+                role: "user",
+                content: `I have provided my notes below between [START] and [END] tags. 
+    Please analyze them and answer the question.
+ 
+[START OF NOTES]
+${context.join('\n---\n')}
+[END OF NOTES]
+
+Question: ${question}
+Answer:`
+            };
+
+            // 3. Build the array (Try testing without history first to isolate the issue)
+            const messages = [systemMessage, userMessage];
+
+            // Add history if available (limit to last 4 messages to save context)
+            if (event.data.history && event.data.history.length > 0) {
+                messages.push(...event.data.history.slice(-4));
+            }
+
+            const prompt = generator.tokenizer.apply_chat_template(messages, {
+                tokenize: false,
+                add_generation_prompt: true,
             });
 
-            for await (const chunk of asyncGenerator) {
-                const content = chunk.choices[0].delta.content;
-                if (content) {
-                    self.postMessage({ type: 'CHUNK', content });
+            const streamer = new TextStreamer(generator.tokenizer, {
+                skip_prompt: true,
+                callback_function: (text: string) => {
+                    if (text) {
+                        self.postMessage({ type: 'CHUNK', content: text });
+                    }
                 }
-            }
+            });
+
+            await generator(prompt, {
+                max_new_tokens: MAX_NEW_TOKENS,
+                streamer,
+                temperature: TEMPERATURE,
+                repetition_penalty: REPETITION_PENALTY,
+                do_sample: DO_SAMPLE,
+                top_k: TOP_K,
+            });
+
             self.postMessage({ type: 'DONE' });
         } catch (error: any) {
-            self.postMessage({ type: 'ERROR', message: error.message || "Bilinmeyen bir AI hatası oluştu." });
+            console.error("LLM Service Hatası:", error);
+            self.postMessage({ type: 'ERROR', message: error });
         }
     }
 };

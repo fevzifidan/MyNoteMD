@@ -5,6 +5,9 @@ import { type EmbeddingRequest, type EmbeddingResponse, type EmbeddingError } fr
 // Define model globally
 let pipe: any = null;
 
+// configuration from environment variables
+const EMBEDDING_MODEL_ID = import.meta.env.VITE_AI_EMBEDDING_MODEL_ID || "Xenova/all-MiniLM-L6-v2";
+
 const workerScope = self as unknown as DedicatedWorkerGlobalScope;
 
 self.onmessage = async (event: MessageEvent<EmbeddingRequest>) => {
@@ -14,7 +17,9 @@ self.onmessage = async (event: MessageEvent<EmbeddingRequest>) => {
         try {
             // Load model if not loaded
             if (!pipe) {
-                pipe = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+                pipe = await pipeline("feature-extraction", EMBEDDING_MODEL_ID, {
+                    device: 'wasm'
+                });
             }
             const output = await pipe(content, { pooling: 'mean', normalize: true });
             const vector = output.data as Float32Array;
