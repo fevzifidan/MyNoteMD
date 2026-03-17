@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export const useNotePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]); // İlk sayfa cursor'ı null'dır
+  const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]); // First page cursor is null
 
   const handleNextPage = (nextCursor: string) => {
     setCursorStack((prev) => [...prev, nextCursor]);

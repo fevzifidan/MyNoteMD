@@ -82,7 +82,7 @@ export default function CollectionsPage() {
           </p>
         )}
 
-        {/* Loading / Content Bölümü */}
+        {/* Loading / Content Section */}
         {loading && collections.length === 0 ? (
           <div className="grid grid-cols-1 gap-4">
             {[1, 2, 3].map((i) => (
@@ -92,14 +92,14 @@ export default function CollectionsPage() {
         ) : (
           <div className={loading ? "opacity-40 pointer-events-none transition-opacity" : "transition-opacity"}>
 
-            {/* Koleksiyon Listesi */}
+            {/* Collection List */}
             <div className="grid grid-cols-1 gap-4">
               {collections.map((item) => (
                 <CollectionCard key={item.id} collection={item} />
               ))}
             </div>
 
-            {/* Boş Durum (Empty State) */}
+            {/* Empty State */}
             {!loading && collections.length === 0 && (
               <div className="text-center py-32 border-2 border-dashed rounded-[3rem] border-muted/40 bg-card/30">
                 <p className="text-muted-foreground font-medium text-lg">
@@ -115,7 +115,7 @@ export default function CollectionsPage() {
           </div>
         )}
 
-        {/* Pagination - Sadece veri varsa göster */}
+        {/* Pagination - Show only if there is data */}
         {collections.length > 0 && (
           <div className="mt-12 mb-20">
             <SharedPagination

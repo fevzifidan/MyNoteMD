@@ -5,7 +5,7 @@ import i18n from "@/i18n";
 let navigateFn: ((path: string) => void) | null = null;
 let unauthorizedCallback: (() => void) | null = null;
 
-// 1. Axios Instance Oluşturma
+// 1. Create Axios Instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000, // 10 seconds timeout,
@@ -76,7 +76,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-// 4. Metotları Dışarı Açma
+// 4. Export Methods
 export const apiService = {
   get: <T = any>(url: string, config = {}) => apiClient.get<any, T>(url, config),
 

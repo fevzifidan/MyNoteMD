@@ -36,12 +36,12 @@ namespace MyNoteMD_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string? cursor, [FromQuery] int limit = 20, [FromQuery] string? search = null)
         {
-            // 1. Üst limiti sınırla
+            // 1. Limit Upper limit constraint
             limit = Math.Min(limit, 50);
 
             var userId = GetCurrentUserId();
 
-            // 2. Temel sorgu (Sadece kullanıcıya ait olanlar)
+            // 2. Base query (Only user's collections)
             var query = _context.Collections.Where(c => c.OwnerId == userId);
 
             // 3. Arama Filtresi (Koleksiyon isminde ara)
@@ -51,20 +51,20 @@ namespace MyNoteMD_API.Controllers
                 query = query.Where(c => c.Name.ToLower().Contains(searchTerm));
             }
 
-            // 4. Cursor Mantığını Uygulama
+            // 4. Applying Cursor Logic
             var decodedCursor = CursorHelper.Decode(cursor);
             if (decodedCursor != null)
             {
                 var cursorDate = decodedCursor.Value.CreatedAt;
                 var cursorId = decodedCursor.Value.Id;
 
-                // "En yeni en üstte" (DESC) sıralaması için cursor filtresi:
+                // Cursor filter for "Newest first" (DESC) sorting
                 query = query.Where(c =>
                     c.CreatedAt < cursorDate ||
                     (c.CreatedAt == cursorDate && c.Id.CompareTo(cursorId) < 0));
             }
 
-            // 5. Veriyi Çekme (Limit + 1 Taktiği)
+            // 5. Fetching Data (Limit + 1 Method)
             var collections = await query
                 .OrderByDescending(c => c.CreatedAt)
                 .ThenByDescending(c => c.Id)
@@ -72,21 +72,21 @@ namespace MyNoteMD_API.Controllers
                 .Select(c => new CollectionResponseDto(
                     c.Id,
                     c.Name,
-                    c.Notes.Count, // Global Soft Delete filtresi sayesinde silinmiş notları saymaz
+                    c.Notes.Count, // It does not count deleted notes thanks to Global Soft Delete filter
                     c.CreatedAt
                 ))
                 .ToListAsync();
 
-            // 6. NextCursor Hesaplanması
+            // 6. Calculating NextCursor
             string? nextCursor = null;
 
             if (collections.Count > limit)
             {
-                // Bir sonraki sayfa var, cursor üret
-                var lastItem = collections[limit - 1]; // Listedeki (limit içindeki) son gerçek eleman
+                // There is a next page, generate cursor
+                var lastItem = collections[limit - 1];
                 nextCursor = CursorHelper.Encode(lastItem.CreatedAt, lastItem.Id);
 
-                // Fazladan çektiğimiz (+1) kontrol elemanını listeden çıkar
+                // Remove the extra (+1) check element from the list
                 collections.RemoveAt(limit);
             }
 

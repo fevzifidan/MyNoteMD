@@ -10,14 +10,14 @@ interface SymbolCategoryPopoverProps {
   category: string;
   symbols: string[];
   onSelect: (latex: string) => void;
-  groupBtnStyle: string; // BasicTab ile aynı stili korumak için
+  groupBtnStyle: string;
 }
 
-export const SymbolCategoryPopover = ({ 
-  category, 
-  symbols, 
-  onSelect, 
-  groupBtnStyle 
+export const SymbolCategoryPopover = ({
+  category,
+  symbols,
+  onSelect,
+  groupBtnStyle
 }: SymbolCategoryPopoverProps) => {
   return (
     <Popover>
@@ -27,14 +27,14 @@ export const SymbolCategoryPopover = ({
           <ChevronDown className="h-3 w-3 opacity-50" />
         </button>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-64 p-0 shadow-xl" align="start" sideOffset={8}>
         <div className="p-2 border-b bg-muted/30">
           <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             {category}
           </h4>
         </div>
-        
+
         <ScrollArea className="h-60 p-2">
           <div className="grid grid-cols-4 gap-1">
             {symbols.map((latex, idx) => (
@@ -43,7 +43,7 @@ export const SymbolCategoryPopover = ({
                 variant="ghost"
                 className="h-12 w-full p-0 hover:bg-accent hover:text-accent-foreground transition-all"
                 onClick={() => onSelect(latex)}
-                title={latex} // Hover yapınca latex kodunu ipucu olarak gösterir
+                title={latex} // Shows latex code on hover
               >
                 <div className="scale-110">
                   <InlineMath math={latex} />

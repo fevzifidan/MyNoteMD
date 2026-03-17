@@ -24,7 +24,7 @@ export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => 
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
 
   const confirm = useCallback(async (params: string | ConfirmOptions) => {
-    // Eğer sadece string gelirse objeye çevir, obje gelirse aynen kullan
+    // If only string is received, convert it to object, if object is received, use it as is
     const options: ConfirmOptions = typeof params === "string"
       ? { title: params }
       : params;

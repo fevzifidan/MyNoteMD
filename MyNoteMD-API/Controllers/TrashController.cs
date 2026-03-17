@@ -38,7 +38,7 @@ namespace MyNoteMD_API.Controllers
             limit = Math.Min(limit, 50);
             var userId = GetCurrentUserId();
 
-            // 1. Notlar için ham veri sorgusu
+            // 1. Raw data query for notes
             var noteQuery = _context.Notes
                 .IgnoreQueryFilters()
                 .Where(n => n.OwnerId == userId && n.DeletedAt != null)
@@ -48,12 +48,11 @@ namespace MyNoteMD_API.Controllers
                     Type = "note",
                     TitleOrName = n.Title,
                     DeletedAt = n.DeletedAt,
-                    // İlişkisel veriyi burada değil, sorgu birleştikten sonra veya manuel alacağız
                     ParentInfo = n.Collection.Name,
                     CountInfo = (int?)null
                 });
 
-            // 2. Koleksiyonlar için ham veri sorgusu
+            // 2. Raw data query for collections
             var colQuery = _context.Collections
                 .IgnoreQueryFilters()
                 .Where(c => c.OwnerId == userId && c.DeletedAt != null)
@@ -67,10 +66,10 @@ namespace MyNoteMD_API.Controllers
                     CountInfo = (int?)c.Notes.Count
                 });
 
-            // 3. Sorguları Birleştir (Şemalar artık tamamen aynı)
+            // 3. Combine queries (Schemas are now completely the same)
             var combinedQuery = noteQuery.Concat(colQuery);
 
-            // 4. Cursor Filtrelemesi
+            // 4. Cursor Filtering
             var decodedCursor = CursorHelper.Decode(cursor);
             if (decodedCursor != null)
             {
@@ -82,15 +81,15 @@ namespace MyNoteMD_API.Controllers
                     (x.DeletedAt == cursorDate && x.Id.CompareTo(cursorId) < 0));
             }
 
-            // 5. Sıralama ve Veri Çekme
-            // SQL burada UNION ALL yapıp ORDER BY ve LIMIT uygulayacak
+            // 5. Sorting and Fetching Data
+            // SQL will apply UNION ALL, ORDER BY, and LIMIT here
             var rawItems = await combinedQuery
                 .OrderByDescending(x => x.DeletedAt)
                 .ThenByDescending(x => x.Id)
                 .Take(limit + 1)
                 .ToListAsync();
 
-            // 6. Sonuçları DTO'ya Eşleme (Memory'de yapıyoruz, EF'i yormuyoruz)
+            // 6. Mapping results to DTO
             var items = rawItems.Select(x => new TrashItemDto(
                 x.Id,
                 x.Type,
@@ -100,7 +99,7 @@ namespace MyNoteMD_API.Controllers
                 x.CountInfo
             )).ToList();
 
-            // 7. NextCursor Hesaplama
+            // 7. NextCursor Calculation
             string? nextCursor = null;
             if (items.Count > limit)
             {

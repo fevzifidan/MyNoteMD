@@ -11,8 +11,8 @@ export default function CommandPalette() {
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center bg-card text-card-foreground border shadow-xl rounded-3xl p-3 w-max max-w-[75vw]">
-      
-      {/* Üst Kısım: Radio Buttons (Ortalanmış) */}
+
+      {/* Top Section: Radio Buttons (Centered) */}
       <RadioGroup
         value={activeTab}
         onValueChange={setActiveTab}
@@ -32,11 +32,11 @@ export default function CommandPalette() {
         </div>
       </RadioGroup>
 
-      {/* Alt Kısım: Araç Çubuğu (Yatay Scrollable) */}
+      {/* Bottom Section: Tool Bar (Horizontally Scrollable) */}
       <div className="w-full overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-2 min-w-max pb-1">
-          
-          {/* Basic Sekmesi İçeriği */}
+
+          {/* Basic Tab Content */}
           {activeTab === "basic" && (
             <BasicTab />
           )}

@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace NoteFlow.Api.Controllers
 {
-    [Authorize] // Sadece giriş yapmış kullanıcılar erişebilir
+    [Authorize]
     [ApiController]
     [Route("v1/account")]
     public class AccountController : ControllerBase
@@ -19,7 +19,6 @@ namespace NoteFlow.Api.Controllers
             _userManager = userManager;
         }
 
-        // Helper metodumuz (Daha önce konuştuğumuz zırhlı versiyon)
         private Guid GetCurrentUserId()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -35,13 +34,13 @@ namespace NoteFlow.Api.Controllers
             if (userId == Guid.Empty)
                 return Unauthorized(new { Message = "Oturum geçersiz." });
 
-            // Kullanıcı bilgilerini veritabanından çekiyoruz (En güncel veri için)
+            // We fetch the user information from the database (for the most up-to-date data)
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             if (user == null)
                 return NotFound(new { Message = "Kullanıcı bulunamadı." });
 
-            // UserDto formatında dönüyoruz
+            // We return the user in UserDto format
             var userDto = new UserDTO(
                 user.Id,
                 user.Email!,

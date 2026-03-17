@@ -114,7 +114,7 @@ const LoginForm = () => {
             </form>
           </Form>
 
-          {/* Sosyal Girişler */}
+          {/* Social Login */}
           <div className="space-y-4 sm:space-y-2 xs:space-y-0">
             <div className="relative flex items-center justify-center">
               <span className="absolute inset-x-0 h-px bg-border"></span>

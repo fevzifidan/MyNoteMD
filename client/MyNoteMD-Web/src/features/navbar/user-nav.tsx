@@ -32,7 +32,7 @@ export function UserNav({ showAdditional }: { showAdditional?: boolean }) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
   }
 
-  // Kullanıcı adının ilk harfini fallback için alalım
+  // Get the first letter of the user's name for fallback
   const initials = user?.givenName?.substring(0, 1).toUpperCase() + user?.familyName?.substring(0, 1).toUpperCase() || "U";
 
   return (

@@ -30,7 +30,7 @@ const RegisterPage = () => {
   const onSubmit = async (data: any) => {
     setLoading(true);
     try {
-      // 1. Kayıt Ol
+      // 1. Register
       await apiService.post("/auth/register", {
         givenName: data.name,
         familyName: data.surname,
@@ -38,7 +38,7 @@ const RegisterPage = () => {
         password: data.password,
       });
 
-      // 2. Başarılı ise login yap
+      // 2. If successful, login
       await login({ email: data.email, password: data.password });
     } catch (error) {
 
@@ -47,7 +47,7 @@ const RegisterPage = () => {
     }
   };
 
-  // Ortak Input Sınıfları (Varyant olarak da tanımlanabilir)
+  // Common Input Classes
   const inputClasses = "h-14 rounded-full border-none bg-secondary/50 px-8 text-base focus-visible:ring-2 focus-visible:ring-[#3D5278] transition-all";
 
   return (

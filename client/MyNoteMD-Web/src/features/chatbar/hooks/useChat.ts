@@ -57,17 +57,17 @@ export function useChat(collectionId: string | null) {
     }, []);
 
     const stopChat = useCallback(() => {
-        // 1. Workers durdur
+        // 1. Stop worker
         workerRef.current?.terminate();
         syncService.stop();
 
-        // 2. Yeni worker yarat ki sonraki isteklerde çalışabilsin
+        // 2. Create new worker to work in next requests
         workerRef.current = new Worker(
             new URL("@/shared/services/ai/services/llm.service.ts", import.meta.url),
             { type: "module" }
         );
-        
-        // worker.onmessage'ı tekrar setupla (useEffect içindeki mantık ile aynı)
+
+        // Setup worker.onmessage again (same logic as in useEffect)
         const setupWorkerEvents = (worker: Worker) => {
             worker.onmessage = (event) => {
                 const { type, content, progress, text, message } = event.data;
@@ -98,7 +98,7 @@ export function useChat(collectionId: string | null) {
         };
         setupWorkerEvents(workerRef.current);
 
-        // 3. Stateleri sıfırla
+        // 3. Reset states
         setIsLoading(false);
         setIsSyncing(false);
         setModelLoading({ active: false, progress: 0, text: "" });
@@ -107,26 +107,26 @@ export function useChat(collectionId: string | null) {
     const sendMessage = useCallback(async (question: string) => {
         if (!collectionId || !question.trim() || isLoading) return;
 
-        // 1. Kullanıcı mesajını ekle
+        // 1. Add user message
         setMessages((prev) => [...prev, { role: "user", content: question }]);
         setIsLoading(true);
 
         try {
-            // 2. Senkronizasyon
+            // 2. Synchronization
             setIsSyncing(true);
             await syncService.syncCollection(collectionId);
             setIsSyncing(false);
 
-            // 3. RAG: İlgili notları bul
+            // 3. RAG: Find relevant notes
             const relevantNotes = await searchRelevantNotes(question, collectionId);
             const context = relevantNotes.map(n => n.content);
 
-            // 4. LLM'e gönder
+            // 4. Send to LLM
             workerRef.current?.postMessage({
                 type: "GENERATE_CHAT",
                 question,
                 context,
-                history: messages // En son halini yakalamak için useCallback dependency'ye messages ekledim
+                history: messages // Added messages to useCallback dependency to catch the latest version
             } as ChatRequest);
 
         } catch (error) {

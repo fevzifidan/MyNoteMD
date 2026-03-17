@@ -7,18 +7,18 @@ import type { IEmbeddingService } from "../types";
 let embeddingServiceInstance: IEmbeddingService = new EmbeddingService();
 
 /**
- * Notu hem veritabanına kaydeder hem de embedding'ini günceller.
- * İşlemleri Dexie transaction içine alarak veri bütünlüğünü sağlar.
+ * Saves the note to the database and updates its embedding.
+ * Ensures data integrity by performing operations within a Dexie transaction.
  */
 export async function saveNoteWithEmbedding(note: Note): Promise<void> {
     try {
-        // 1. Notu kaydet
+        // 1. Save the note
         await db.notes.put(note);
 
-        // 2. Embedding'i hesapla (Worker üzerinden - asenkron)
+        // 2. Calculate embedding (asynchronous via Worker)
         const vector = await embeddingServiceInstance.getVector(note.content);
 
-        // 3. Embedding'i transaction içinde kaydet
+        // 3. Save embedding within transaction
         await db.transaction('rw', db.embeddings, async () => {
             await db.embeddings.put({
                 noteId: note.id,
@@ -34,7 +34,7 @@ export async function saveNoteWithEmbedding(note: Note): Promise<void> {
 
 export class SyncService {
     /**
-     * Tarihleri her zaman sayısal timestamp (milisaniye) formatına çevirir.
+     * Converts dates to numeric timestamp (milliseconds) format.
      */
     private toTimestamp(date: string | number | Date | undefined): number {
         if (!date) return 0;
@@ -42,11 +42,11 @@ export class SyncService {
     }
 
     /**
-     * Koleksiyondaki tüm notları lookup eder ve eksik/güncel olmayanları çeker.
+     * Fetches all notes in the collection and retrieves missing/outdated ones.
      */
     async syncCollection(collectionId: string): Promise<void> {
-        // 500 hatası aldığı için getNotesLookup yerine getNotes kullanıyoruz.
-        // Gelecekte backend düzelirse getNotesLookup'a dönülebilir.
+        // Using getNotes instead of getNotesLookup due to 500 error.
+        // getNotesLookup can be used when the backend is fixed.
         const response: any = await collectionService.getNotes(collectionId, { cursor: null });
         const items = response.items || [];
 
@@ -56,17 +56,17 @@ export class SyncService {
     }
 
     /**
-     * Tek bir notun detayını çeker ve yerel veritabanıyla kıyaslar.
+     * Fetches the details of a single note and compares it with the local database.
      */
     async syncNoteDetail(noteId: string): Promise<void> {
-        // Sunucudan güncel detayı çek
+        // Get the latest details from the server
         const detail: Note = await noteService.getById(noteId);
         const localNote = await db.notes.get(noteId);
 
         const remoteUpdatedAt = this.toTimestamp(detail.updatedAt);
         const localUpdatedAt = localNote?.updatedAt || 0;
 
-        // Eğer not hiç yoksa veya sunucudaki daha güncelse güncelle
+        // If the note doesn't exist or the server version is newer, update it
         if (!localNote || remoteUpdatedAt > localUpdatedAt) {
 
             const normalizedNote: Note = {
@@ -76,7 +76,7 @@ export class SyncService {
                 publishedAt: this.toTimestamp(detail.publishedAt)
             };
 
-            // Notu ve embedding'i güncelle
+            // Update note and embedding
             await saveNoteWithEmbedding(normalizedNote);
         }
     }
@@ -89,4 +89,4 @@ export class SyncService {
     }
 }
 
-export const syncService = new SyncService();
+export const syncService = new SyncService();

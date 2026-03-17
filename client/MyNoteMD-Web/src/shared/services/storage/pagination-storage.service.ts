@@ -2,14 +2,14 @@
 import { db } from './db';
 import { type IPaginatedItem, type IContextMetadata } from './types';
 
-// Hangi itemType'ın hangi tabloya karşılık geldiğini belirleyen yardımcı tip
+// Helper type to determine which table corresponds to which itemType
 type TableName = 'notes' | 'collections';
 
 export class PaginationStorageService {
-  
+
   async upsertPage<T extends { id: string }>(
-    contextId: string, 
-    items: T[], 
+    contextId: string,
+    items: T[],
     nextCursor: string | null,
     itemType: 'note' | 'collection'
   ) {
@@ -46,8 +46,8 @@ export class PaginationStorageService {
   }
 
   async getItemsByIndexRange<T>(
-    contextId: string, 
-    start: number, 
+    contextId: string,
+    start: number,
     limit: number
   ): Promise<(IPaginatedItem & { data: T | undefined })[]> {
     const refs = await db.items

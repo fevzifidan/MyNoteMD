@@ -40,7 +40,7 @@ export function GlobalSearch({ onSearch, onTypeChange, currentType, defaultValue
         <Input
           type="text"
           placeholder={placeholder}
-          defaultValue={defaultValue} // URL'den gelen değer
+          defaultValue={defaultValue} // Value from URL
           onChange={(e) => onSearch(e.target.value)}
           className="flex-1 border-none bg-transparent shadow-none focus-visible:ring-0 text-base h-full"
         />
