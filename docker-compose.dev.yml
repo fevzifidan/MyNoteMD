@@ -1,0 +1,82 @@
+name: MyNoteMD
+
+services:
+  # --- DATABASE (PostgreSQL) ---
+  db:
+    image: postgres:17-alpine
+    container_name: "mynotemd-db"
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- Redis ---
+  redis:
+    image: redis:7-alpine
+    container_name: "mynotemd-redis"
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # --- BACKEND (.NET 10 API) ---
+  backend:
+    container_name: "mynotemd-backend"
+    build:
+      context: ./MyNoteMD-API
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5031:5031"
+    volumes:
+      - ./MyNoteMD-API:/app
+      - /app/bin
+      - /app/obj
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Port=5432
+      - ConnectionStrings__RedisConnection=redis:6379,password=${REDIS_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "dotnet ef database update && dotnet run --urls http://0.0.0.0:5031"
+
+  # --- FRONTEND (React / Vite) ---
+  frontend:
+    container_name: "mynotemd-frontend"
+    build:
+      context: ./client/MyNoteMD-Web
+      dockerfile: Dockerfile.dev
+    ports:
+      - "9595:5173" # Host: 9595, Container: 5173
+    volumes:
+      - ./client/MyNoteMD-Web:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:5031/v1
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,21 @@
+# Sadece .NET komutları olmalı, YAML (backend:) olmamalı!
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+WORKDIR /app
+
+# EF Core araçlarını yükle
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Bağımlılıkları kopyala
+COPY ["MyNoteMD-API.csproj", "./"]
+RUN dotnet restore "MyNoteMD-API.csproj"
+
+# Kalan her şeyi kopyala
+COPY . .
+
+# Derle
+RUN dotnet build "MyNoteMD-API.csproj" -c Debug
+
+EXPOSE 5031
+
+CMD ["dotnet", "run", "--urls", "http://0.0.0.0:5031"]

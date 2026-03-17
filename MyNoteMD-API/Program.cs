@@ -48,7 +48,7 @@ try
     {
         options.AddPolicy("MyNoteMDReactAppPolicy", policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins("http://localhost:9595")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
@@ -130,6 +130,12 @@ try
 
     var app = builder.Build();
 
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
+
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -151,7 +157,7 @@ try
 
     app.UseExceptionHandler();
 
-    //app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 
     app.UseRouting();
 
