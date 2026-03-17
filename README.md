@@ -38,4 +38,37 @@ MyNoteMD is a feature-rich Markdown note management system that allows users to 
 
 ---
 
+### 🛠️ Installation Steps
+
+#### 1. Clone the Project
+```bash
+git clone https://github.com/fevzifidan/MyNoteMD.git
+cd MyNoteMD
+```
+
+#### 2. Configure Environment Variables
+Create a `.env` file in the project's root directory and paste the following template (you can change the passwords as you wish):
+
+```env
+# PostgreSQL Settings
+POSTGRES_USER=mynotemd_user
+POSTGRES_PASSWORD=mynotemd_password_123
+POSTGRES_DB=mynotemd_db
+
+# Redis Settings
+REDIS_PASSWORD=redis_password_123
+
+# .NET Environment
+ASPNETCORE_ENVIRONMENT=Development
+```
+
+#### 3. Start the System
+Build and run all services (PostgreSQL, Redis, .NET 10 API, React) at once using Docker Compose:
+
+```bash
+docker compose -f docker-compose.dev.yml up
+```
+
+---
+
 *This project was developed to learn and apply the technologies outlined in the tech stack to full-stack web development practice.*
