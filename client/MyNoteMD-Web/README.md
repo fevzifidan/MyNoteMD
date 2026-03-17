@@ -39,9 +39,3 @@ We strictly avoid inline validation logic. All forms use `yup` schemas separated
 - **Tailwind CSS:** We exclusively use Tailwind CSS utility classes.
 - **Shadcn Custom Variants:** We utilize the `cva` (class-variance-authority) pattern to manage UI states and specific design variants (e.g., `authInput`, `destructive` buttons).
 - **Theme Variables:** Colors are defined in `globals.css` using CSS variables (e.g., `bg-background`, `text-muted-foreground`) to ensure Shadcn UI handles dark mode automatically.
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
