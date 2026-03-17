@@ -1,16 +1,16 @@
 # MyNoteMD
 
-MyNoteMD, kullanıcıların genişletilmiş Markdown formatında notlar kaydedebilmesi ve bu notları koleksiyonlar oluşturarak organize edebilmesi için geliştirilmiş zengin özellikli bir Markdown not yönetim sistemidir. 
+MyNoteMD is a feature-rich Markdown note management system that allows users to save notes in an extended Markdown format and organize those notes by creating collections.
 
 ## 🛠 Backend Tech Stack
 
 *   **Runtime:** .NET 10
-*   **Veritabanı:** PostgreSQL (Entity Framework Core)
-*   **Oturum Yönetimi:** Redis (Opaque Tokens)
-*   **Güvenlik:** Identity Core, HttpOnly Cookies, Antiforgery Tokens (CSRF Protection)
-*   **Loglama:** Serilog
-*   **API Tasarım ve Dokümantasyon:** OpenAPI
-*   **ID Yapısı:** UUIDv7
+*   **Database:** PostgreSQL (Entity Framework Core)
+*   **Session Management:** Redis (Opaque Tokens)
+*   **Security:** Identity Core, HttpOnly Cookies, Antiforgery Tokens (CSRF Protection)
+*   **Logging:** Serilog
+*   **API Design and Documentation:** OpenAPI
+*   **ID Preference:** UUIDv7
 
 ## 🛠 Frontend Tech Stack
 - **Framework:** [React.js](https://react.dev/)
@@ -21,21 +21,21 @@ MyNoteMD, kullanıcıların genişletilmiş Markdown formatında notlar kaydedeb
 - **Icons:** [Lucide React](https://lucide.dev/)
 - **HTTP Client:** [Axios](https://axios-http.com/)
 
-## ✨ Temel Özellikler
+## ✨ Key Features
 
-### 🔐 Oturum Yönetimi ve Oturum Güvenliği
--   **Opaque Token & Redis:** Ana oturum yönetimi için **Opaque** tokenlar kullanılır. Tüm oturumlar Redis üzerinde yönetilir, bu sayede anında oturum sonlandırma mümkündür.
--   **HttpOnly Cookies:** Tokenlar `localStorage` yerine JavaScript erişimine kapalı `HttpOnly, Secure, SameSite=Strict` çerezlerde tutulur. Bu, **XSS** saldırılarına karşı koruma sağlar.
--   **CSRF Koruması:** Çerez tabanlı kimlik doğrulamanın getirdiği risklere karşı **Antiforgery Token**lar kullanılmaktadır.
--   **Audit Logging:** Çeşitli işlemler veritabanında kayıt altına alınır.
+### 🔐 Session Management and Session Security
+-   **Opaque Token & Redis:** **Opaque Tokens** are used for main session management. All sessions are managed on Redis, allowing for instant session termination.
+-   **HttpOnly Cookies:** Tokens are stored in `HttpOnly, Secure, SameSite=Strict` cookies that are inaccessible to JavaScript, instead of `localStorage`. This provides protection against **XSS** attacks.
+-   **CSRF Protection:** **Antiforgery Tokens** are used to counter the risks associated with cookie-based authentication.
+-   **Audit Logging:** Various transactions are recorded in the database.
 
-### 🚀 Veri Yönetimi
--   **Cursor-Based Pagination:** Veritabanı performansı ve işlem hızı için Base64 şifreli cursor-based pagination sistemi kullanılır.
--   **Soft Delete & Cascading Trash:** Silinen her şey önce çöp kutusuna gider. Bir koleksiyon silindiğinde içindeki tüm notlar otomatik olarak çöpe taşınır ve geri yükleme (Restore) sırasında silme zamanlamaları göz önünde bulundurularak kullanıcı deneyiminin artırılması hedeflenir.
+### 🚀 Data Management
+-   **Cursor-Based Pagination:** Base64 encrypted cursor-based pagination is used for database performance and transaction speed.
+-   **Soft Delete & Cascading Trash:** Everything that is deleted first goes to the Recycle Bin. When a collection is deleted, all notes within it are automatically moved to the Recycle Bin, and the goal is to improve the user experience by considering deletion times during the restore process.
 
 >[!Note]
->Frontend için detaylı açıklama `client/MyNoteMD-Web/README.md` dosyasında mevcuttur.
+>Detailed instructions for the frontend are available in the `client/MyNoteMD-Web/README.md` file.
 
 ---
 
-*Bu proje fullstack web geliştirme pratiği için tech stack'de belirtilen teknolojilerin öğrenilmesi ve bir proje üzerinde uygulanması amacıyla geliştirilmiştir.*
+*This project was developed to learn and apply the technologies outlined in the tech stack to full-stack web development practice.*
