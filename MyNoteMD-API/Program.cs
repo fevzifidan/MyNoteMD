@@ -48,7 +48,7 @@ try
     {
         options.AddPolicy("MyNoteMDReactAppPolicy", policy =>
         {
-            policy.WithOrigins("http://localhost:9595")
+            policy.WithOrigins("http://localhost:9595", "http://localhost:5173")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();

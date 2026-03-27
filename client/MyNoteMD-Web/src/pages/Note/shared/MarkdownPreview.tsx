@@ -2,8 +2,14 @@ import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import remarkDirective from 'remark-directive';
+import remarkGithubAlerts from 'remark-github-alerts';
+import 'remark-github-alerts/styles/github-colors-light.css';
+import 'remark-github-alerts/styles/github-colors-dark-class.css';
+import 'remark-github-alerts/styles/github-base.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import 'katex/dist/katex.min.css';
@@ -19,18 +25,19 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
   const { resolvedTheme } = useTheme();
 
   const components = useMemo(() => ({
-    code({ node, inline, className, children, ...props }: any) {
+    code({ node, className, children, ...props }: any) {
       const match = /language-(\w+)/.exec(className || '');
       const language = match ? match[1] : '';
+      const isBlock = !!match;
 
       if (language === 'mermaid') {
         return <Mermaid chart={String(children).replace(/\n$/, '')} />;
       }
 
-      return !inline && match ? (
+      return isBlock ? (
         <SyntaxHighlighter
           style={vscDarkPlus}
-          language={match[1]}
+          language={match![1]}
           PreTag="div"
           {...props}
         >
@@ -38,7 +45,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
         </SyntaxHighlighter>
       ) : (
         <code
-          className="bg-muted px-1 py-0.5 rounded text-xs-[8px] font-mono"
+          className="bg-muted px-1 py-0.5 rounded text-xs font-mono"
           {...props}
         >
           {children}
@@ -59,8 +66,25 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
   return (
     <div className={`prose prose-sm max-w-none dark:prose-invert text-[13px] text-sm-[12px] leading-relaxed overflow-x-hidden ${resolvedTheme === 'dark' ? 'dark' : ''}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath, remarkDirective, customDirectivePlugin]}
-        rehypePlugins={[rehypeKatex]}
+        remarkPlugins={[remarkGfm, remarkMath, remarkDirective, customDirectivePlugin, remarkGithubAlerts]}
+        rehypePlugins={[
+          rehypeRaw,
+          rehypeKatex,
+          [rehypeSanitize, {
+            ...defaultSchema,
+            attributes: {
+              ...defaultSchema.attributes,
+              // Allow KaTeX and syntax highlighter classes
+              '*': [...(defaultSchema.attributes?.['*'] ?? []), 'className', 'style'],
+              // Allow img src, alt, width, height
+              'img': ['src', 'alt', 'width', 'height', 'title'],
+            },
+            // Explicitly reject script and iframe tags
+            tagNames: (defaultSchema.tagNames ?? []).filter(
+              (tag) => !['script', 'iframe', 'object', 'embed'].includes(tag)
+            ),
+          }],
+        ]}
         components={components}
       >
         {markdown}
