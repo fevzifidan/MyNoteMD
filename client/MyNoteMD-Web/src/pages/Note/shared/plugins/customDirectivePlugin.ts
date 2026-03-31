@@ -8,31 +8,19 @@ export function customDirectivePlugin() {
         const attributes = node.attributes || {};
         
         if (node.name === 'style') {
-          data.hName = attributes.block ? 'div' : 'span';
+          data.hName = 'markdown-style';
           data.hProperties = {
-            style: {
-              color: attributes.color,
-              backgroundColor: attributes.bg,
-              fontSize: attributes.size,
-              fontFamily: attributes.font,
-              textAlign: attributes.align,
-              textDecoration: attributes.underline ? 'underline' : attributes.strike ? 'line-through' : undefined,
-              lineHeight: attributes.lh,
-              padding: attributes.p,
-              margin: attributes.m,
-              direction: attributes.rtl ? 'rtl' : 'ltr',
-              display: attributes.align ? 'block' : 'inline-block'
-            }
+            ...attributes
           };
         }
 
         if (node.name === 'video') {
           data.hName = 'video';
-          data.hProperties = { src: attributes.url, controls: true, style: { maxWidth: '100%' } };
+          data.hProperties = { src: attributes.url || attributes.src, controls: true, style: { maxWidth: '100%' } };
         }
         if (node.name === 'audio') {
           data.hName = 'audio';
-          data.hProperties = { src: attributes.url, controls: true };
+          data.hProperties = { src: attributes.url || attributes.src, controls: true };
         }
       }
     });

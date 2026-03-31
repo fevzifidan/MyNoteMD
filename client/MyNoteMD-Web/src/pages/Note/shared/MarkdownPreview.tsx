@@ -60,6 +60,32 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
         return <td rowSpan={parseInt(span)} {...props}>{parts[2]}</td>;
       }
       return <td {...props}>{children}</td>;
+    },
+    'markdown-style': ({ node, children, ...props }: any) => {
+      const isBlock = props.block === 'true' || props.block === true;
+      const Tag = isBlock ? 'div' : 'span';
+      return (
+        <Tag
+          id={props.id}
+          className={props.className}
+          style={{
+            color: props.color,
+            backgroundColor: props.bg,
+            fontSize: props.size,
+            fontFamily: props.font,
+            textAlign: props.align,
+            textDecoration: props.underline ? 'underline' : props.strike ? 'line-through' : undefined,
+            lineHeight: props.lh,
+            padding: props.p,
+            margin: props.m,
+            direction: props.rtl ? 'rtl' : 'ltr',
+            borderRadius: props.rounded,
+            display: props.align ? 'block' : (isBlock ? 'block' : 'inline-block')
+          }}
+        >
+          {children}
+        </Tag>
+      );
     }
   }), []);
 
@@ -78,11 +104,17 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
               '*': [...(defaultSchema.attributes?.['*'] ?? []), 'className', 'style'],
               // Allow img src, alt, width, height
               'img': ['src', 'alt', 'width', 'height', 'title'],
+              'video': ['src', 'controls', 'style'],
+              'audio': ['src', 'controls'],
+              'markdown-style': ['color', 'bg', 'size', 'font', 'align', 'underline', 'strike', 'lh', 'p', 'm', 'rtl', 'block', 'rounded', 'id', 'className']
             },
-            // Explicitly reject script and iframe tags
-            tagNames: (defaultSchema.tagNames ?? []).filter(
-              (tag) => !['script', 'iframe', 'object', 'embed'].includes(tag)
-            ),
+            // Explicitly reject dangerous tags but allow our custom ones
+            tagNames: [
+              ...(defaultSchema.tagNames ?? []).filter(
+                (tag) => !['script', 'iframe', 'object', 'embed'].includes(tag)
+              ),
+              'video', 'audio', 'markdown-style'
+            ],
           }],
         ]}
         components={components}

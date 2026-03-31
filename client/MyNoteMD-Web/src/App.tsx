@@ -59,7 +59,7 @@ function App() {
                 <Toaster position="top-right" richColors />
 
                 <Routes>
-                  <></>
+                  <Route path='/' element={<GuestRoute><LoginPage /></GuestRoute>} />
                   <Route path='/login' element={<GuestRoute><LoginPage /></GuestRoute>} />
                   <Route path='/register' element={<GuestRoute><RegisterPage /></GuestRoute>} />
                   <Route path='/home'

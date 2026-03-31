@@ -29,7 +29,7 @@ export const NoteCard = ({ note }: { note: NoteResponseDto }) => {
 
   const copySlug = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(note.slug);
+    navigator.clipboard.writeText(`${origin}/notes/public/${note.slug}`);
     setCopied(true);
     toast.success(t("notePage:slugCopyied"));
     setTimeout(() => setCopied(false), 2000);
