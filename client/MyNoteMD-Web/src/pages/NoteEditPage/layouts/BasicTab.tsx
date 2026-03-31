@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 
 export default function BasicTab() {
-  const { applyFormat, clearFormat, insertText } = useEditor();
+  const { applyFormat, changeFontSize, clearFormat, insertText } = useEditor();
   const { t } = useTranslation('noteEditPage');
   const [textColor, setTextColor] = useState("#ef4444"); // Default red
   const [highlightColor, setHighlightColor] = useState("#eab308"); // Default yellow
@@ -39,7 +39,7 @@ export default function BasicTab() {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {[1, 2, 3, 4, 5].map((level) => (
-            <DropdownMenuItem key={level}>H{level}</DropdownMenuItem>
+            <DropdownMenuItem key={level} onClick={() => applyFormat(`${"#".repeat(level)} `, "")}>H{level}</DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -134,8 +134,8 @@ export default function BasicTab() {
 
       {/* Font Size */}
       <ToggleGroup type="single" className={groupContainer}>
-        <Button variant={"outline"} className={groupBtn}>F+</Button>
-        <Button variant={"outline"} className={groupBtn}>F-</Button>
+        <Button variant={"outline"} className={groupBtn} onClick={() => changeFontSize(2)}>F+</Button>
+        <Button variant={"outline"} className={groupBtn} onClick={() => changeFontSize(-2)}>F-</Button>
       </ToggleGroup>
 
       {/* Alignment Toggle Group */}
@@ -147,8 +147,8 @@ export default function BasicTab() {
 
       {/* List Toggle Group */}
       <ToggleGroup type="single" className={groupContainer}>
-        <Button variant={"outline"} className={groupBtn}><ListOrdered /></Button>
-        <Button variant={"outline"} className={groupBtn}><List /></Button>
+        <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("1. ", "")}><ListOrdered /></Button>
+        <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("- ", "")}><List /></Button>
       </ToggleGroup>
 
       {/* FN Dropdown */}
@@ -159,8 +159,8 @@ export default function BasicTab() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>{t('basicTab.fn.indicator')}</DropdownMenuItem>
-          <DropdownMenuItem>{t('basicTab.fn.descriptor')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => insertText("[^1]")}>{t('basicTab.fn.indicator')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => insertText("\n[^1]: ")}>{t('basicTab.fn.descriptor')}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

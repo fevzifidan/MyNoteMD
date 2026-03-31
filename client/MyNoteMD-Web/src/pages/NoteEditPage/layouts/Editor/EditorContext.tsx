@@ -14,6 +14,7 @@ interface EditorContextType {
   setMarkdown: (val: string) => void;
   deferredMarkdown: string;
   applyFormat: (before: string, after?: string, isDirective?: boolean) => void;
+  changeFontSize: (step: number) => void;
   insertText: (snippet: string) => void;
   clearFormat: () => void;
   insertMath: (snippet: string) => void;
@@ -85,7 +86,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const saveDraft = async () => {
     if (!noteData || isSavingDraft || markdown === lastSavedMarkdown) return;
-    
+
     setIsSavingDraft(true);
     try {
       await noteService.update(noteData.id, { content: markdown }, { silent: true });
@@ -102,7 +103,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (contentMode !== 'draft' || !noteData) return;
-    
+
     if (hasUnsavedDraftChanges) {
       const timer = setTimeout(() => {
         saveDraft();
@@ -136,7 +137,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const getView = () => editorRef.current?.view;
   // ... (rest of the formatting methods remain unchanged, omitting for brevity in TargetContent matching)
 
-  const mergeStyleProps = (oldProps: string, newProps: string) => {
+  const mergeStyleProps = (oldProps: string, newProps: string, toggle = true) => {
     const propsObj: Record<string, string> = {};
     const regex = /([a-zA-Z0-9_-]+)(?:=([^ \s{}]+))?/g;
     let m;
@@ -144,7 +145,13 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       propsObj[m[1]] = m[2] || "true";
     }
     while ((m = regex.exec(newProps)) !== null) {
-      propsObj[m[1]] = m[2] || "true";
+      const key = m[1];
+      const val = m[2] || "true";
+      if (toggle && propsObj[key] === val) {
+        delete propsObj[key];
+      } else {
+        propsObj[key] = val;
+      }
     }
     return Object.entries(propsObj)
       .map(([k, v]) => (v === "true" ? k : `${k}=${v}`))
@@ -159,31 +166,43 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const fullText = view.state.doc.toString();
 
     if (isDirective) {
-      const textBefore = fullText.substring(0, from);
-      const lastOpenIndex = textBefore.lastIndexOf(":style[");
+      let isMerged = false;
+      const regex = /:style\[([\s\S]*?)\]\{([\s\S]*?)\}/g;
+      let match;
 
-      if (lastOpenIndex !== -1) {
-        const contentEndIndex = fullText.indexOf("]{", lastOpenIndex);
-        const propsEndIndex = fullText.indexOf("}", contentEndIndex);
+      while ((match = regex.exec(fullText)) !== null) {
+        const matchStart = match.index;
+        const matchEnd = match.index + match[0].length;
 
-        if (contentEndIndex !== -1 && propsEndIndex !== -1 && from <= propsEndIndex) {
-          const existingContent = fullText.substring(lastOpenIndex + 7, contentEndIndex);
-          const existingPropsStr = fullText.substring(contentEndIndex + 2, propsEndIndex);
+        // If cursor or selected area is completely inside this directive
+        const isInside = matchStart <= from && to <= matchEnd;
 
-          const newPropsMatch = after.match(/\{(.*?)\}/);
+        // If user's selection exactly encapsulates this directive (spaces may be at the beginning or end)
+        const isEncapsulating = from <= matchStart && matchEnd <= to && fullText.slice(from, to).trim() === match[0];
+
+        if (isInside || isEncapsulating) {
+          const existingContent = match[1];
+          const existingPropsStr = match[2];
+
+          const newPropsMatch = after.match(/\{([\s\S]*?)\}/);
           const newPropsStr = newPropsMatch ? newPropsMatch[1] : "";
 
-          const mergedProps = mergeStyleProps(existingPropsStr, newPropsStr);
-          const replacement = `:style[${existingContent}]{${mergedProps}}`;
+          const mergedProps = mergeStyleProps(existingPropsStr, newPropsStr, true);
+          const replacement = mergedProps.trim() === ""
+            ? existingContent
+            : `:style[${existingContent}]{${mergedProps}}`;
 
           view.dispatch({
-            changes: { from: lastOpenIndex, to: propsEndIndex + 1, insert: replacement },
-            selection: { anchor: lastOpenIndex + replacement.length }
+            changes: { from: matchStart, to: matchEnd, insert: replacement },
+            selection: { anchor: matchStart + replacement.length }
           });
           view.focus();
-          return;
+          isMerged = true;
+          break;
         }
       }
+
+      if (isMerged) return;
     }
 
     const selectedText = view.state.sliceDoc(from, to);
@@ -198,6 +217,71 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       selection: { anchor: newCursorPos }
     });
     view.focus();
+  };
+
+  const changeFontSize = (step: number) => {
+    const view = getView();
+    if (!view) return;
+
+    const { from, to } = view.state.selection.main;
+    const fullText = view.state.doc.toString();
+    const DEFAULT_SIZE = 12;
+
+    let isMerged = false;
+    const regex = /:style\[([\s\S]*?)\]\{([\s\S]*?)\}/g;
+    let match;
+
+    while ((match = regex.exec(fullText)) !== null) {
+      const matchStart = match.index;
+      const matchEnd = match.index + match[0].length;
+
+      const isInside = matchStart <= from && to <= matchEnd;
+      const isEncapsulating = from <= matchStart && matchEnd <= to && fullText.slice(from, to).trim() === match[0];
+
+      if (isInside || isEncapsulating) {
+        const existingContent = match[1];
+        const existingPropsStr = match[2];
+
+        const sizeMatch = existingPropsStr.match(/size=(\d+)px/);
+        let currentSize = DEFAULT_SIZE;
+        if (sizeMatch && sizeMatch[1]) {
+          currentSize = parseInt(sizeMatch[1], 10);
+        }
+
+        const newSize = Math.max(6, currentSize + step);
+        const newPropsStr = `size=${newSize}px`;
+
+        const mergedProps = mergeStyleProps(existingPropsStr, newPropsStr, false);
+        const replacement = mergedProps.trim() === ""
+          ? existingContent
+          : `:style[${existingContent}]{${mergedProps}}`;
+
+        view.dispatch({
+          changes: { from: matchStart, to: matchEnd, insert: replacement },
+          selection: { anchor: matchStart + replacement.length }
+        });
+        view.focus();
+        isMerged = true;
+        break;
+      }
+    }
+
+    if (!isMerged) {
+      const newSize = Math.max(6, DEFAULT_SIZE + step);
+
+      const selectedText = view.state.sliceDoc(from, to);
+      const replacement = `:style[${selectedText}]{size=${newSize}px}`;
+
+      const newCursorPos = selectedText.length > 0
+        ? from + replacement.length
+        : from + 7;
+
+      view.dispatch({
+        changes: { from, to, insert: replacement },
+        selection: { anchor: newCursorPos }
+      });
+      view.focus();
+    }
   };
 
   const insertText = (snippet: string) => {
@@ -272,6 +356,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setMarkdown,
         deferredMarkdown,
         applyFormat,
+        changeFontSize,
         insertText,
         clearFormat,
         insertMath,
