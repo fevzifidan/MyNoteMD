@@ -55,7 +55,7 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
         <div className="min-h-screen bg-background text-foreground">
             <TopNav collapse={false} />
             <Sidebar />
-            <main className="pt-24 lg:pt-32 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+            <main className="pt-24 px-4 pb-10 sm:pt-16 sm:px-6 lg:pt-16 lg:px-8 max-w-4xl mx-auto">
                 {loading ? (
                     <div className="flex items-center justify-center min-h-[40vh]">
                         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -93,8 +93,8 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
                                 <span>{t("notePreviewPage:actions.downloadPDF")}</span>
                             </Button>
                         </div>
-                        <div 
-                            ref={contentRef} 
+                        <div
+                            ref={contentRef}
                             className="print-container bg-background"
                         >
                             <style>

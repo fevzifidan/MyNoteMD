@@ -36,12 +36,12 @@ export function Sidebar() {
       {/* 
         1. DESKTOP SIDEBAR (Floating Pill)
         - 'hidden': Not seen on mobile
-        - 'md:flex': Visible on 768px and above
+        - 'min-[1060px]:flex': Visible on 1060px and above
       */}
       <aside
         className={cn(
           "fixed left-6 top-1/2 -translate-y-1/2 z-[90] transition-all duration-500 ease-in-out",
-          "hidden md:flex flex-col items-center py-6", // Not seen on mobile
+          "hidden min-[1060px]:flex flex-col items-center py-6", // Not seen on mobile
           "bg-card/80 backdrop-blur-lg border shadow-2xl rounded-[2.5rem]",
           isExpanded ? "w-64 px-4" : "w-20 px-2"
         )}
@@ -61,9 +61,9 @@ export function Sidebar() {
       {/* 
         2. MOBILE SIDEBAR (Hamburger & Sheet)
         - 'block': Seen on mobile
-        - 'md:hidden': Not seen on 768px and above
+        - 'min-[1060px]:hidden': Not seen on 1060px and above
       */}
-      <div className="md:hidden fixed top-6 left-6 z-[110]">
+      <div className="min-[1060px]:hidden fixed top-6 left-6 z-[110]">
         <Sheet>
           <SheetTrigger asChild>
             <Button
