@@ -24,10 +24,28 @@ export function Sidebar() {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
+  const sidebarRef = React.useRef<HTMLElement>(null);
+
   // To prevent hydration errors
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Handle outside clicks to close the sidebar
+  React.useEffect(() => {
+    if (!isExpanded) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isExpanded]);
 
   if (!mounted) return null;
 
@@ -39,6 +57,7 @@ export function Sidebar() {
         - 'min-[1060px]:flex': Visible on 1060px and above
       */}
       <aside
+        ref={sidebarRef}
         className={cn(
           "fixed left-6 top-1/2 -translate-y-1/2 z-[90] transition-all duration-500 ease-in-out",
           "hidden min-[1060px]:flex flex-col items-center py-6", // Not seen on mobile
@@ -96,7 +115,13 @@ export function Sidebar() {
 // --- SHARED MENU CONTENT ---
 function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
   const { t } = useTranslation("sidebar");
-  const [isYeniOpen, setIsYeniOpen] = React.useState(false);
+  const [isNewOpen, setIsNewOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isExpanded) {
+      setIsNewOpen(false);
+    }
+  }, [isExpanded]);
 
   return (
     <div className="flex flex-col w-full gap-2">
@@ -114,21 +139,16 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
       <SidebarItem icon={Trash} label={t("sidebar:trash")} isExpanded={isExpanded} endpoint="/trash" />
 
       {/* 'New' Option (Collapsible) */}
-      <Collapsible open={isYeniOpen} onOpenChange={setIsYeniOpen} className="w-full">
+      <Collapsible open={isNewOpen} onOpenChange={setIsNewOpen} className="w-full">
         <CollapsibleTrigger asChild>
-          <Button
-            variant="ghost"
-            className={cn(
-              "w-full flex items-center gap-4 px-3 h-12 rounded-2xl transition-all",
-              isExpanded ? "justify-start" : "justify-center"
-            )}
-          >
-            <Plus className="h-5 w-5 shrink-0" />
-            {isExpanded && <span className="font-semibold flex-1 text-left">{t("sidebar:new")}</span>}
-            {isExpanded && (
-              <ChevronRight className={cn("h-4 w-4 transition-transform duration-200", isYeniOpen && "rotate-90")} />
-            )}
-          </Button>
+          <SidebarItem
+            icon={Plus}
+            label={t("sidebar:new")}
+            isExpanded={isExpanded}
+            rightElement={
+              <ChevronRight className={cn("h-4 w-4 transition-transform duration-200", isNewOpen && "rotate-90")} />
+            }
+          />
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-1 mt-1 animate-in fade-in slide-in-from-top-1">
           <CreateCollectionDialog isExpanded={isExpanded} />
@@ -147,25 +167,50 @@ function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
 }
 
 // --- SIDEBAR ITEM COMPONENT ---
-function SidebarItem({ icon: Icon, label, isExpanded, endpoint }: any) {
+const SidebarItem = React.forwardRef<HTMLButtonElement, any>((props, ref) => {
+  const { icon: Icon, label, isExpanded, endpoint, onClick, rightElement, className, ...rest } = props;
   const navigate = useNavigate();
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (endpoint) navigate(endpoint);
+    if (onClick) onClick(e);
+  };
+
+  const button = (
+    <Button
+      ref={ref}
+      variant="ghost"
+      className={cn(
+        "w-full flex items-center gap-4 px-3 h-12 rounded-2xl transition-all group",
+        isExpanded ? "justify-start" : "justify-center",
+        className
+      )}
+      onClick={handleClick}
+      {...rest}
+    >
+      <Icon className="h-5 w-5 shrink-0 group-hover:text-primary transition-colors" />
+      {isExpanded && (
+        <span className={cn("font-semibold tracking-tight", rightElement && "flex-1 text-left")}>
+          {label}
+        </span>
+      )}
+      {isExpanded && rightElement}
+    </Button>
+  );
+
+  // If expanded, just return the button without Tooltip wrapper.
+  if (isExpanded) {
+    return button;
+  }
+
+  // If collapsed, wrap with Tooltip
   return (
-    <Tooltip>
+    <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full flex items-center gap-4 px-3 h-12 rounded-2xl transition-all group",
-            isExpanded ? "justify-start" : "justify-center"
-          )}
-          onClick={() => navigate(endpoint)}
-        >
-          <Icon className="h-5 w-5 shrink-0 group-hover:text-primary transition-colors" />
-          {isExpanded && <span className="font-semibold tracking-tight">{label}</span>}
-        </Button>
+        {button}
       </TooltipTrigger>
-      {!isExpanded && <TooltipContent side="right" className="font-bold">{label}</TooltipContent>}
+      <TooltipContent side="right" className="font-bold">{label}</TooltipContent>
     </Tooltip>
   );
-}
+});
+SidebarItem.displayName = "SidebarItem";
