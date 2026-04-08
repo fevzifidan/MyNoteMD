@@ -4,6 +4,7 @@
     },
     "actions": {
         "backToHome": "Ana Sayfaya Dön",
-        "downloadPDF": "PDF İndir"
+        "downloadPDF": "PDF İndir",
+        "downloadMyNoteMD": "MyNoteMD Dosyası İndir"
     }
 }
