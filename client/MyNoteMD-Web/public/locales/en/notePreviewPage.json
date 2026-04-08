@@ -4,6 +4,7 @@
     },
     "actions": {
         "backToHome": "Back to Home",
-        "downloadPDF": "Download PDF"
+        "downloadPDF": "Download PDF",
+        "downloadMyNoteMD": "Download MyNoteMD File"
     }
 }

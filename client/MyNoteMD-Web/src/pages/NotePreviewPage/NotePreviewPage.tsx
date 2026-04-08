@@ -8,8 +8,11 @@ import { TopNav } from "@/features/navbar/top-right-nav";
 import { Sidebar } from "@/components/custom/FloatingSidebar/FloatingSidebar";
 import { NoteErrorState } from "@/shared/components/note-error-state";
 import { Button } from "@/components/ui/button";
-import { History, CheckCircle2, FileText } from "lucide-react";
+import { History, CheckCircle2, FileText, MoreHorizontal, Download } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import downloadMyNoteMD from "./helpers/exportMyNoteMD";
 
 const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
     const { id } = useParams();
@@ -25,6 +28,11 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
         contentRef,
         documentTitle: id || "note",
     });
+
+    const handleDownloadMyNoteMD = () => {
+        const content = contentMode === 'draft' ? draftNote : publishedNote;
+        downloadMyNoteMD(content || "", id || "note");
+    };
 
     React.useEffect(() => {
         const fetchNote = async () => {
@@ -83,15 +91,35 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
                                 <CheckCircle2 className="h-4 w-4" />
                                 <span>{t("common:status.final")}</span>
                             </Button>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handlePrint()}
-                                className="rounded-full gap-2 px-4 shadow-sm"
-                            >
-                                <FileText className="h-4 w-4" />
-                                <span>{t("notePreviewPage:actions.downloadPDF")}</span>
-                            </Button>
+                            <ButtonGroup>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handlePrint()}
+                                    className="rounded-full gap-2 px-4 shadow-sm"
+                                >
+                                    <FileText className="h-4 w-4" />
+                                    <span>{t("notePreviewPage:actions.downloadPDF")}</span>
+                                </Button>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" size="sm" className="rounded-full gap-2 px-4 shadow-sm">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuItem onClick={() => handlePrint()}>
+                                            <Download className="h-4 w-4 mr-2" />
+                                            <span>{t("notePreviewPage:actions.downloadPDF")}</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDownloadMyNoteMD()}>
+                                            <Download className="h-4 w-4 mr-2" />
+                                            <span>{t("notePreviewPage:actions.downloadMyNoteMD")}</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </ButtonGroup>
+
                         </div>
                         <div
                             ref={contentRef}
