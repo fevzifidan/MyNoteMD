@@ -20,6 +20,20 @@ const latexExtension = StreamLanguage.define(stex);
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ markdown, setMarkdown, editorRef, readOnly = false }) => {
   const { resolvedTheme } = useTheme();
 
+  const extensions = React.useMemo(() => [
+    cmMarkdown({ base: markdownLanguage, codeLanguages: languages }),
+    latexExtension,
+    EditorView.lineWrapping
+  ], []);
+
+  const basicSetup = React.useMemo(() => ({
+    lineNumbers: true,
+    history: true,
+    foldGutter: false,
+    highlightActiveLine: !readOnly,
+    bracketMatching: true,
+  }), [readOnly]);
+
   return (
     <div className="h-full border rounded-md overflow-hidden bg-background">
       <CodeMirror
@@ -29,18 +43,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ markdown, setMarkdown, 
         theme={resolvedTheme === 'dark' ? vscodeDark : 'light'}
         onChange={(val) => !readOnly && setMarkdown(val)}
         readOnly={readOnly}
-        extensions={[
-          cmMarkdown({ base: markdownLanguage, codeLanguages: languages }),
-          latexExtension,
-          EditorView.lineWrapping
-        ]}
-        basicSetup={{
-          lineNumbers: true,
-          history: true,
-          foldGutter: false,
-          highlightActiveLine: !readOnly,
-          bracketMatching: true,
-        }}
+        extensions={extensions}
+        basicSetup={basicSetup}
         className="text-xs sm:text-xs font-thin font-mono h-full"
       />
     </div>
