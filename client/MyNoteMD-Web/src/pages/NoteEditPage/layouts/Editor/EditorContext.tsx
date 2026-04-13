@@ -85,13 +85,14 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const saveDraft = async () => {
-    if (!noteData || isSavingDraft || markdown === lastSavedMarkdown) return;
+    const contentToSave = markdown;
+    if (!noteData || isSavingDraft || contentToSave === lastSavedMarkdown) return;
 
     setIsSavingDraft(true);
     try {
-      await noteService.update(noteData.id, { content: markdown }, { silent: true });
-      setLastSavedMarkdown(markdown);
-      setNoteData(prev => prev ? { ...prev, content: markdown } : null);
+      await noteService.update(noteData.id, { content: contentToSave }, { silent: true });
+      setLastSavedMarkdown(contentToSave);
+      // Removed destructive setNoteData call: prevent reverting user's new typings
     } catch (error: any) {
       console.error("Auto-save Error:", error);
     } finally {
