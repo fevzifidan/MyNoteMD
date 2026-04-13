@@ -1,30 +1,36 @@
-
-import { SymbolCategoryPopover } from "./SymbolCategoryPopover";
+import { useState } from "react";
 import { MATH_SYMBOLS } from "./math-data";
 import { useEditor } from "../Editor/EditorContext";
+import { CategoryTabs } from "./CategoryTabs";
+import { SymbolScrollBar } from "./SymbolScrollBar";
+
+const CATEGORIES = Object.keys(MATH_SYMBOLS) as (keyof typeof MATH_SYMBOLS)[];
 
 export default function MathTab() {
   const { insertMath } = useEditor();
-  const groupContainer = "inline-flex items-center border border-input bg-background rounded-md shadow-sm overflow-hidden h-9 divide-x";
-  const groupBtn = "h-full px-3 rounded-none bg-transparent hover:bg-accent hover:text-accent-foreground text-sm transition-colors shadow-none outline-none flex items-center gap-1.5";
+  const [selectedCategory, setSelectedCategory] = useState<keyof typeof MATH_SYMBOLS>(CATEGORIES[0]);
 
   const handleSelect = (latex: string) => {
     insertMath(latex);
   };
 
+  const symbols = MATH_SYMBOLS[selectedCategory];
+
   return (
-    <div className="flex items-center">
-      <div className={groupContainer}>
-        {Object.entries(MATH_SYMBOLS).map(([category, symbols]) => (
-          <SymbolCategoryPopover
-            key={category}
-            category={category}
-            symbols={symbols}
-            onSelect={handleSelect}
-            groupBtnStyle={groupBtn}
-          />
-        ))}
-      </div>
+    <div className="flex flex-col gap-1 min-w-0 flex-1">
+      {/* Row 1: Category selector tabs */}
+      <CategoryTabs
+        categories={CATEGORIES as string[]}
+        selected={selectedCategory}
+        onSelect={(cat) => setSelectedCategory(cat as keyof typeof MATH_SYMBOLS)}
+      />
+
+      {/* Row 2: Symbol scroll bar for selected category */}
+      <SymbolScrollBar
+        symbols={symbols}
+        category={selectedCategory}
+        onSelect={handleSelect}
+      />
     </div>
   );
 }
