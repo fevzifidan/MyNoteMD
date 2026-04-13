@@ -1,6 +1,6 @@
 import React from "react";
 
-interface BaseCardProps {
+interface BaseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   actions?: React.ReactNode;
   icon?: React.ReactNode;
@@ -8,10 +8,13 @@ interface BaseCardProps {
   onClick?: () => void;
 }
 
-export const BaseCard = ({ children, actions, icon, className = "", onClick }: BaseCardProps) => {
+export const BaseCard = React.forwardRef<HTMLDivElement, BaseCardProps>(
+  ({ children, actions, icon, className = "", onClick, ...props }, ref) => {
   return (
     <div
+      ref={ref}
       onClick={onClick}
+      {...props}
       className={`flex items-center justify-between p-5 rounded-3xl bg-card border transition-all hover:bg-accent/50 active:scale-[0.99] cursor-pointer hover:shadow-lg hover:border-primary/20 transition-all group ${className}`}>
       <div className="flex items-center gap-5">
         {/* Icon Area */}
@@ -32,4 +35,5 @@ export const BaseCard = ({ children, actions, icon, className = "", onClick }: B
       </div>
     </div>
   );
-};
+});
+BaseCard.displayName = "BaseCard";

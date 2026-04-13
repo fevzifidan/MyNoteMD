@@ -3,6 +3,7 @@
     "title": "Not Oluştur",
     "description": "Yeni bir not oluştur.",
     "collection": "Koleksiyon",
+    "selectCollection": "Bir Koleksiyon Seçin",
     "searchPlaceholder": "Koleksiyonları ara...",
     "noCollectionsFound": "Hiçbir koleksiyon bulunamadı.",
     "success": "Not başarıyla oluşturuldu!"

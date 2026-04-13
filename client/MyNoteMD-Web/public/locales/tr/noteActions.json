@@ -12,7 +12,7 @@
     },
     "handleAccessChange": {
         "title": "Erişimi Güncelle",
-        "description": "Bu notun erişimini güncellemek üzeresiniz. Emin misiniz?",
+        "description": "Bu notun erişimini {{status}} olarak güncellemek üzeresiniz. Emin misiniz?",
         "successful": "Erişim başarıyla güncellendi."
     },
     "handleDelete": {

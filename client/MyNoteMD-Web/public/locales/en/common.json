@@ -35,7 +35,8 @@
     "private": "Private",
     "draft": "Draft",
     "final": "Final Version",
-    "moving": "Moving..."
+    "moving": "Moving...",
+    "creating": "Creating..."
   },
   "error": {
     "err_reach_server": "Could not reach server!",

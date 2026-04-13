@@ -1,17 +1,20 @@
 import React from "react";
 
-interface BaseRowProps {
+interface BaseRowProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  onClick?: (e: React.MouseEvent) => void;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   actions?: React.ReactNode;
   icon?: React.ReactNode;
   className?: string;
 }
 
-export const BaseRow = ({ children, onClick, actions, icon, className = "" }: BaseRowProps) => {
+export const BaseRow = React.forwardRef<HTMLDivElement, BaseRowProps>(
+  ({ children, onClick, actions, icon, className = "", ...props }, ref) => {
   return (
     <div
+      ref={ref}
       onClick={onClick}
+      {...props}
       className={`group flex items-center justify-between p-3 rounded-xl transition-all hover:bg-accent/50 active:scale-[0.98] cursor-pointer ${className}`}
     >
       <div className="flex items-center gap-4">
@@ -41,4 +44,5 @@ export const BaseRow = ({ children, onClick, actions, icon, className = "" }: Ba
       </div>
     </div>
   );
-};
+});
+BaseRow.displayName = "BaseRow";

@@ -2,9 +2,11 @@
 
 import { Folder } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CollectionActions } from "./collection-actions";
+import { CollectionDropdownMenu, CollectionContextMenuContent } from "./collection-menus";
+import { useCollectionActions } from "../hooks/use-collection-actions";
 import { BaseRow } from "@/shared/components/base-row";
 import { useTranslation } from "react-i18next";
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 interface CollectionRowProps {
   id: string;
@@ -21,12 +23,16 @@ export const CollectionRow = ({ id, name, noteCount, createdAt }: CollectionRowP
     navigate(`/collection/notes?collectionId=${id}`);
   };
 
+  const actionsBag = useCollectionActions({ collectionId: id });
+
   return (
-    <BaseRow
-      onClick={handleItemClick}
-      icon={<Folder className="h-5 w-5" />}
-      actions={<CollectionActions collectionId={id} />}
-    >
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <BaseRow
+          onClick={handleItemClick}
+          icon={<Folder className="h-5 w-5" />}
+          actions={<CollectionDropdownMenu collectionId={id} actionsBag={actionsBag} />}
+        >
       <div className="flex flex-col">
         <span className="text-sm font-semibold leading-none mb-1">
           {name}
@@ -39,5 +45,10 @@ export const CollectionRow = ({ id, name, noteCount, createdAt }: CollectionRowP
         </span>
       </div>
     </BaseRow>
+    </ContextMenuTrigger>
+
+    <CollectionContextMenuContent collectionId={id} actionsBag={actionsBag} />
+    {actionsBag.dialogs}
+  </ContextMenu>
   );
 };

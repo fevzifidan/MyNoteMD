@@ -35,7 +35,8 @@
     "private": "Gizli",
     "draft": "Taslak",
     "final": "Final Versiyon",
-    "moving": "Taşınıyor..."
+    "moving": "Taşınıyor...",
+    "creating": "Oluşturuluyor..."
   },
   "error": {
     "err_reach_server": "Sunucuya ulaşılamıyor!",

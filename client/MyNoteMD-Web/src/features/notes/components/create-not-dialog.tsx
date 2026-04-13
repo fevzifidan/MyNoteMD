@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import { noteService, collectionService } from "@/shared/services/api";
 import notificationService from "@/shared/services/notification";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue } from "@/components/ui/combobox";
 import { useTranslation } from "react-i18next";
-import { t } from "i18next";
 
 // Type for Combobox
 type ComboboxOption = {
@@ -20,18 +19,22 @@ type ComboboxOption = {
   label: string; // Display
 };
 
-const defaultOption: ComboboxOption = { code: "", value: "", label: t("createNoteDialog:collection") };
-
 export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
+  const { t } = useTranslation(["createNoteDialog", "common"]);
+
+  // Defined inside component so t() is called after namespaces are loaded
+  const defaultOption = useMemo<ComboboxOption>(
+    () => ({ code: "", value: "", label: t("createNoteDialog:selectCollection") }),
+    [t]
+  );
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingCollections, setFetchingCollections] = useState(false);
 
   const [title, setTitle] = useState("");
   const [collections, setCollections] = useState<ComboboxOption[]>([]);
-  const [selectedCollection, setSelectedCollection] = useState<ComboboxOption>(defaultOption);
-
-  const { t } = useTranslation(["createNoteDialog", "common"]);
+  const [selectedCollection, setSelectedCollection] = useState<ComboboxOption | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -63,14 +66,14 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
     } else {
       // Reset the form when the dialog closes
       setTitle("");
-      setSelectedCollection(defaultOption);
+      setSelectedCollection(null);
     }
-  }, [open]);
+  }, [open, defaultOption]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim() || !selectedCollection.code) {
+    if (!title.trim() || !selectedCollection?.code) {
       notificationService.error(t("common:error.fill_all_fields"));
       return;
     }
@@ -79,7 +82,7 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
     try {
       await noteService.create({
         title: title,
-        collectionId: selectedCollection.code
+        collectionId: selectedCollection!.code
       });
       notificationService.success(t("createNoteDialog:success"));
       setOpen(false);
@@ -122,8 +125,8 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
               <Label>{t("createNoteDialog:collection")}</Label>
               <Combobox
                 items={collections}
-                value={selectedCollection}
-                onValueChange={(value) => setSelectedCollection(value ?? defaultOption)}
+                value={selectedCollection ?? defaultOption}
+                onValueChange={(value) => setSelectedCollection(value ?? null)}
                 disabled={fetchingCollections}
               >
                 <ComboboxTrigger
@@ -151,7 +154,7 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={!title.trim() || !selectedCollection.code || loading}>
+            <Button type="submit" disabled={!title.trim() || !selectedCollection?.code || loading}>
               {loading ? t("common:status.creating") : t("common:actions.create")}
             </Button>
           </DialogFooter>

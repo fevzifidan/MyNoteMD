@@ -12,7 +12,7 @@
     },
     "handleAccessChange": {
         "title": "Change Access",
-        "description": "Are you sure you want to change the access of this note?",
+        "description": "Are you sure you want to change the access of this note to {{status}}?",
         "successful": "Accessibility changed successfully."
     },
     "handleDelete": {

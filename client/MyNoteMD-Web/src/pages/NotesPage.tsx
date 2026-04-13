@@ -134,7 +134,7 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
 
         {/* Pagination - Only show if data exists */}
         {notes.length > 0 && (
-          <div className="mt-10 mb-20">
+          <div className="mt-10 mb-0">
             <SharedPagination
               currentPage={currentPage}
               hasNextPage={!!nextCursor}

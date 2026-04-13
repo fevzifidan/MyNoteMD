@@ -36,7 +36,18 @@ export function Sidebar() {
     if (!isExpanded) return;
 
     function handleClickOutside(event: MouseEvent) {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+      const target = event.target as Element;
+
+      // Radix modalları ve portalları dış tıklama olarak sayma (Sidebar içi modalların kapanmasını vb. önler)
+      if (
+        target.closest('[role="dialog"]') ||
+        target.closest('[role="alertdialog"]') ||
+        target.closest('[data-radix-portal]')
+      ) {
+        return;
+      }
+
+      if (sidebarRef.current && !sidebarRef.current.contains(target as Node)) {
         setIsExpanded(false);
       }
     }

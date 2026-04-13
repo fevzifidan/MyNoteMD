@@ -3,9 +3,11 @@
 import { Folder, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { BaseCard } from "@/shared/components/base-card";
-import { CollectionActions } from "./collection-actions";
+import { CollectionDropdownMenu, CollectionContextMenuContent } from "./collection-menus";
+import { useCollectionActions } from "../hooks/use-collection-actions";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 // Note: If types.ts is not found during build, this might need adjustment
 export interface CollectionResponseDto {
@@ -29,12 +31,16 @@ export const CollectionCard = ({ collection }: { collection: CollectionResponseD
     year: "numeric",
   }).format(new Date(collection.createdAt));
 
+  const actionsBag = useCollectionActions({ collectionId: collection.id });
+
   return (
-    <BaseCard
-      icon={<Folder className="h-7 w-7" />}
-      actions={<CollectionActions collectionId={collection.id} />}
-      onClick={() => handleViewCollection(collection.id)}
-    >
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <BaseCard
+          icon={<Folder className="h-7 w-7" />}
+          actions={<CollectionDropdownMenu collectionId={collection.id} actionsBag={actionsBag} />}
+          onClick={() => handleViewCollection(collection.id)}
+        >
       <h3 className="font-bold text-xl tracking-tight leading-none">
         {collection.name}
       </h3>
@@ -50,5 +56,10 @@ export const CollectionCard = ({ collection }: { collection: CollectionResponseD
         </span>
       </div>
     </BaseCard>
+    </ContextMenuTrigger>
+
+    <CollectionContextMenuContent collectionId={collection.id} actionsBag={actionsBag} />
+    {actionsBag.dialogs}
+  </ContextMenu>
   );
 };

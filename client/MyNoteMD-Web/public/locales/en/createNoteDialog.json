@@ -3,6 +3,7 @@
     "title": "Create Note",
     "description": "Create a new note.",
     "collection": "Collection",
+    "selectCollection": "Select Collection",
     "searchPlaceholder": "Search collections...",
     "noCollectionsFound": "No collections found.",
     "success": "Note created successfully!"

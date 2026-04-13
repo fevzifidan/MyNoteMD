@@ -117,7 +117,7 @@ export default function CollectionsPage() {
 
         {/* Pagination - Show only if there is data */}
         {collections.length > 0 && (
-          <div className="mt-12 mb-20">
+          <div className="mt-12 mb-0">
             <SharedPagination
               currentPage={currentPage}
               hasNextPage={!!nextCursor}
