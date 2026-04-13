@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import BasicTab from "./BasicTab";
 import MathTab from "./MathTab/MathTab";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
+
 
 export default function CommandPalette() {
   const [activeTab, setActiveTab] = useState("basic");
@@ -33,8 +35,12 @@ export default function CommandPalette() {
       </RadioGroup>
 
       {/* Bottom Section: Tool Bar (Horizontally Scrollable) */}
-      <div className="w-full overflow-x-auto scrollbar-hide">
-        <div className="flex items-center gap-2 min-w-max pb-1">
+      <div className="w-full overflow-x-auto hide-scrollbar px-1">
+        <div className={cn(
+          "flex items-center gap-2 pb-1",
+          activeTab === "math" ? "w-full" : "min-w-max"
+        )}>
+
 
           {/* Basic Tab Content */}
           {activeTab === "basic" && (

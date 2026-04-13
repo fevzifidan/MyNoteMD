@@ -157,3 +157,12 @@
   margin-top: 1.5em !important;
   margin-bottom: 1.5em !important;
 }
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
