@@ -19,7 +19,7 @@ interface SharedPaginationProps {
 export const SharedPagination = ({ currentPage, hasNextPage, onNext, onPrevious, disabled }: SharedPaginationProps) => {
   const { t } = useTranslation();
   return (
-    <Pagination className="mt-10">
+    <Pagination className="mt-5">
       <PaginationContent className="gap-4">
         <PaginationItem>
           <Button

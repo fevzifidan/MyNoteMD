@@ -7,6 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { ToggleGroup } from "@/components/ui/toggle-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -176,6 +179,20 @@ export default function BasicTab() {
           <DropdownMenuItem onClick={() => insertText("![alt](url)")}>{t('basicTab.insert.imageLink')}</DropdownMenuItem>
           <DropdownMenuItem onClick={() => applyFormat("```\n", "\n```")}>{t('basicTab.insert.code')}</DropdownMenuItem>
           <DropdownMenuItem onClick={() => insertText("\n| header | header |\n| --- | --- |\n| cell | cell |\n")}>{t('basicTab.insert.table')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => insertText("``")}>{t('basicTab.insert.inlineCode')}</DropdownMenuItem>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              {t('basicTab.insert.note.label')}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={() => applyFormat("> [!NOTE]\n> ", "")}>{t('basicTab.insert.note.note')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => applyFormat("> [!TIP]\n> ", "")}>{t('basicTab.insert.note.tip')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => applyFormat("> [!IMPORTANT]\n> ", "")}>{t('basicTab.insert.note.important')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => applyFormat("> [!WARNING]\n> ", "")}>{t('basicTab.insert.note.warning')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => applyFormat("> [!CAUTION]\n> ", "")}>{t('basicTab.insert.note.caution')}</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
       <Button variant="ghost" onClick={clearFormat} className="text-xs">{t('basicTab.clear')}</Button>

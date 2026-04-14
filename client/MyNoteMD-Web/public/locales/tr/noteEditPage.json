@@ -30,7 +30,16 @@
       "link": "Bağlantı",
       "imageLink": "Görsel Bağlantı",
       "code": "Kod",
-      "table": "Tablo"
+      "table": "Tablo",
+      "inlineCode": "Satır İçi Kod",
+      "note": {
+        "label": "Not",
+        "note": "Not",
+        "tip": "İpucu",
+        "important": "Önemli",
+        "warning": "Uyarı",
+        "caution": "Dikkat"
+      }
     },
     "clear": "Temizle"
   }

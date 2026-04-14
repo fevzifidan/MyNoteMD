@@ -19,8 +19,36 @@ type ComboboxOption = {
   label: string; // Display
 };
 
-export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
+interface CreateNoteDialogProps {
+  isExpanded?: boolean;
+  collectionId?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+}
+
+export function CreateNoteDialog({
+  isExpanded,
+  collectionId: propCollectionId,
+  open: propOpen,
+  onOpenChange: propOnOpenChange,
+  hideTrigger = false
+}: CreateNoteDialogProps) {
   const { t } = useTranslation(["createNoteDialog", "common"]);
+
+  // Internal state for uncontrolled usage
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Determine if component is controlled or uncontrolled
+  const isControlled = propOpen !== undefined;
+  const open = isControlled ? propOpen : internalOpen;
+  const setOpen = (val: boolean) => {
+    if (isControlled) {
+      propOnOpenChange?.(val);
+    } else {
+      setInternalOpen(val);
+    }
+  };
 
   // Defined inside component so t() is called after namespaces are loaded
   const defaultOption = useMemo<ComboboxOption>(
@@ -28,7 +56,6 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
     [t]
   );
 
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingCollections, setFetchingCollections] = useState(false);
 
@@ -38,7 +65,19 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
 
   useEffect(() => {
     if (open) {
+      // If collectionId is provided via props, we don't necessarily need to fetch all collections
+      // but we set the selected collection to match the prop
+      if (propCollectionId) {
+        setSelectedCollection({
+          code: propCollectionId,
+          label: "", // We don't need label if we aren't showing the select
+          value: ""
+        });
+      }
+
       const fetchCollections = async () => {
+        if (propCollectionId) return; // Skip fetching if pre-selected
+
         setFetchingCollections(true);
         try {
           const response = await collectionService.lookup();
@@ -57,7 +96,7 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
 
           setCollections([defaultOption, ...formattedData]);
         } catch (error) {
-
+          notificationService.error(t("common:error.generic"));
         } finally {
           setFetchingCollections(false);
         }
@@ -68,12 +107,14 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
       setTitle("");
       setSelectedCollection(null);
     }
-  }, [open, defaultOption]);
+  }, [open, defaultOption, propCollectionId, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim() || !selectedCollection?.code) {
+    const collectionIdToUse = propCollectionId || selectedCollection?.code;
+
+    if (!title.trim() || !collectionIdToUse) {
       notificationService.error(t("common:error.fill_all_fields"));
       return;
     }
@@ -82,12 +123,12 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
     try {
       await noteService.create({
         title: title,
-        collectionId: selectedCollection!.code
+        collectionId: collectionIdToUse
       });
       notificationService.success(t("createNoteDialog:success"));
       setOpen(false);
     } catch (error) {
-
+      notificationService.error(t("common:error.generic"));
     } finally {
       setLoading(false);
     }
@@ -95,20 +136,22 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen} modal={false}>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full flex items-center gap-4 h-10 rounded-xl pl-10 text-muted-foreground hover:text-foreground",
-            !isExpanded && "hidden"
-          )}
-        >
-          <FileText className="h-4 w-4 shrink-0" />
-          <span className="text-sm font-medium flex-1 text-left">{t("createNoteDialog:note")}</span>
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full flex items-center gap-4 h-10 rounded-xl pl-10 text-muted-foreground hover:text-foreground",
+              !isExpanded && "hidden"
+            )}
+          >
+            <FileText className="h-4 w-4 shrink-0" />
+            <span className="text-sm font-medium flex-1 text-left">{t("createNoteDialog:note")}</span>
+          </Button>
+        </DialogTrigger>
+      )}
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" onInteractOutside={(e) => e.preventDefault()}>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{t("createNoteDialog:title")}</DialogTitle>
@@ -121,40 +164,41 @@ export function CreateNoteDialog({ isExpanded }: { isExpanded: boolean }) {
               <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
             </div>
 
-            <div className="space-y-2 flex flex-col">
-              <Label>{t("createNoteDialog:collection")}</Label>
-              <Combobox
-                items={collections}
-                value={selectedCollection ?? defaultOption}
-                onValueChange={(value) => setSelectedCollection(value ?? null)}
-                disabled={fetchingCollections}
-              >
-                <ComboboxTrigger
-                  render={
-                    <Button variant="outline" className="w-full justify-between font-normal">
-                      <ComboboxValue />
-                    </Button>
-                  }
-                />
-                {/* z-index added: To prevent it from staying under the dialog overlay and blocking clicks */}
-                <ComboboxContent className="z-[9999]">
-                  <ComboboxInput showTrigger={false} placeholder={t("createNoteDialog:searchPlaceholder")} />
-                  <ComboboxEmpty>{t("createNoteDialog:noCollectionsFound")}</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item.code} value={item}>
-                        {item.label}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
-            </div>
+            {!propCollectionId && (
+              <div className="space-y-2 flex flex-col">
+                <Label>{t("createNoteDialog:collection")}</Label>
+                <Combobox
+                  items={collections}
+                  value={selectedCollection ?? defaultOption}
+                  onValueChange={(value) => setSelectedCollection(value ?? null)}
+                  disabled={fetchingCollections}
+                >
+                  <ComboboxTrigger
+                    render={
+                      <Button variant="outline" className="w-full justify-between font-normal">
+                        <ComboboxValue />
+                      </Button>
+                    }
+                  />
+                  <ComboboxContent className="z-[9999]">
+                    <ComboboxInput showTrigger={false} placeholder={t("createNoteDialog:searchPlaceholder")} />
+                    <ComboboxEmpty>{t("createNoteDialog:noCollectionsFound")}</ComboboxEmpty>
+                    <ComboboxList>
+                      {(item) => (
+                        <ComboboxItem key={item.code} value={item}>
+                          {item.label}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+              </div>
+            )}
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>{t("common:actions.cancel")}</Button>
-            <Button type="submit" disabled={!title.trim() || !selectedCollection?.code || loading}>
+            <Button type="submit" disabled={!title.trim() || (!propCollectionId && !selectedCollection?.code) || loading}>
               {loading ? t("common:status.creating") : t("common:actions.create")}
             </Button>
           </DialogFooter>

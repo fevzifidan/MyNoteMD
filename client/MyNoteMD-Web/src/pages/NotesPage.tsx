@@ -8,9 +8,10 @@ import { SharedPagination } from "@/shared/components/shared-pagination";
 import DashboardLayout from "@/features/dashboard/components/dashboard-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
 import { ChatBar } from "@/features/chatbar/components/ChatBar";
 import { useTranslation } from "react-i18next";
+import { CreateNoteDialog } from "@/features/notes/components/create-not-dialog";
 
 export default function NotesPage({ forCollection }: { forCollection?: boolean }) {
   const [searchParams] = useSearchParams();
@@ -22,6 +23,7 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isCreateNoteOpen, setIsCreateNoteOpen] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -85,12 +87,25 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
     }
   };
 
+  const handleCreateNote = () => {
+    setIsCreateNoteOpen(true);
+  }
+
   return (
     <DashboardLayout>
       <div className="flex flex-col min-h-[400px]">
-        {/* AI Button - Right Top (Only in collection mode) */}
+        {/* AI Button and Create Note Buttons - Right Top (Only in collection mode) */}
         {forCollection && collectionId && (
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between mb-4">
+            <Button
+              onClick={handleCreateNote}
+              variant="outline"
+              className="rounded-full gap-2 px-4 shadow-sm hover:shadow-primary/20 transition-all"
+              size="default"
+            >
+              <FileText className="w-4 h-4" />
+              <span>{t("notePage:createNote")}</span>
+            </Button>
             <Button
               onClick={() => setIsChatOpen(true)}
               className="group flex items-center gap-2 rounded-full px-6 shadow-lg hover:shadow-primary/20 transition-all"
@@ -154,6 +169,12 @@ export default function NotesPage({ forCollection }: { forCollection?: boolean }
           onOpenChange={setIsChatOpen}
         />
       )}
+      <CreateNoteDialog
+        open={isCreateNoteOpen}
+        onOpenChange={setIsCreateNoteOpen}
+        collectionId={collectionId || undefined}
+        hideTrigger={true}
+      />
     </DashboardLayout>
   );
 }

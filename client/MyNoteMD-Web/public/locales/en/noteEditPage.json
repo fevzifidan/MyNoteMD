@@ -30,7 +30,16 @@
       "link": "Link",
       "imageLink": "Image Link",
       "code": "Code",
-      "table": "Table"
+      "table": "Table",
+      "inlineCode": "Inline Code",
+      "note": {
+        "label": "Note",
+        "note": "Note",
+        "tip": "Tip",
+        "important": "Important",
+        "warning": "Warning",
+        "caution": "Caution"
+      }
     },
     "clear": "Clear"
   }
