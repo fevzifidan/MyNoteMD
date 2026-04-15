@@ -70,7 +70,7 @@ export function Sidebar() {
       <aside
         ref={sidebarRef}
         className={cn(
-          "fixed left-6 top-1/2 -translate-y-1/2 z-[90] transition-all duration-500 ease-in-out",
+          "fixed left-6 top-1/2 -translate-y-1/2 z-30 transition-all duration-500 ease-in-out",
           "hidden min-[1060px]:flex flex-col items-center py-6", // Not seen on mobile
           "bg-card/80 backdrop-blur-lg border shadow-2xl rounded-[2.5rem]",
           isExpanded ? "w-64 px-4" : "w-20 px-2"
@@ -93,7 +93,7 @@ export function Sidebar() {
         - 'block': Seen on mobile
         - 'min-[1060px]:hidden': Not seen on 1060px and above
       */}
-      <div className="min-[1060px]:hidden fixed top-6 left-6 z-[110]">
+      <div className="min-[1060px]:hidden fixed top-6 left-6 z-40">
         <Sheet>
           <SheetTrigger asChild>
             <Button

@@ -7,12 +7,12 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 
-export default function CommandPalette() {
+export default function CommandPalette({ className }: { className?: string }) {
   const [activeTab, setActiveTab] = useState("basic");
   const { t } = useTranslation('noteEditPage');
 
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center bg-card text-card-foreground border shadow-xl rounded-3xl p-3 w-max max-w-[75vw]">
+    <div className={cn("fixed top-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center bg-card text-card-foreground border shadow-xl rounded-3xl p-3 w-max max-w-[75vw] max-[1060px]:top-24 transition-all duration-300", className)}>
 
       {/* Top Section: Radio Buttons (Centered) */}
       <RadioGroup

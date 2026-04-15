@@ -42,5 +42,20 @@
       }
     },
     "clear": "Clear"
+  },
+  "insertTable": {
+    "title": "Create Table",
+    "rows": "Rows",
+    "cols": "Columns",
+    "addRow": "Add Row",
+    "addCol": "Add Column",
+    "removeRow": "Remove Row",
+    "removeCol": "Remove Column",
+    "placeholder": {
+      "header": "Header...",
+      "cell": "Cell..."
+    },
+    "cancel": "Cancel",
+    "insert": "Insert Table"
   }
 }

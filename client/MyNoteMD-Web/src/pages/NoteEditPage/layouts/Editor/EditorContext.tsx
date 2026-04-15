@@ -18,6 +18,7 @@ interface EditorContextType {
   insertText: (snippet: string) => void;
   clearFormat: () => void;
   insertMath: (snippet: string) => void;
+  toggleChecklist: () => void;
   editorRef: React.RefObject<ReactCodeMirrorRef | null>;
   viewMode: 'editor' | 'preview';
   setViewMode: (mode: 'editor' | 'preview') => void;
@@ -350,6 +351,40 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     view.focus();
   };
 
+  const toggleChecklist = () => {
+    const view = getView();
+    if (!view) return;
+
+    const { from } = view.state.selection.main;
+    const line = view.state.doc.lineAt(from);
+    const lineText = line.text;
+
+    // Check for existing checklist marker (e.g., -/+ [ ], -/+ [x], -/+ [X] at the start, or after a list bullet)
+    const checklistRegex = /^(\s*[-+]\s([-*+]?\s*)?)\[( |x|X)\]\s/;
+    const match = lineText.match(checklistRegex);
+
+    if (match) {
+      const marker = match[3];
+      const newMarker = marker === ' ' ? 'x' : ' ';
+      const bracketPos = match[0].indexOf('[');
+      const posToReplace = line.from + bracketPos + 1;
+
+      view.dispatch({
+        changes: { from: posToReplace, to: posToReplace + 1, insert: newMarker }
+      });
+    } else {
+      const listMatch = lineText.match(/^(\s*([-*+]?\s*)?)/);
+      const insertPos = line.from + (listMatch ? listMatch[0].length : 0);
+      const insertion = "- [ ] ";
+
+      view.dispatch({
+        changes: { from: insertPos, to: insertPos, insert: insertion },
+        selection: { anchor: from + insertion.length }
+      });
+    }
+    view.focus();
+  };
+
   return (
     <EditorContext.Provider
       value={{
@@ -361,6 +396,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         insertText,
         clearFormat,
         insertMath,
+        toggleChecklist,
         editorRef,
         viewMode,
         setViewMode,

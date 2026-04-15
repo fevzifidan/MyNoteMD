@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Bold, Italic, Underline, Strikethrough, ListOrdered, List, AlignLeft, AlignCenter, AlignRight, Palette } from "lucide-react";
+import { ChevronDown, Bold, Italic, Underline, Strikethrough, ListOrdered, List, AlignLeft, AlignCenter, AlignRight, Palette, ListTodo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEditor } from "./Editor/EditorContext";
 import {
@@ -16,12 +16,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
+import { InsertTableDialog } from "./Editor/components/InsertTableDialog";
 
 export default function BasicTab() {
-  const { applyFormat, changeFontSize, clearFormat, insertText } = useEditor();
+  const { applyFormat, changeFontSize, clearFormat, insertText, toggleChecklist } = useEditor();
   const { t } = useTranslation('noteEditPage');
   const [textColor, setTextColor] = useState("#ef4444"); // Default red
   const [highlightColor, setHighlightColor] = useState("#eab308"); // Default yellow
+  const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
 
   // Sample quick color palette
   const colors = ["#ef4444", "#3b82f6", "#22c55e", "#eab308", "#a855f7", "#000000"];
@@ -154,6 +156,11 @@ export default function BasicTab() {
         <Button variant={"outline"} className={groupBtn} onClick={() => applyFormat("- ", "")}><List /></Button>
       </ToggleGroup>
 
+      {/* Checklist Group */}
+      <ToggleGroup type="single" className={groupContainer}>
+        <Button variant={"outline"} className={groupBtn} onClick={toggleChecklist}><ListTodo /></Button>
+      </ToggleGroup>
+
       {/* FN Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -178,7 +185,7 @@ export default function BasicTab() {
           <DropdownMenuItem onClick={() => insertText("[title](url)")}>{t('basicTab.insert.link')}</DropdownMenuItem>
           <DropdownMenuItem onClick={() => insertText("![alt](url)")}>{t('basicTab.insert.imageLink')}</DropdownMenuItem>
           <DropdownMenuItem onClick={() => applyFormat("```\n", "\n```")}>{t('basicTab.insert.code')}</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => insertText("\n| header | header |\n| --- | --- |\n| cell | cell |\n")}>{t('basicTab.insert.table')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsTableDialogOpen(true)}>{t('basicTab.insert.table')}</DropdownMenuItem>
           <DropdownMenuItem onClick={() => insertText("``")}>{t('basicTab.insert.inlineCode')}</DropdownMenuItem>
 
           <DropdownMenuSub>
@@ -196,6 +203,12 @@ export default function BasicTab() {
         </DropdownMenuContent>
       </DropdownMenu>
       <Button variant="ghost" onClick={clearFormat} className="text-xs">{t('basicTab.clear')}</Button>
+
+      <InsertTableDialog 
+        open={isTableDialogOpen} 
+        onOpenChange={setIsTableDialogOpen} 
+        onInsert={insertText} 
+      />
     </>
   )
 }

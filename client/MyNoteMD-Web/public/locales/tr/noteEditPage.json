@@ -42,5 +42,20 @@
       }
     },
     "clear": "Temizle"
+  },
+  "insertTable": {
+    "title": "Tablo Oluştur",
+    "rows": "Satır",
+    "cols": "Sütun",
+    "addRow": "Satır Ekle",
+    "addCol": "Sütun Ekle",
+    "removeRow": "Satırı Sil",
+    "removeCol": "Sütunu Sil",
+    "placeholder": {
+      "header": "Başlık...",
+      "cell": "Hücre..."
+    },
+    "cancel": "Vazgeç",
+    "insert": "Tabloyu Ekle"
   }
 }
