@@ -3,7 +3,8 @@ import MarkdownEditor from './MarkdownEditor';
 import MarkdownPreview from '../../../Note/shared/MarkdownPreview';
 import { useEditor } from './EditorContext';
 import { Button } from '@/components/ui/button';
-import { Eye, Edit3, Save, CheckCircle2, History, Cloud, CloudOff, Loader2 } from 'lucide-react';
+import { ModeToggle, ModeToggleOption } from '@/shared/components/mode-toggle';
+import { Eye, Edit3, Save, CheckCircle2, FileText, Cloud, CloudOff, Loader2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,16 @@ const EditorContainer: React.FC = () => {
     await publishNote();
   };
 
+  const contentModeOptions: ModeToggleOption<'draft' | 'published'>[] = [
+    { value: 'draft', icon: FileText, label: t('editor.draft') },
+    { value: 'published', icon: CheckCircle2, label: t('editor.finalVersion') },
+  ];
+
+  const viewModeOptions: ModeToggleOption<'editor' | 'preview'>[] = [
+    { value: 'editor', icon: Edit3, label: t('editor.editor') },
+    { value: 'preview', icon: Eye, label: t('editor.preview') },
+  ];
+
   if (isLoading) {
     return (
       <div className="flex flex-col h-[calc(100vh-80px)] w-full lg:w-[85%] lg:max-w-none mx-auto px-0 sm:px-6 lg:px-8 py-4 gap-4">
@@ -57,24 +68,11 @@ const EditorContainer: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
         <div className="flex gap-2">
           {/* Draft / Final Version Toggle */}
-          <Button
-            size="sm"
-            variant={contentMode === 'draft' ? 'default' : 'outline'}
-            onClick={() => setContentMode('draft')}
-            className="rounded-full gap-2 px-4 shadow-sm"
-          >
-            <History className="h-4 w-4" />
-            <span>{t('editor.draft')}</span>
-          </Button>
-          <Button
-            size="sm"
-            variant={contentMode === 'published' ? 'default' : 'outline'}
-            onClick={() => setContentMode('published')}
-            className="rounded-full gap-2 px-4 shadow-sm"
-          >
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{t('editor.finalVersion')}</span>
-          </Button>
+          <ModeToggle
+            value={contentMode}
+            onValueChange={setContentMode}
+            options={contentModeOptions}
+          />
         </div>
 
         <div className="flex items-center gap-2">
@@ -118,24 +116,11 @@ const EditorContainer: React.FC = () => {
           {/* Editor / Preview Toggle */}
           <div className="h-8 w-[1px] bg-border mx-2 hidden sm:block" />
 
-          <Button
-            size="sm"
-            variant={viewMode === 'editor' ? 'default' : 'outline'}
-            onClick={() => setViewMode('editor')}
-            className="rounded-full gap-2 px-4 shadow-sm"
-          >
-            <Edit3 className="h-4 w-4" />
-            <span>{t('editor.editor')}</span>
-          </Button>
-          <Button
-            size="sm"
-            variant={viewMode === 'preview' ? 'default' : 'outline'}
-            onClick={() => setViewMode('preview')}
-            className="rounded-full gap-2 px-4 shadow-sm"
-          >
-            <Eye className="h-4 w-4" />
-            <span>{t('editor.preview')}</span>
-          </Button>
+          <ModeToggle
+            value={viewMode}
+            onValueChange={(value) => setViewMode(value)}
+            options={viewModeOptions}
+          />
         </div>
       </div>
 
