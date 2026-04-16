@@ -8,7 +8,8 @@ import { TopNav } from "@/features/navbar/top-right-nav";
 import { Sidebar } from "@/components/custom/FloatingSidebar/FloatingSidebar";
 import { NoteErrorState } from "@/shared/components/note-error-state";
 import { Button } from "@/components/ui/button";
-import { History, CheckCircle2, FileText, MoreHorizontal, Download } from "lucide-react";
+import { CheckCircle2, FileText, MoreHorizontal, Download } from "lucide-react";
+import { ModeToggle, ModeToggleOption } from "@/shared/components/mode-toggle";
 import { useTranslation } from "react-i18next";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -23,6 +24,11 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
     const [contentMode, setContentMode] = React.useState<'draft' | 'published'>('published');
     const { t } = useTranslation(["commons", "notePreviewPage"]);
     const contentRef = React.useRef<HTMLDivElement>(null);
+
+    const contentModeOptions: ModeToggleOption<'draft' | 'published'>[] = [
+        { value: 'draft', icon: FileText, label: t("common:status.draft") },
+        { value: 'published', icon: CheckCircle2, label: t("common:status.final") },
+    ];
 
     const handlePrint = useReactToPrint({
         contentRef,
@@ -73,24 +79,11 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
                 ) : (
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center justify-end gap-2 mb-4">
-                            <Button
-                                size="sm"
-                                variant={contentMode === 'draft' ? 'default' : 'outline'}
-                                onClick={() => setContentMode('draft')}
-                                className="rounded-full gap-2 px-4 shadow-sm"
-                            >
-                                <History className="h-4 w-4" />
-                                <span>{t("common:status.draft")}</span>
-                            </Button>
-                            <Button
-                                size="sm"
-                                variant={contentMode === 'published' ? 'default' : 'outline'}
-                                onClick={() => setContentMode('published')}
-                                className="rounded-full gap-2 px-4 shadow-sm"
-                            >
-                                <CheckCircle2 className="h-4 w-4" />
-                                <span>{t("common:status.final")}</span>
-                            </Button>
+                            <ModeToggle
+                                value={contentMode}
+                                onValueChange={setContentMode}
+                                options={contentModeOptions}
+                            />
                             <ButtonGroup>
                                 <Button
                                     size="sm"
