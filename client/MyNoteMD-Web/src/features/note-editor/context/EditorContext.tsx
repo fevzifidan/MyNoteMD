@@ -137,7 +137,6 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [contentMode, noteData?.content, noteData?.publishedContent]);
 
   const getView = () => editorRef.current?.view;
-  // ... (rest of the formatting methods remain unchanged, omitting for brevity in TargetContent matching)
 
   const mergeStyleProps = (oldProps: string, newProps: string, toggle = true) => {
     const propsObj: Record<string, string> = {};
@@ -339,7 +338,6 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (isInline) {
         finalSnippet = `$${cleanSnippet}$`;
       } else {
-        // finalSnippet = `\n$$\n${cleanSnippet}\n$$\n`;
         finalSnippet = `$${cleanSnippet}$`;
       }
     }
@@ -359,7 +357,6 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const line = view.state.doc.lineAt(from);
     const lineText = line.text;
 
-    // Check for existing checklist marker (e.g., -/+ [ ], -/+ [x], -/+ [X] at the start, or after a list bullet)
     const checklistRegex = /^(\s*[-+]\s([-*+]?\s*)?)\[( |x|X)\]\s/;
     const match = lineText.match(checklistRegex);
 

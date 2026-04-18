@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import MarkdownPreview from "@/pages/Note/shared/MarkdownPreview";
+import MarkdownPreview from "@/shared/components/markdown-preview/MarkdownPreview";
 import { type Message } from "../hooks/useChat";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";

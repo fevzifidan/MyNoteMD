@@ -1,32 +1,17 @@
-import React from "react";
-import MarkdownPreview from "../Note/shared/MarkdownPreview";
 import { useParams } from "react-router-dom";
-import apiService from "@/shared/services/api";
 import { NoteErrorState } from "@/shared/components/note-error-state";
 import { ThemeToggle } from "@/components/custom/ThemeToggle/ThemeToggle";
+import { useNotePreview } from "@/features/notes/hooks/use-note-preview";
+import MarkdownPreview from "@/shared/components/markdown-preview/MarkdownPreview";
 
 const GuestPreviewPage = () => {
-    const { id } = useParams();
-    const [note, setNote] = React.useState<string | null>(null);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState(false);
+    const { id } = useParams<{ id: string }>();
 
-    React.useEffect(() => {
-        const fetchNote = async () => {
-            try {
-                const res = await apiService.get(`/notes/public/${id}`, { silent: true });
-                setNote(res.content || "");
-            }
-            catch (error: any) {
-                setError(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchNote();
-
-    }, [id]);
+    const {
+        currentContent,
+        loading,
+        error
+    } = useNotePreview({ id, isPublic: true });
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -39,7 +24,7 @@ const GuestPreviewPage = () => {
                 ) : error ? (
                     <NoteErrorState />
                 ) : (
-                    <MarkdownPreview markdown={note || ""} />
+                    <MarkdownPreview markdown={currentContent} />
                 )}
             </main>
         </div>

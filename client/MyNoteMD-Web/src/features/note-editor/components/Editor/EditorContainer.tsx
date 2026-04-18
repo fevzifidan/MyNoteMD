@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import MarkdownEditor from './MarkdownEditor';
-import MarkdownPreview from '../../../Note/shared/MarkdownPreview';
-import { useEditor } from './EditorContext';
+import MarkdownPreview from '@/shared/components/markdown-preview/MarkdownPreview';
+import { useEditor } from '../../context/EditorContext';
 import { Button } from '@/components/ui/button';
-import { ModeToggle, ModeToggleOption } from '@/shared/components/mode-toggle';
+import { ModeToggle, type ModeToggleOption } from '@/shared/components/mode-toggle';
 import { Eye, Edit3, Save, CheckCircle2, FileText, Cloud, CloudOff, Loader2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
+
+import { NoteDownloadActions } from '@/features/notes/components/note-download-actions';
 
 const EditorContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,13 +67,20 @@ const EditorContainer: React.FC = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] w-full lg:w-[85%] lg:max-w-none mx-auto px-0 sm:px-6 lg:px-8 py-4 gap-4 text-left">
       {/* View Toggle & Content Mode Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
-        <div className="flex gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 mb-2">
+        <div className="flex gap-2 items-center">
           {/* Draft / Final Version Toggle */}
           <ModeToggle
             value={contentMode}
             onValueChange={setContentMode}
             options={contentModeOptions}
+          />
+
+          <div className="h-8 w-[1px] bg-border mx-2 hidden sm:block" />
+
+          <NoteDownloadActions
+            content={markdown}
+            noteId={id || "note"}
           />
         </div>
 
@@ -83,9 +92,8 @@ const EditorContainer: React.FC = () => {
               variant="ghost"
               onClick={saveDraft}
               disabled={isSavingDraft || !hasUnsavedDraftChanges}
-              className={`rounded-full gap-2 px-3 text-sm flex ${
-                hasUnsavedDraftChanges ? "text-amber-500 hover:text-amber-600 hover:bg-amber-50" : "text-muted-foreground"
-              }`}
+              className={`rounded-full gap-2 px-3 text-sm flex ${hasUnsavedDraftChanges ? "text-amber-500 hover:text-amber-600 hover:bg-amber-50" : "text-muted-foreground"
+                }`}
             >
               {isSavingDraft ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -106,10 +114,10 @@ const EditorContainer: React.FC = () => {
               size="sm"
               variant="secondary"
               onClick={handlePublish}
-              className="rounded-full gap-2 px-4 shadow-sm bg-green-600 hover:bg-green-700 text-white"
+              className="rounded-full gap-1.5 sm:gap-2 px-3 sm:px-4 shadow-sm bg-green-600 hover:bg-green-700 text-white"
             >
               <Save className="h-4 w-4" />
-              <span>{t('editor.saveAsFinalVersion')}</span>
+              <span className="hidden sm:inline">{t('editor.saveAsFinalVersion')}</span>
             </Button>
           )}
 

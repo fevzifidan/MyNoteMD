@@ -71,9 +71,9 @@ export function Sidebar() {
         ref={sidebarRef}
         className={cn(
           "fixed left-6 top-1/2 -translate-y-1/2 z-30 transition-all duration-500 ease-in-out",
-          "hidden min-[1060px]:flex flex-col items-center py-6", // Not seen on mobile
-          "bg-card/80 backdrop-blur-lg border shadow-2xl rounded-[2.5rem]",
-          isExpanded ? "w-64 px-4" : "w-20 px-2"
+          "hidden min-[1060px]:flex flex-col items-center py-4", // Reduced py-6 to py-4
+          "bg-card/80 backdrop-blur-lg border shadow-2xl rounded-[2rem]", // Reduced rounded-[2.5rem] to rounded-[2rem]
+          isExpanded ? "w-52 px-3" : "w-16 px-2" // Reduced w-64/w-20
         )}
       >
         <Button
@@ -192,16 +192,16 @@ const SidebarItem = React.forwardRef<HTMLButtonElement, any>((props, ref) => {
       ref={ref}
       variant="ghost"
       className={cn(
-        "w-full flex items-center gap-4 px-3 h-12 rounded-2xl transition-all group",
+        "w-full flex items-center gap-3 px-2.5 h-10 rounded-xl transition-all group", // Reduced gap, h-12 to h-10, and rounded
         isExpanded ? "justify-start" : "justify-center",
         className
       )}
       onClick={handleClick}
       {...rest}
     >
-      <Icon className="h-5 w-5 shrink-0 group-hover:text-primary transition-colors" />
+      <Icon className="h-[1.125rem] w-[1.125rem] shrink-0 group-hover:text-primary transition-colors" />
       {isExpanded && (
-        <span className={cn("font-semibold tracking-tight", rightElement && "flex-1 text-left")}>
+        <span className={cn("font-semibold text-sm tracking-tight", rightElement && "flex-1 text-left")}>
           {label}
         </span>
       )}
