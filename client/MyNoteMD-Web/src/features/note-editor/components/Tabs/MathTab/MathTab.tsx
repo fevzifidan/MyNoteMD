@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MATH_SYMBOLS } from "./math-data";
-import { useEditor } from "../Editor/EditorContext";
+import { useEditor } from "../../../context/EditorContext";
 import { CategoryTabs } from "./CategoryTabs";
 import { SymbolScrollBar } from "./SymbolScrollBar";
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import BasicTab from "./BasicTab";
-import MathTab from "./MathTab/MathTab";
+import BasicTab from "../Tabs/BasicTab";
+import MathTab from "../Tabs/MathTab/MathTab";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 

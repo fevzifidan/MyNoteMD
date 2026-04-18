@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, Bold, Italic, Underline, Strikethrough, ListOrdered, List, AlignLeft, AlignCenter, AlignRight, Palette, ListTodo } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEditor } from "./Editor/EditorContext";
+import { useEditor } from "../../context/EditorContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
-import { InsertTableDialog } from "./Editor/components/InsertTableDialog";
+import { InsertTableDialog } from "../Editor/InsertTableDialog";
 
 export default function BasicTab() {
   const { applyFormat, changeFontSize, clearFormat, insertText, toggleChecklist } = useEditor();

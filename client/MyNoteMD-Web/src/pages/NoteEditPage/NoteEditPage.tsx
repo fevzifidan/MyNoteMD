@@ -1,8 +1,6 @@
 import { TopNav } from "@/features/navbar/top-right-nav";
-import CommandPalette from "./layouts/CommandPalette";
 import { Sidebar } from "@/components/custom/FloatingSidebar/FloatingSidebar";
-import EditorContainer from "./layouts/Editor/EditorContainer";
-import { EditorProvider } from "./layouts/Editor/EditorContext";
+import { EditorProvider, EditorContainer, CommandPalette } from "@/features/note-editor";
 
 export default function NoteEditPage() {
   return (
