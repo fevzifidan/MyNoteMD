@@ -25,7 +25,7 @@
   },
   "row": {
     "noteCount": "({{count}} not)",
-    "createdAt": "Oluşturulma tarihi:"
+    "updatedAt": "Son güncelleme:"
   },
   "create": {
     "triggerLabel": "Koleksiyon",

@@ -12,10 +12,10 @@ interface CollectionRowProps {
   id: string;
   name: string;
   noteCount: number;
-  createdAt: string;
+  lastUpdate: string;
 }
 
-export const CollectionRow = ({ id, name, noteCount, createdAt }: CollectionRowProps) => {
+export const CollectionRow = ({ id, name, noteCount, lastUpdate }: CollectionRowProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation('collectionActions');
 
@@ -41,7 +41,7 @@ export const CollectionRow = ({ id, name, noteCount, createdAt }: CollectionRowP
           </span>
         </span>
         <span className="text-xs text-muted-foreground text-left font-medium opacity-70">
-          {t('row.createdAt')} {createdAt}
+          {t('row.updatedAt')} {lastUpdate || "—"}
         </span>
       </div>
     </BaseRow>

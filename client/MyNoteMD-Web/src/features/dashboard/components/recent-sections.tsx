@@ -9,6 +9,7 @@ import { NoteRow } from "@/features/notes/components/note-row";
 import { ShowMoreButton } from "./show-more-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
+import { formatLocalizedDate } from "@/shared/utils/date-utils";
 
 export const RecentActivity = () => {
   const [collections, setCollections] = useState<any[]>([]);
@@ -21,11 +22,9 @@ export const RecentActivity = () => {
     const fetchRecentData = async () => {
       setLoading(true);
       try {
-        // Send two requests at the same time for performance
-        // Get only 5 records from API (pageSize=5)
         const [collectionsRes, notesRes] = await Promise.all([
-          apiService.get("/collections", { params: { pageSize: 5 } }),
-          apiService.get("/notes", { params: { pageSize: 5 } }),
+          apiService.get("/collections", { params: { limit: 5 } }),
+          apiService.get("/notes", { params: { limit: 5 } }),
         ]);
 
         setCollections(collectionsRes.items || []);
@@ -60,15 +59,19 @@ export const RecentActivity = () => {
             <ListSkeleton />
           ) : (
             <>
-              {collections.slice(0, 5).map((item) => (
-                <CollectionRow
-                  key={item.id}
-                  id={item.id}
-                  name={item.name}
-                  noteCount={item.noteCount}
-                  createdAt={new Date(item.createdAt).toLocaleDateString()}
-                />
-              ))}
+              {collections.slice(0, 5).map((item) => {
+                const formattedDate = formatLocalizedDate(item.updatedAt || item.createdAt);
+
+                return (
+                  <CollectionRow
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    noteCount={item.noteCount}
+                    lastUpdate={formattedDate}
+                  />
+                );
+              })}
               {collections.length === 0 && (
                 <p className="text-sm text-muted-foreground py-4 px-2 italic">{t("dashboard:noRecentCollections")}</p>
               )}
@@ -86,15 +89,19 @@ export const RecentActivity = () => {
             <ListSkeleton />
           ) : (
             <>
-              {notes.slice(0, 5).map((item) => (
-                <NoteRow
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  status={item.isPublic ? t("common:public") : t("common:private")}
-                  lastUpdated={new Date(item.updatedAt).toLocaleDateString()}
-                />
-              ))}
+              {notes.slice(0, 5).map((item) => {
+                const formattedDate = formatLocalizedDate(item.updatedAt || item.createdAt);
+
+                return (
+                  <NoteRow
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    status={item.isPublic ? t("common:public") : t("common:private")}
+                    lastUpdated={formattedDate}
+                  />
+                );
+              })}
               {notes.length === 0 && (
                 <p className="text-sm text-muted-foreground py-4 px-2 italic">{t("dashboard:noRecentNotes")}</p>
               )}

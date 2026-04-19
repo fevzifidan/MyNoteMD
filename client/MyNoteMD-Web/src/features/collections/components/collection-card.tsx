@@ -9,12 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 
-// Note: If types.ts is not found during build, this might need adjustment
 export interface CollectionResponseDto {
   id: string;
   name: string;
   noteCount: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export const CollectionCard = ({ collection }: { collection: CollectionResponseDto }) => {
@@ -25,11 +25,14 @@ export const CollectionCard = ({ collection }: { collection: CollectionResponseD
     navigate(`/collection/notes?collectionId=${collectionId}`);
   };
 
+  const dateToFormat = collection.updatedAt || collection.createdAt;
+  const validDate = dateToFormat ? new Date(dateToFormat) : new Date();
+
   const formattedDate = new Intl.DateTimeFormat(i18n.language, {
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(collection.createdAt));
+  }).format(isNaN(validDate.getTime()) ? new Date() : validDate);
 
   const actionsBag = useCollectionActions({ collectionId: collection.id });
 
@@ -41,25 +44,25 @@ export const CollectionCard = ({ collection }: { collection: CollectionResponseD
           actions={<CollectionDropdownMenu collectionId={collection.id} actionsBag={actionsBag} />}
           onClick={() => handleViewCollection(collection.id)}
         >
-      <h3 className="font-bold text-xl tracking-tight leading-none">
-        {collection.name}
-      </h3>
-      <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
-        <span className="flex items-center gap-1.5">
-          <Badge variant="secondary" className="rounded-md font-bold">
-            {t('card.noteCount', { count: collection.noteCount })}
-          </Badge>
-        </span>
-        <span className="flex items-center gap-1 text-xs">
-          <Calendar className="h-3 w-3" />
-          {formattedDate}
-        </span>
-      </div>
-    </BaseCard>
-    </ContextMenuTrigger>
+          <h3 className="font-bold text-xl tracking-tight leading-none">
+            {collection.name}
+          </h3>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
+            <span className="flex items-center gap-1.5">
+              <Badge variant="secondary" className="rounded-md font-bold">
+                {t('card.noteCount', { count: collection.noteCount })}
+              </Badge>
+            </span>
+            <span className="flex items-center gap-1 text-xs">
+              <Calendar className="h-3 w-3" />
+              {formattedDate}
+            </span>
+          </div>
+        </BaseCard>
+      </ContextMenuTrigger>
 
-    <CollectionContextMenuContent collectionId={collection.id} actionsBag={actionsBag} />
-    {actionsBag.dialogs}
-  </ContextMenu>
+      <CollectionContextMenuContent collectionId={collection.id} actionsBag={actionsBag} />
+      {actionsBag.dialogs}
+    </ContextMenu>
   );
 };

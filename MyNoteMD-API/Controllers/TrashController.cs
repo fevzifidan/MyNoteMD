@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyNoteMD_API.Data;
@@ -24,6 +24,17 @@ namespace MyNoteMD_API.Controllers
         {
             _context = context;
             _auditService = auditService;
+        }
+
+        private async Task UpdateCollectionTime(Guid collectionId)
+        {
+            var collection = await _context.Collections
+                .FirstOrDefaultAsync(c => c.Id == collectionId);
+            if (collection != null)
+            {
+                collection.UpdatedAt = DateTimeOffset.UtcNow;
+                _context.Entry(collection).State = EntityState.Modified;
+            }
         }
 
         private Guid GetCurrentUserId()
@@ -198,6 +209,7 @@ namespace MyNoteMD_API.Controllers
                 }
 
                 note.DeletedAt = null;
+                await UpdateCollectionTime(note.CollectionId); // Update collection timestamp when note is restored
             }
             else if (type.ToLower() == "collection")
             {
