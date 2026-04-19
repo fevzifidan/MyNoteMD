@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyNoteMD_API.DTOs
 {
@@ -10,7 +10,8 @@ namespace MyNoteMD_API.DTOs
         Guid Id,
         string Name,
         int NoteCount,
-        DateTimeOffset CreatedAt
+        DateTimeOffset CreatedAt,
+        DateTimeOffset? UpdatedAt
     );
 
     public record PagedCollectionResponseDto(

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyNoteMD_API.Data;
@@ -59,21 +59,23 @@ namespace MyNoteMD_API.Controllers
                 var cursorId = decodedCursor.Value.Id;
 
                 // Cursor filter for "Newest first" (DESC) sorting
+                // We use UpdatedAt ?? CreatedAt logic
                 query = query.Where(c =>
-                    c.CreatedAt < cursorDate ||
-                    (c.CreatedAt == cursorDate && c.Id.CompareTo(cursorId) < 0));
+                    (c.UpdatedAt ?? c.CreatedAt) < cursorDate ||
+                    ((c.UpdatedAt ?? c.CreatedAt) == cursorDate && c.Id.CompareTo(cursorId) < 0));
             }
 
             // 5. Fetching Data (Limit + 1 Method)
             var collections = await query
-                .OrderByDescending(c => c.CreatedAt)
+                .OrderByDescending(c => c.UpdatedAt ?? c.CreatedAt)
                 .ThenByDescending(c => c.Id)
                 .Take(limit + 1)
                 .Select(c => new CollectionResponseDto(
                     c.Id,
                     c.Name,
                     c.Notes.Count, // It does not count deleted notes thanks to Global Soft Delete filter
-                    c.CreatedAt
+                    c.CreatedAt,
+                    c.UpdatedAt
                 ))
                 .ToListAsync();
 
@@ -84,7 +86,7 @@ namespace MyNoteMD_API.Controllers
             {
                 // There is a next page, generate cursor
                 var lastItem = collections[limit - 1];
-                nextCursor = CursorHelper.Encode(lastItem.CreatedAt, lastItem.Id);
+                nextCursor = CursorHelper.Encode(lastItem.UpdatedAt ?? lastItem.CreatedAt, lastItem.Id);
 
                 // Remove the extra (+1) check element from the list
                 collections.RemoveAt(limit);
@@ -117,14 +119,15 @@ namespace MyNoteMD_API.Controllers
             {
                 Id = Guid.CreateVersion7(),
                 Name = request.Name,
-                OwnerId = GetCurrentUserId()
+                OwnerId = GetCurrentUserId(),
+                UpdatedAt = DateTimeOffset.UtcNow
             };
 
             _context.Collections.Add(collection);
             await _context.SaveChangesAsync();
             await _auditService.LogAsync(GetCurrentUserId(), "NewCollectionCreated", $"Created Collection ID: {collection.Id}");
 
-            var response = new CollectionResponseDto(collection.Id, collection.Name, 0, collection.CreatedAt);
+            var response = new CollectionResponseDto(collection.Id, collection.Name, 0, collection.CreatedAt, collection.UpdatedAt);
 
             return StatusCode(201, response); // 201 Created
         }
@@ -136,7 +139,7 @@ namespace MyNoteMD_API.Controllers
 
             var collection = await _context.Collections
                 .Where(c => c.Id == id && c.OwnerId == userId)
-                .Select(c => new CollectionResponseDto(c.Id, c.Name, c.Notes.Count, c.CreatedAt))
+                .Select(c => new CollectionResponseDto(c.Id, c.Name, c.Notes.Count, c.CreatedAt, c.UpdatedAt))
                 .FirstOrDefaultAsync();
 
             if (collection == null)
@@ -163,6 +166,7 @@ namespace MyNoteMD_API.Controllers
 
             // Update the name
             collection.Name = request.Name;
+            collection.UpdatedAt = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync();
 

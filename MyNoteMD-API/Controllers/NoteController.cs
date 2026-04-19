@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyNoteMD_API.Data;
@@ -26,6 +26,17 @@ namespace MyNoteMD_API.Controllers
         {
             _context = context;
             _auditService = auditService;
+        }
+
+        private async Task UpdateCollectionTime(Guid collectionId)
+        {
+            var collection = await _context.Collections
+                .FirstOrDefaultAsync(c => c.Id == collectionId);
+            if (collection != null)
+            {
+                collection.UpdatedAt = DateTimeOffset.UtcNow;
+                _context.Entry(collection).State = EntityState.Modified;
+            }
         }
 
         private Guid GetCurrentUserId()
@@ -132,6 +143,7 @@ namespace MyNoteMD_API.Controllers
             };
 
             _context.Notes.Add(note);
+            await UpdateCollectionTime(request.CollectionId); // Update collection timestamp
             await _context.SaveChangesAsync();
             await _auditService.LogAsync(userId, "NewNoteCreated", $" Note Created with ID: {noteId} in Collection with ID: {request.CollectionId}");
 
@@ -185,17 +197,18 @@ namespace MyNoteMD_API.Controllers
                 isDraftChanged = true;
             }
 
-            if (request.IsPublic.HasValue)
+            if (request.IsPublic.HasValue && request.IsPublic.Value != note.IsPublic)
             {
                 note.IsPublic = request.IsPublic.Value;
+                isDraftChanged = true; // Visibility change is also a modification
             }
 
             if (isDraftChanged)
             {
                 note.HasUnpublishedChanges = true;
+                note.UpdatedAt = DateTimeOffset.UtcNow;
+                await UpdateCollectionTime(note.CollectionId); // Update collection timestamp
             }
-
-            note.UpdatedAt = DateTimeOffset.Now;
 
             await _context.SaveChangesAsync();
 
@@ -218,6 +231,7 @@ namespace MyNoteMD_API.Controllers
 
             // This endpoint does not change the accessibility of the note
 
+            await UpdateCollectionTime(note.CollectionId);
             await _context.SaveChangesAsync();
             await _auditService.LogAsync(userId, "NotePublished", $"Published Note ID: {id}");
 
@@ -234,6 +248,7 @@ namespace MyNoteMD_API.Controllers
             if (note == null) return NotFound();
 
             note.IsPublic = !note.IsPublic;
+            await UpdateCollectionTime(note.CollectionId);
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = $"Note is now {(note.IsPublic ? "public" : "private")}." });
@@ -252,7 +267,12 @@ namespace MyNoteMD_API.Controllers
             var note = await _context.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == userId);
             if (note == null) return NotFound();
 
+            var oldCollectionId = note.CollectionId;
             note.CollectionId = request.TargetCollectionId;
+
+            await UpdateCollectionTime(oldCollectionId);
+            await UpdateCollectionTime(request.TargetCollectionId);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -271,6 +291,7 @@ namespace MyNoteMD_API.Controllers
             }
 
             note.DeletedAt = DateTimeOffset.UtcNow; // Soft Delete
+            await UpdateCollectionTime(note.CollectionId); // Update collection timestamp
             await _context.SaveChangesAsync();
             await _auditService.LogAsync(userId, "NoteDeleted", $"Deleted Note ID: {id}");
 

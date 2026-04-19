@@ -22,6 +22,8 @@ import NoteEditPage from './pages/NoteEditPage/NoteEditPage.js';
 import NotePreviewPage from './pages/NotePreviewPage/NotePreviewPage.js';
 import TrashPage from './pages/TrashPage.js';
 import GuestPreviewPage from './pages/NotePreviewPage/GuestPreviewPage.js';
+import NotFoundPage from './pages/NotFoundPage.js';
+
 
 function App() {
   const { i18n, ready } = useTranslation();
@@ -86,6 +88,7 @@ function App() {
                   <Route path='/notes/public/:id'
                     element={<GuestPreviewPage />}
                   />
+                  <Route path='*' element={<NotFoundPage />} />
                 </Routes>
               </AuthProvider>
             </ConfirmProvider>
