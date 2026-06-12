@@ -207,6 +207,19 @@ export const NoteDownloadActions: React.FC<NoteDownloadActionsProps> = ({
                                 .print-container .prose .token.url {
                                     color: #d73a49 !important;
                                 }
+                                ::-webkit-scrollbar {
+                                    display: none !important;
+                                    width: 0 !important;
+                                    height: 0 !important;
+                                    background: transparent !important;
+                                }
+                                * {
+                                    -ms-overflow-style: none !important;
+                                    scrollbar-width: none !important;
+                                }
+                                .katex, .mjx-container, .math-inline, .math {
+                                    overflow: visible !important;
+                                }
                             }
                         `}
                     </style>
