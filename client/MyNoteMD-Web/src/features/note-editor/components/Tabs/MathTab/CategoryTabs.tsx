@@ -8,7 +8,7 @@ interface CategoryTabsProps {
   onSelect: (category: string) => void;
 }
 
-export function CategoryTabs({ categories, selected, onSelect }: CategoryTabsProps) {
+export function CategoryTabs({ categories, selected, onSelect, forceVertical }: CategoryTabsProps & { forceVertical?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -42,6 +42,27 @@ export function CategoryTabs({ categories, selected, onSelect }: CategoryTabsPro
   const scroll = (direction: "left" | "right") => {
     scrollRef.current?.scrollBy({ left: direction === "right" ? 200 : -200, behavior: "smooth" });
   };
+
+  if (forceVertical) {
+    return (
+      <div className="flex flex-wrap gap-1.5 py-1 w-full justify-center">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => onSelect(cat)}
+            className={cn(
+              "inline-flex items-center justify-center px-3 h-7 text-[11px] font-semibold rounded-md transition-all border shrink-0 cursor-pointer",
+              selected === cat
+                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground border-border/40"
+            )}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="relative group/tabs flex items-center min-w-0">

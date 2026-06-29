@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { CreateCollectionDialog } from "@/features/collections/components/create-collection-dialog";
 import { CreateNoteDialog } from "@/features/notes/components/create-not-dialog";
 
-export function Sidebar() {
+export function Sidebar({ hideMobileTrigger }: { hideMobileTrigger?: boolean }) {
   const { t } = useTranslation("sidebar");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -93,38 +93,40 @@ export function Sidebar() {
         - 'block': Seen on mobile
         - 'min-[1060px]:hidden': Not seen on 1060px and above
       */}
-      <div className="min-[1060px]:hidden fixed top-6 left-6 z-40">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full h-12 w-12 shadow-xl bg-background/90 backdrop-blur-md border-primary/20 hover:bg-accent"
+      {!hideMobileTrigger && (
+        <div className="min-[1060px]:hidden fixed top-6 left-6 z-40">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full h-12 w-12 shadow-xl bg-background/90 backdrop-blur-md border-primary/20 hover:bg-accent"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="w-[300px] border-r-0 rounded-r-[2.5rem] bg-card/95 backdrop-blur-xl p-6"
             >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-[300px] border-r-0 rounded-r-[2.5rem] bg-card/95 backdrop-blur-xl p-6"
-          >
-            <SheetHeader className="text-left mb-8">
-              <SheetTitle className="text-3xl font-bold italic tracking-tighter text-primary">
-                {t("sidebar:menu")}
-              </SheetTitle>
-            </SheetHeader>
-            <div className="overflow-y-auto h-full pr-2">
-              <SidebarContent isExpanded={true} />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+              <SheetHeader className="text-left mb-8">
+                <SheetTitle className="text-3xl font-bold italic tracking-tighter text-primary">
+                  {t("sidebar:menu")}
+                </SheetTitle>
+              </SheetHeader>
+              <div className="overflow-y-auto h-full pr-2">
+                <SidebarContent isExpanded={true} />
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      )}
     </TooltipProvider>
   );
 }
 
 // --- SHARED MENU CONTENT ---
-function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
+export function SidebarContent({ isExpanded }: { isExpanded: boolean }) {
   const { t } = useTranslation("sidebar");
   const [isNewOpen, setIsNewOpen] = React.useState(false);
 

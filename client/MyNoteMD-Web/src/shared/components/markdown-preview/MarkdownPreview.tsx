@@ -90,7 +90,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ markdown }) => {
   }), []);
 
   return (
-    <div className={`prose prose-sm max-w-none dark:prose-invert text-[13px] text-sm-[12px] leading-relaxed overflow-x-hidden ${resolvedTheme === 'dark' ? 'dark' : ''}`}>
+    <div className={`prose prose-sm max-w-none dark:prose-invert leading-relaxed overflow-x-hidden prose-p:text-[13px] prose-li:text-[13px] prose-td:text-[13px] prose-th:text-[13px] prose-h1:text-[20px] md:prose-h1:text-[24px] prose-h2:text-[18px] md:prose-h2:text-[20px] prose-h3:text-[16px] md:prose-h3:text-[17px] prose-h4:text-[15px] prose-headings:mt-4 prose-headings:mb-2 ${resolvedTheme === 'dark' ? 'dark' : ''}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath, remarkDirective, customDirectivePlugin, remarkGithubAlerts]}
         rehypePlugins={[

@@ -2,7 +2,7 @@
 
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Sidebar } from "@/components/custom/FloatingSidebar/FloatingSidebar";
-import { TopNav } from "@/features/navbar/top-right-nav";
+import { QuickSettingsNav } from "@/features/navbar/quick-settings-nav";
 import { GlobalSearch } from "@/features/search/components/global-search";
 import { useTranslation } from "react-i18next";
 
@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       {/* Right Top Navigation */}
-      <TopNav />
+      <QuickSettingsNav />
 
       {/* Left Sidebar */}
       <Sidebar />

@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { TopNav } from "@/features/navbar/top-right-nav";
+import { QuickSettingsNav } from "@/features/navbar/quick-settings-nav";
 import { Sidebar } from "@/components/custom/FloatingSidebar/FloatingSidebar";
 import { NoteErrorState } from "@/shared/components/note-error-state";
 import { CheckCircle2, FileText } from "lucide-react";
@@ -28,7 +28,7 @@ const NotePreviewPage = ({ isPublic = false }: { isPublic?: boolean }) => {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <TopNav collapse={false} />
+            <QuickSettingsNav collapse={false} />
             <Sidebar />
             <main className="pt-24 px-4 pb-10 sm:pt-16 sm:px-6 lg:pt-16 lg:px-8 max-w-4xl mx-auto">
                 {loading ? (

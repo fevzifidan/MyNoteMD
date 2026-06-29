@@ -16,7 +16,7 @@ interface SymbolScrollBarProps {
   onSelect: (latex: string) => void;
 }
 
-export function SymbolScrollBar({ symbols, category, onSelect }: SymbolScrollBarProps) {
+export function SymbolScrollBar({ symbols, category, onSelect, forceVertical }: SymbolScrollBarProps & { forceVertical?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +53,32 @@ export function SymbolScrollBar({ symbols, category, onSelect }: SymbolScrollBar
   const scroll = (direction: "left" | "right") => {
     containerRef.current?.scrollBy({ left: direction === "right" ? 180 : -180, behavior: "smooth" });
   };
+
+  if (forceVertical) {
+    return (
+      <div className="w-full border border-input rounded-2xl bg-background/50 p-3 max-h-[180px] overflow-y-auto">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {symbols.map((latex, idx) => (
+            <TooltipProvider key={`${category}-${idx}`} delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 rounded-lg border bg-background hover:bg-accent text-xs flex items-center justify-center cursor-pointer shadow-sm hover:scale-105 transition-all shrink-0"
+                    onClick={() => onSelect(latex)}
+                  >
+                    <InlineMath math={latex} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="font-semibold text-xs">{latex}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex items-center w-full border border-input rounded-md bg-background h-9 overflow-hidden group/symbol-bar">
