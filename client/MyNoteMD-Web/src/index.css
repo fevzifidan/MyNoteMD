@@ -165,4 +165,37 @@
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* ─── Responsive Toast (Sonner) ─────────────────────────────────────── */
+/* Mobile: toast genişliğini ve font boyutunu küçült */
+@media (max-width: 640px) {
+  .toaster {
+    --width: calc(100vw - 2rem) !important;
+  }
+
+  .cn-toast {
+    font-size: 0.8125rem !important; /* 13px */
+    padding: 0.625rem 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* İkon boyutunu da orantılı küçült */
+  .cn-toast [data-icon] svg {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+  }
+
+  /* Kapat butonunu küçült */
+  .cn-toast [data-close-button] {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+}
+
+/* Tablet ve üzeri: normal genişlik */
+@media (min-width: 641px) {
+  .toaster {
+    --width: 356px;
+  }
 }

@@ -3,7 +3,7 @@ import LanguageSelector from "@/components/custom/LanguageSelector/LanguageSelec
 import { ThemeToggle } from "@/components/custom/ThemeToggle/ThemeToggle";
 import { UserNav } from "./user-nav";
 
-export const TopNav = ({ collapse, className }: { collapse?: boolean; className?: string }) => {
+export const QuickSettingsNav = ({ collapse, className }: { collapse?: boolean; className?: string }) => {
   return (
     <div className={cn("fixed top-6 right-6 z-30 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500", className)}>
       {!collapse && <>

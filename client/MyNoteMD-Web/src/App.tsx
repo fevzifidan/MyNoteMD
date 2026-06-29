@@ -85,6 +85,7 @@ function App() {
                   <Route path='/trash'
                     element={<ProtectedRoute><TrashPage /></ProtectedRoute>}
                   />
+                  <Route path='/test' element={<NoteEditPage />} />
                   <Route path='/notes/public/:id'
                     element={<GuestPreviewPage />}
                   />

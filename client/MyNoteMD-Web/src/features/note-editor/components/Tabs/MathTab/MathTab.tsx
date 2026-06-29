@@ -6,7 +6,7 @@ import { SymbolScrollBar } from "./SymbolScrollBar";
 
 const CATEGORIES = Object.keys(MATH_SYMBOLS) as (keyof typeof MATH_SYMBOLS)[];
 
-export default function MathTab() {
+export default function MathTab({ forceVertical }: { forceVertical?: boolean }) {
   const { insertMath } = useEditor();
   const [selectedCategory, setSelectedCategory] = useState<keyof typeof MATH_SYMBOLS>(CATEGORIES[0]);
 
@@ -23,6 +23,7 @@ export default function MathTab() {
         categories={CATEGORIES as string[]}
         selected={selectedCategory}
         onSelect={(cat) => setSelectedCategory(cat as keyof typeof MATH_SYMBOLS)}
+        forceVertical={forceVertical}
       />
 
       {/* Row 2: Symbol scroll bar for selected category */}
@@ -30,6 +31,7 @@ export default function MathTab() {
         symbols={symbols}
         category={selectedCategory}
         onSelect={handleSelect}
+        forceVertical={forceVertical}
       />
     </div>
   );
