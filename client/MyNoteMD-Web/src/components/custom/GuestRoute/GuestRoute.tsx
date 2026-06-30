@@ -1,8 +1,8 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
-export default function GuestRoute({ children }: { children: React.ReactNode }) {
+export default function GuestRoute() {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -13,5 +13,5 @@ export default function GuestRoute({ children }: { children: React.ReactNode }) 
     return <Navigate to="/home" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }

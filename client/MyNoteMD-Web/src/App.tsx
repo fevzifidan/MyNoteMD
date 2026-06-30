@@ -61,34 +61,23 @@ function App() {
                 <Toaster position="top-right" richColors />
 
                 <Routes>
-                  <Route path='/' element={<GuestRoute><LoginPage /></GuestRoute>} />
-                  <Route path='/login' element={<GuestRoute><LoginPage /></GuestRoute>} />
-                  <Route path='/register' element={<GuestRoute><RegisterPage /></GuestRoute>} />
-                  <Route path='/home'
-                    element={<ProtectedRoute><HomePage /></ProtectedRoute>}
-                  />
-                  <Route path='/collections'
-                    element={<ProtectedRoute><CollectionsPage /></ProtectedRoute>}
-                  />
-                  <Route path='/notes'
-                    element={<ProtectedRoute><NotesPage /></ProtectedRoute>}
-                  />
-                  <Route path='/notes/:id'
-                    element={<ProtectedRoute><NotePreviewPage /></ProtectedRoute>}
-                  />
-                  <Route path='/collection/notes'
-                    element={<ProtectedRoute><NotesPage forCollection={true} /></ProtectedRoute>}
-                  />
-                  <Route path='/edit/:id'
-                    element={<ProtectedRoute><NoteEditPage /></ProtectedRoute>}
-                  />
-                  <Route path='/trash'
-                    element={<ProtectedRoute><TrashPage /></ProtectedRoute>}
-                  />
-                  <Route path='/test' element={<NoteEditPage />} />
-                  <Route path='/notes/public/:id'
-                    element={<GuestPreviewPage />}
-                  />
+                  <Route element={<GuestRoute />}>
+                    <Route path='/' element={<LoginPage />} />
+                    <Route path='/login' element={<LoginPage />} />
+                    <Route path='/register' element={<RegisterPage />} />
+                  </Route>
+
+                  <Route element={<ProtectedRoute />}>
+                    <Route path='/home' element={<HomePage />} />
+                    <Route path='/collections' element={<CollectionsPage />} />
+                    <Route path='/notes' element={<NotesPage />} />
+                    <Route path='/notes/:id' element={<NotePreviewPage />} />
+                    <Route path='/collection/notes' element={<NotesPage forCollection={true} />} />
+                    <Route path='/edit/:id' element={<NoteEditPage />} />
+                    <Route path='/trash' element={<TrashPage />} />
+                  </Route>
+
+                  <Route path='/notes/public/:id' element={<GuestPreviewPage />} />
                   <Route path='*' element={<NotFoundPage />} />
                 </Routes>
               </AuthProvider>
